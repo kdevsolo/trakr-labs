@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { signIn } from "@/app/auth/actions";
+import { signUp } from "@/app/auth/actions";
 import { AuthFieldLabel } from "@/components/auth/auth-field-label";
 import { AuthFormCard } from "@/components/auth/auth-form-card";
 import { AuthLegalLinks } from "@/components/auth/auth-legal-links";
@@ -13,15 +13,40 @@ import { AuthSocialButtons } from "@/components/auth/auth-social-buttons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const [message, setMessage] = useState("");
+  const [messageVariant, setMessageVariant] = useState<"error" | "success">(
+    "error",
+  );
   const [pending, setPending] = useState(false);
 
   async function handleSubmit(formData: FormData) {
     setMessage("");
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (password !== confirmPassword) {
+      setMessageVariant("error");
+      setMessage("Passwords do not match.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setMessageVariant("error");
+      setMessage("Password must be at least 8 characters.");
+      return;
+    }
+
     setPending(true);
-    const result = await signIn(formData);
-    if (result?.error) setMessage(result.error);
+    const result = await signUp(formData);
+    if (result?.error) {
+      setMessageVariant("error");
+      setMessage(result.error);
+    }
+    if (result?.message) {
+      setMessageVariant("success");
+      setMessage(result.message);
+    }
     setPending(false);
   }
 
@@ -31,10 +56,10 @@ export default function LoginPage() {
         <div className="space-y-6">
           <div className="space-y-2">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Welcome back
+              Create your account
             </h1>
             <p className="text-sm text-muted-foreground">
-              Track goals and progress with your team.
+              Get started with Trakr Labs in seconds.
             </p>
           </div>
 
@@ -53,38 +78,45 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <AuthFieldLabel
-                htmlFor="password"
-                action={
-                  <Link
-                    href="#"
-                    className="text-xs font-medium normal-case tracking-normal text-primary hover:underline"
-                  >
-                    Forgot password?
-                  </Link>
-                }
-              >
-                Password
-              </AuthFieldLabel>
+              <AuthFieldLabel htmlFor="password">Password</AuthFieldLabel>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                placeholder="••••••••"
-                autoComplete="current-password"
+                placeholder="At least 8 characters"
+                autoComplete="new-password"
+                minLength={8}
                 required
                 disabled={pending}
               />
             </div>
 
-            {message && <AuthMessage message={message} variant="error" />}
+            <div className="space-y-2">
+              <AuthFieldLabel htmlFor="confirmPassword">
+                Confirm password
+              </AuthFieldLabel>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                autoComplete="new-password"
+                minLength={8}
+                required
+                disabled={pending}
+              />
+            </div>
+
+            {message && (
+              <AuthMessage message={message} variant={messageVariant} />
+            )}
 
             <Button
               type="submit"
               className="h-11 w-full text-base"
               disabled={pending}
             >
-              {pending ? "Signing in…" : "Sign in"}
+              {pending ? "Creating account…" : "Sign up"}
             </Button>
           </form>
 
@@ -94,12 +126,12 @@ export default function LoginPage() {
       </AuthFormCard>
 
       <p className="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{" "}
+        Already have an account?{" "}
         <Link
-          href="/auth/signup"
+          href="/auth/login"
           className="font-semibold text-primary hover:underline"
         >
-          Create one
+          Sign in
         </Link>
       </p>
 

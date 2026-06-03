@@ -8,7 +8,7 @@ export default async function DashboardPage() {
   // Always use getUser() on the server — never getSession()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/auth/login')
 
   return (
     <div>

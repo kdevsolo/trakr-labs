@@ -26,9 +26,19 @@ export async function middleware(request: NextRequest) {
   // Refresh session — do NOT use getSession() here
   const { data: { user } } = await supabase.auth.getUser()
 
+  const isAuthRoute =
+    request.nextUrl.pathname === '/auth/login' ||
+    request.nextUrl.pathname === '/auth/signup'
+
+  if (isAuthRoute && user) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  } else if (request.nextUrl.pathname === '/' && !user) {
+    return NextResponse.redirect(new URL('/auth/login', request.url))
+  }
+
   // Redirect unauthenticated users away from protected routes
   if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
   return supabaseResponse
