@@ -44,3 +44,43 @@ export { Prisma }
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model Organization
+ * 
+ */
+export type Organization = Prisma.OrganizationModel
+/**
+ * Model Project
+ * 
+ */
+export type Project = Prisma.ProjectModel
+/**
+ * Model ProjectMember
+ * 
+ */
+export type ProjectMember = Prisma.ProjectMemberModel
+/**
+ * Model MemberPermission
+ * 
+ */
+export type MemberPermission = Prisma.MemberPermissionModel
+/**
+ * Model Issue
+ * 
+ */
+export type Issue = Prisma.IssueModel
+/**
+ * Model Comment
+ * 
+ */
+export type Comment = Prisma.CommentModel
+/**
+ * Model IssueMedia
+ * 
+ */
+export type IssueMedia = Prisma.IssueMediaModel
+/**
+ * Model StatusMaster
+ * 
+ */
+export type StatusMaster = Prisma.StatusMasterModel

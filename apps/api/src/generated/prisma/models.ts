@@ -9,4 +9,12 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
+export type * from './models/Organization'
+export type * from './models/Project'
+export type * from './models/ProjectMember'
+export type * from './models/MemberPermission'
+export type * from './models/Issue'
+export type * from './models/Comment'
+export type * from './models/IssueMedia'
+export type * from './models/StatusMaster'
 export type * from './commonInputTypes'

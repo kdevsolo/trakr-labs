@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { signOut } from '@/app/auth/actions'
+import Sidebar from '@/components/dashboard/Sidebar'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -17,6 +18,7 @@ export default async function DashboardPage() {
       <form action={signOut}>
         <button type="submit">Sign Out</button>
       </form>
+      <Sidebar />
     </div>
   )
 }

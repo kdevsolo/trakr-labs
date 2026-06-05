@@ -8,10 +8,161 @@ datasource db {
   provider = "postgresql"
 }
 
+enum PermissionResource {
+  PROJECT
+  USER
+  ISSUE
+  COMMENT
+  ISSUE_MEDIA
+}
+
+enum PermissionAction {
+  READ
+  CREATE
+  UPDATE
+  DELETE
+}
+
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
+  id         String   @id
+  name       String
+  email      String   @unique
+  orgId      String?
+  isOrgAdmin Boolean  @default(false)
+
+  org            Organization?      @relation(fields: [orgId], references: [id])
+  projectMembers ProjectMember[]
+  permissions    MemberPermission[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([orgId])
+}
+
+model Organization {
+  id         String   @id @default(uuid())
+  name       String
+  ownerId    String
+  createdBy  String
+  modifiedBy String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  users       User[]
+  projects    Project[]
+  permissions MemberPermission[]
+  statuses    StatusMaster[]
+}
+
+model Project {
+  id         String   @id @default(uuid())
+  name       String
+  projectKey String   @unique
+  orgId      String
+  createdBy  String
+  modifiedBy String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  org         Organization       @relation(fields: [orgId], references: [id])
+  members     ProjectMember[]
+  permissions MemberPermission[]
+  issues      Issue[]
+
+  @@index([orgId])
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  projectId String
+  userId    String
+  addedBy   String
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([userId])
+}
+
+model MemberPermission {
+  id        String             @id @default(uuid())
+  userId    String
+  orgId     String
+  projectId String?
+  resource  PermissionResource
+  action    PermissionAction
+  grantedBy String
+  createdAt DateTime           @default(now())
+
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  org     Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  project Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, orgId, projectId, resource, action])
+  @@index([userId, projectId])
+  @@index([orgId])
+}
+
+model Issue {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  metadata    Json?
+  statusId    String
+  projectId   String
+  reportedBy  String
+  assignedTo  String?
+  assignedBy  String?
+  modifiedBy  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  status   StatusMaster @relation(fields: [statusId], references: [id])
+  project  Project      @relation(fields: [projectId], references: [id])
+  comments Comment[]
+  media    IssueMedia[]
+
+  @@index([projectId])
+  @@index([statusId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  issueId   String
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+
+  @@index([issueId])
+}
+
+model IssueMedia {
+  id        String   @id @default(uuid())
+  issueId   String
+  url       String
+  fileType  String?
+  createdAt DateTime @default(now())
+
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+
+  @@index([issueId])
+}
+
+model StatusMaster {
+  id        String   @id @default(uuid())
+  orgId     String
+  title     String
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  org    Organization @relation(fields: [orgId], references: [id])
+  issues Issue[]
+
+  @@unique([orgId, title])
 }
