@@ -10,6 +10,7 @@ import { IssuesModule } from './issues/issues.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
+import { OrganizationsModule } from './organizations/organizations.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UsersModule } from './users/users.module';
     PermissionsModule,
     IssuesModule,
     UsersModule,
+    OrganizationsModule,
   ],
   controllers: [AppController],
   providers: [

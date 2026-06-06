@@ -1,18 +1,13 @@
 'use client'
-import { apiFetch } from '@/lib/api'
-import { useQuery } from '@tanstack/react-query'
+
 import { FolderIcon, HomeIcon, SettingsIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+
+import { useMe } from '@/hooks/api/use-me'
 
 const Sidebar = () => {
-    const { data: me } = useQuery({
-        queryKey: ['me'],
-        queryFn: () => apiFetch('/users/me'),
-    })
-
-    console.log(me)
+    const { data: me } = useMe()
   return (
     <div>
         <div>

@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PermissionsService } from '../auth/permissions.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateOrgDto } from './dto/create-org.dto';
 
 const userSelect = {
   id: true,
@@ -65,6 +66,42 @@ export class UsersService {
     }
 
     return updated;
+  }
+
+  async createOrg(userId: string, dto: CreateOrgDto) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+    });
+
+    if (user.orgId) {
+      throw new BadRequestException('User already belongs to an organization');
+    }
+
+    if (user.isOrgAdmin) {
+      throw new BadRequestException('User is already an organization admin');
+    }
+
+    if (dto.name.length < 3) {
+      throw new BadRequestException('Organization name must be at least 3 characters long');
+    }
+
+    if (dto.name.length > 255) {
+      throw new BadRequestException('Organization name must be less than 255 characters long');
+    }
+
+    if (dto.name.includes(' ')) {
+      throw new BadRequestException('Organization name must not contain spaces');
+    }
+    
+
+    return this.prisma.organization.create({
+      data: {
+        name: dto.name,
+        ownerId: userId,
+        createdBy: userId,
+        modifiedBy: userId,
+      },
+    });
   }
 
   private async assertUserInOrg(orgId: string, userId: string) {

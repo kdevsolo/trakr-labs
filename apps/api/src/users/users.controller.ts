@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -20,6 +21,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { requireOrgId } from '../auth/utils/require-org-id';
+import { CreateOrgDto } from './dto/create-org.dto';
 
 @Controller()
 export class UsersController {
@@ -64,5 +66,11 @@ export class UsersController {
     @Body() dto: UpdateUserDto,
   ) {
     return this.usersService.updateMember(requireOrgId(user.orgId), userId, dto);
+  }
+
+  @UseGuards(OrgAdminGuard)
+  @Post('/org/create')
+  createOrg(@CurrentUser() user: AuthenticatedUser, @Body() dto: CreateOrgDto) {
+    return this.usersService.createOrg(user.id, dto);
   }
 }

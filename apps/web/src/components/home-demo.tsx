@@ -1,17 +1,12 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-
 import { Button } from "@/components/ui/button";
-import { fetchHealth } from "@/lib/api";
+import { useHealth } from "@/hooks/api/use-health";
 import { useAppStore } from "@/stores/use-app-store";
 
 export function HomeDemo() {
   const { count, increment, reset } = useAppStore();
-  const healthQuery = useQuery({
-    queryKey: ["health"],
-    queryFn: fetchHealth,
-  });
+  const healthQuery = useHealth();
 
   return (
     <div className="flex w-full max-w-xl flex-col gap-6 rounded-xl border bg-card p-8 text-card-foreground shadow-sm">
@@ -45,11 +40,11 @@ export function HomeDemo() {
             <code className="rounded bg-muted px-1 py-0.5">pnpm dev</code>.
           </p>
         )}
-        {healthQuery.data && (
+        {healthQuery.isSuccess ? (
           <pre className="overflow-x-auto rounded-md bg-background p-3 text-xs">
             {JSON.stringify(healthQuery.data, null, 2)}
           </pre>
-        )}
+        ) : null}
         <Button
           variant="secondary"
           size="sm"
