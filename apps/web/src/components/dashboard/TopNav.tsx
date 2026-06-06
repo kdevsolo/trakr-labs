@@ -1,8 +1,7 @@
 "use client";
 
-import { BellIcon, ClockIcon, SearchIcon } from "lucide-react";
+import { BellIcon, BotIcon, ClockIcon } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
 import { useMe } from "@/hooks/api/use-me";
 import { cn } from "@/lib/utils";
 
@@ -22,17 +21,26 @@ const TopNav = ({ className }: TopNavProps) => {
   return (
     <header
       className={cn(
-        "flex h-14 shrink-0 items-center justify-between gap-4 border-b border-border bg-card px-6",
+        "flex h-14 shrink-0 items-center justify-between gap-4 border-b border-border bg-[#f3f1fa] px-6",
         className,
       )}
     >
-      <div className="relative mx-auto w-full max-w-xl">
-        <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search issues, projects, or users..."
-          className="h-9 bg-muted/60 pl-9 text-sm"
-        />
-      </div>
+      <button
+        type="button"
+        className={cn(
+          "ai-chat-mode-btn group relative flex items-center gap-2 overflow-hidden rounded-lg border border-border bg-white/60 px-3 py-2",
+          "font-sans text-sm text-muted-foreground shadow-sm",
+          "transition-[transform,box-shadow,border-color,color] duration-200 ease-out",
+          "hover:border-primary/30 hover:text-primary hover:shadow-md",
+          "active:scale-[0.97] active:shadow-sm active:duration-100",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        )}
+      >
+        <BotIcon className="relative z-10 size-4 transition-colors duration-200 group-hover:text-primary" />
+        <span className="relative z-10 font-mono transition-colors duration-200 group-hover:text-primary">
+          AI Chat Mode
+        </span>
+      </button>
 
       <div className="flex shrink-0 items-center gap-2">
         <button

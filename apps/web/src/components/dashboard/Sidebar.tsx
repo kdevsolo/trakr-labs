@@ -49,14 +49,14 @@ const Sidebar = () => {
 
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border bg-[#f3f1fa]">
-      <div className="px-5 pt-6 pb-4">
+      <div className="px-5 pt-3 pb-4">
         <div className="flex items-center gap-2.5">
           <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <BugIcon className="size-4" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-foreground">Trakr Labs</p>
-            <p className="text-[11px] text-muted-foreground">{version}</p>
+            <p className="text-sm font-semibold font-mono text-foreground">Trakr Labs</p>
+            <p className="text-[11px] font-mono text-muted-foreground">{version}</p>
           </div>
         </div>
       </div>

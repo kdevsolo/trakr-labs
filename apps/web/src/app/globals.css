@@ -25,6 +25,8 @@
 }
 
 @theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -48,13 +50,75 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-sans);
+}
+
+label {
+  font-family: var(--font-mono);
+}
+
+@keyframes ai-chat-bg-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.ai-chat-mode-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    120deg,
+    oklch(0.97 0.03 264) 0%,
+    oklch(0.93 0.06 264) 45%,
+    oklch(0.96 0.04 264) 100%
+  );
+  background-size: 200% 200%;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.ai-chat-mode-btn:hover::before,
+.ai-chat-mode-btn:focus-visible::before {
+  opacity: 1;
+  animation: ai-chat-bg-shift 2.5s ease infinite;
+}
+
+.ai-chat-mode-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    oklch(1 0 0 / 0.45) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.55s ease;
+}
+
+.ai-chat-mode-btn:hover::after {
+  transform: translateX(120%);
 }
