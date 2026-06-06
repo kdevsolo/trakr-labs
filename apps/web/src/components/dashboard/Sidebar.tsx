@@ -1,34 +1,115 @@
-'use client'
+"use client";
 
-import { FolderIcon, HomeIcon, SettingsIcon } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
+import {
+  BookOpenIcon,
+  BugIcon,
+  LayoutGridIcon,
+  LifeBuoyIcon,
+  PlusIcon,
+  SettingsIcon,
+  UsersIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
-import { useMe } from '@/hooks/api/use-me'
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  useSidebarStore,
+  type SidebarTab,
+} from "@/stores/use-sidebar-store";
+
+import {
+  getTabFromPathname,
+  SIDEBAR_TAB_ROUTES,
+} from "./sidebar-routes";
+
+type NavItem = {
+  id: SidebarTab;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
+
+const NAV_ITEMS: NavItem[] = [
+  { id: "overview", label: "Overview", icon: LayoutGridIcon },
+  { id: "issues", label: "Issues", icon: BugIcon },
+  { id: "team", label: "Team", icon: UsersIcon },
+  { id: "settings", label: "Settings", icon: SettingsIcon },
+];
 
 const Sidebar = () => {
-    const { data: me } = useMe()
-  return (
-    <div>
-        <div>
-            <Image src="/images/logo.svg" alt="Trakr Labs" width={100} height={100} />
-        </div>
-        <div className="flex flex-col gap-2">
-            <Link href="/" className="flex items-center gap-2">
-                <HomeIcon className="w-5 h-5" />
-                <span>Home</span>
-            </Link>
-            <Link href="/projects" className="flex items-center gap-2">
-                <FolderIcon className="w-5 h-5" />
-                <span>Projects</span>
-            </Link>
-            <Link href="/settings" className="flex items-center gap-2">
-                <SettingsIcon className="w-5 h-5" />
-                <span>Settings</span>
-            </Link>
-        </div>
-    </div>
-  )
-}
+  const pathname = usePathname();
+  const { activeTab, setActiveTab } = useSidebarStore();
+  const version = process.env.NEXT_PUBLIC_APP_VERSION;
 
-export default Sidebar
+  useEffect(() => {
+    setActiveTab(getTabFromPathname(pathname));
+  }, [pathname, setActiveTab]);
+
+  return (
+    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border bg-[#f3f1fa]">
+      <div className="px-5 pt-6 pb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <BugIcon className="size-4" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">Trakr Labs</p>
+            <p className="text-[11px] text-muted-foreground">{version}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 pb-4">
+        <Button className="w-full gap-2 shadow-sm" size="default">
+          <PlusIcon className="size-4" />
+          New Issue
+        </Button>
+      </div>
+
+      <nav className="flex flex-1 flex-col gap-0.5 px-3">
+        {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
+          const isActive = activeTab === id;
+
+          return (
+            <Link
+              key={id}
+              href={SIDEBAR_TAB_ROUTES[id]}
+              className={cn(
+                "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                isActive
+                  ? "bg-white text-primary shadow-sm"
+                  : "text-muted-foreground hover:bg-white/60 hover:text-foreground",
+              )}
+            >
+              <Icon className="size-4 shrink-0" />
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="mt-auto border-t border-border/60 px-3 py-4">
+        <div className="flex flex-col gap-0.5">
+          <button
+            type="button"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/60 hover:text-foreground"
+          >
+            <BookOpenIcon className="size-4" />
+            Documentation
+          </button>
+          <button
+            type="button"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/60 hover:text-foreground"
+          >
+            <LifeBuoyIcon className="size-4" />
+            Support
+          </button>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
+export default Sidebar;
