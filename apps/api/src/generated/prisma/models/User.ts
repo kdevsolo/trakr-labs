@@ -259,7 +259,7 @@ export type UserScalarWhereWithAggregatesInput = {
 }
 
 export type UserCreateInput = {
-  id: string
+  id?: string
   name: string
   email: string
   isOrgAdmin?: boolean
@@ -271,7 +271,7 @@ export type UserCreateInput = {
 }
 
 export type UserUncheckedCreateInput = {
-  id: string
+  id?: string
   name: string
   email: string
   orgId?: string | null
@@ -307,7 +307,7 @@ export type UserUncheckedUpdateInput = {
 }
 
 export type UserCreateManyInput = {
-  id: string
+  id?: string
   name: string
   email: string
   orgId?: string | null
@@ -467,7 +467,7 @@ export type UserUpdateOneRequiredWithoutPermissionsNestedInput = {
 }
 
 export type UserCreateWithoutOrgInput = {
-  id: string
+  id?: string
   name: string
   email: string
   isOrgAdmin?: boolean
@@ -478,7 +478,7 @@ export type UserCreateWithoutOrgInput = {
 }
 
 export type UserUncheckedCreateWithoutOrgInput = {
-  id: string
+  id?: string
   name: string
   email: string
   isOrgAdmin?: boolean
@@ -528,7 +528,7 @@ export type UserScalarWhereInput = {
 }
 
 export type UserCreateWithoutProjectMembersInput = {
-  id: string
+  id?: string
   name: string
   email: string
   isOrgAdmin?: boolean
@@ -539,7 +539,7 @@ export type UserCreateWithoutProjectMembersInput = {
 }
 
 export type UserUncheckedCreateWithoutProjectMembersInput = {
-  id: string
+  id?: string
   name: string
   email: string
   orgId?: string | null
@@ -588,7 +588,7 @@ export type UserUncheckedUpdateWithoutProjectMembersInput = {
 }
 
 export type UserCreateWithoutPermissionsInput = {
-  id: string
+  id?: string
   name: string
   email: string
   isOrgAdmin?: boolean
@@ -599,7 +599,7 @@ export type UserCreateWithoutPermissionsInput = {
 }
 
 export type UserUncheckedCreateWithoutPermissionsInput = {
-  id: string
+  id?: string
   name: string
   email: string
   orgId?: string | null
@@ -648,7 +648,7 @@ export type UserUncheckedUpdateWithoutPermissionsInput = {
 }
 
 export type UserCreateManyOrgInput = {
-  id: string
+  id?: string
   name: string
   email: string
   isOrgAdmin?: boolean

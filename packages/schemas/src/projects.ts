@@ -1,0 +1,36 @@
+import * as z from 'zod';
+
+export enum PermissionAction {
+  READ = 'READ',
+  CREATE = 'CREATE',
+  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
+}
+
+export const CreateProjectSchema = z.object({
+  name: z.string().min(1).max(100),
+  orgId: z.string().min(1),
+});
+
+export const AddProjectMemberSchema = z.object({
+  projectId: z.string().min(1),
+  userId: z.string().min(1),
+  actions: z.array(z.enum(Object.values(PermissionAction) as [string, ...string[]])).optional(),
+});
+
+export const UpdateProjectSchema = CreateProjectSchema.partial();
+export const ProjectSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  orgId: z.string(),
+  projectKey: z.string(),
+  createdBy: z.string(),
+  modifiedBy: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type CreateProjectInput = z.infer<typeof CreateProjectSchema>;
+export type UpdateProjectInput = z.infer<typeof UpdateProjectSchema>;
+export type Project = z.infer<typeof ProjectSchema>;
+export type AddProjectMemberInput = z.infer<typeof AddProjectMemberSchema>;

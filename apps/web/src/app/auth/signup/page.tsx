@@ -6,7 +6,6 @@ import { useState } from "react";
 import { signUp } from "@/app/auth/actions";
 import { AuthFieldLabel } from "@/components/auth/auth-field-label";
 import { AuthFormCard } from "@/components/auth/auth-form-card";
-import { AuthLegalLinks } from "@/components/auth/auth-legal-links";
 import { AuthMessage } from "@/components/auth/auth-message";
 import { AuthOrDivider } from "@/components/auth/auth-or-divider";
 import { AuthSocialButtons } from "@/components/auth/auth-social-buttons";
@@ -134,8 +133,6 @@ export default function SignUpPage() {
           Sign in
         </Link>
       </p>
-
-      <AuthLegalLinks />
     </>
   );
 }

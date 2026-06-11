@@ -1,9 +1,12 @@
 "use client";
 
-import { BellIcon, BotIcon, ClockIcon } from "lucide-react";
+import { BellIcon, BotIcon, ClockIcon, LogOutIcon } from "lucide-react";
 
 import { useMe } from "@/hooks/api/use-me";
 import { cn } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { signOut } from "@/app/auth/actions";
+import { redirect } from "next/navigation";
 
 type TopNavProps = {
   className?: string;
@@ -17,6 +20,11 @@ const TopNav = ({ className }: TopNavProps) => {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
+  const handleLogout = async () => {
+    await signOut();
+    redirect("/auth/login");
+  };
 
   return (
     <header
@@ -58,9 +66,20 @@ const TopNav = ({ className }: TopNavProps) => {
         >
           <ClockIcon className="size-4" />
         </button>
-        <div className="ml-1 flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-          {initials ?? "?"}
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="cursor-pointer">
+            <div className="ml-1 flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+              {initials ?? "?"}
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={handleLogout} variant="destructive">
+              <LogOutIcon className="size-4 cursor-pointer" />
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
       </div>
     </header>
   );

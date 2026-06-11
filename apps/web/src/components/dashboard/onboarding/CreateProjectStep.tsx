@@ -8,10 +8,20 @@ import { Input } from '@/components/ui/input'
 import { OnboardingCard } from './OnboardingCard'
 import { FieldLabel } from './FieldLabel'
 import { useOnboardingStore } from '@/stores/use-onboarding-store'
+import { CreateProjectInput } from '@trakr/schemas'
+import { useMutation } from '@tanstack/react-query'
 
 export default function CreateProjectStep() {
-  const { setProjectName, projectName, setStep } = useOnboardingStore()
-
+  const { setProjectName, projectName } = useOnboardingStore()
+  // const { mutate: createProject } = useMutation({
+  //   mutationFn: (input: CreateProjectInput) => createProject(input),
+  //   onSuccess: () => {
+  //     // setStep(4)
+  //   },
+  //   onError: (error) => {
+  //     console.error(error)
+  //   },
+  // })
   return (
     <OnboardingCard step={3}>
       <div className="space-y-2">
