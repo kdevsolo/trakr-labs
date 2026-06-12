@@ -17,7 +17,6 @@
     "db:seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
-    "@trakr/schemas": "workspace:*",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",
@@ -27,6 +26,8 @@
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@supabase/supabase-js": "^2.107.0",
+    "@trakr/schemas": "workspace:*",
     "jwks-rsa": "^4.0.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",

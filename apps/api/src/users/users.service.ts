@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PermissionsService } from '../auth/permissions.service';
+import { getSupabaseAdmin } from '../auth/supabase-admin';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateOrgDto } from './dto/create-org.dto';
+import { InviteUserDto } from './dto/invite-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateOrgDto } from './dto/create-org.dto';
 
 const userSelect = {
   id: true,
@@ -102,6 +104,41 @@ export class UsersService {
         modifiedBy: userId,
       },
     });
+  }
+
+  async inviteMember(orgId: string, adminId: string, dto: InviteUserDto) {
+    const { data, error } = await getSupabaseAdmin().auth.admin.inviteUserByEmail(
+      dto.email,
+    );
+
+    if (error) {
+      throw new BadRequestException(error.message);
+    }
+
+    const uid = data.user.id;
+
+    await this.prisma.$transaction([
+      this.prisma.user.create({
+        data: { id: uid, name: dto.name, email: dto.email, orgId },
+      }),
+      ...dto.permissions.map((p) =>
+        this.prisma.memberPermission.create({
+          data: {
+            userId: uid,
+            orgId,
+            projectId: p.projectId ?? null,
+            resource: p.resource,
+            action: p.action,
+            grantedBy: adminId,
+          },
+        }),
+      ),
+      this.prisma.userInvite.create({
+        data: { userId: uid, orgId, invitedBy: adminId },
+      }),
+    ]);
+
+    return { id: uid };
   }
 
   private async assertUserInOrg(orgId: string, userId: string) {

@@ -28,3 +28,11 @@ export const PermissionAction = {
 } as const
 
 export type PermissionAction = (typeof PermissionAction)[keyof typeof PermissionAction]
+
+
+export const UserInviteStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED'
+} as const
+
+export type UserInviteStatus = (typeof UserInviteStatus)[keyof typeof UserInviteStatus]

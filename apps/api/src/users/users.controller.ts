@@ -16,6 +16,7 @@ import { OrgAdminOnly } from '../auth/decorators/org-admin.decorator';
 import { RequirePermission } from '../auth/decorators/require-permission.decorator';
 import { OrgAdminGuard } from '../auth/guards/org-admin.guard';
 import { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
+import { InviteUserDto } from './dto/invite-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -66,6 +67,16 @@ export class UsersController {
     @Body() dto: UpdateUserDto,
   ) {
     return this.usersService.updateMember(requireOrgId(user.orgId), userId, dto);
+  }
+
+  @Post('org/members/invite')
+  @UseGuards(OrgAdminGuard)
+  @OrgAdminOnly()
+  inviteMember(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: InviteUserDto,
+  ) {
+    return this.usersService.inviteMember(requireOrgId(user.orgId), user.id, dto);
   }
 
   @UseGuards(OrgAdminGuard)

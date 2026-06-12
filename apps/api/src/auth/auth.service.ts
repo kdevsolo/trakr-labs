@@ -20,6 +20,11 @@ export class AuthService {
 
     if (!user) {
       user = await this.provisionUser(payload);
+    } else {
+      await this.prisma.userInvite.updateMany({
+        where: { userId: user.id, status: 'PENDING' },
+        data: { status: 'ACCEPTED' },
+      });
     }
 
     return this.toAuthenticatedUser(user);

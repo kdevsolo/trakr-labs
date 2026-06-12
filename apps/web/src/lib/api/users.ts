@@ -1,3 +1,5 @@
+import type { InviteUserInput } from "@trakr/schemas";
+
 import { apiFetch } from "./client";
 import type { UpdateProfileInput, User } from "./types";
 
@@ -18,4 +20,11 @@ export function listOrgMembers() {
 
 export function getOrgMember(userId: string) {
   return apiFetch<User>(`/org/members/${userId}`);
+}
+
+export function inviteOrgMember(input: InviteUserInput) {
+  return apiFetch<{ id: string }>("/org/members/invite", {
+    method: "POST",
+    json: input,
+  });
 }

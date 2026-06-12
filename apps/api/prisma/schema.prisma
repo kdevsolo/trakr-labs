@@ -23,8 +23,13 @@ enum PermissionAction {
   DELETE
 }
 
+enum UserInviteStatus {
+  PENDING
+  ACCEPTED
+}
+
 model User {
-  id         String   @id @default(uuid())
+  id         String   @id
   name       String
   email      String   @unique
   orgId      String?
@@ -33,10 +38,26 @@ model User {
   org            Organization?      @relation(fields: [orgId], references: [id])
   projectMembers ProjectMember[]
   permissions    MemberPermission[]
+  invite         UserInvite?
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
 
   @@index([orgId])
+}
+
+model UserInvite {
+  id        String            @id @default(uuid())
+  userId    String            @unique
+  orgId     String
+  invitedBy String
+  status    UserInviteStatus  @default(PENDING)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([orgId])
+  @@index([status])
 }
 
 model Organization {

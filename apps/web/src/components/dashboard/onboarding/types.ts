@@ -1,9 +1,5 @@
-export type TeamRole = 'Developer' | 'QA' | 'Product Manager' | 'Admin'
-
-export type TeamInvite = {
-  email: string
-  role: TeamRole
-}
+import { InviteUserInput } from "@trakr/schemas";
+export type TeamInvite = InviteUserInput
 
 export type EnvironmentContext = 'production' | 'staging'
 
