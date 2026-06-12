@@ -2,7 +2,7 @@ import type { SidebarTab } from "@/stores/use-sidebar-store";
 
 export const SIDEBAR_TAB_ROUTES: Record<SidebarTab, string> = {
   overview: "/dashboard",
-  issues: "/dashboard/projects",
+  issues: "/dashboard/issues",
   team: "/dashboard/users",
   settings: "/dashboard/settings",
 };
