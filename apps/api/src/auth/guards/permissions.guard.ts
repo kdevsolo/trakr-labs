@@ -33,9 +33,14 @@ export class PermissionsGuard implements CanActivate {
       params: { projectId?: string };
     }>();
     const user = request.user;
+    console.log({user})
 
     if (!user) {
       throw new ForbiddenException('Authentication required');
+    }
+
+    if (user.isOrgAdmin) {
+      return true;
     }
 
     if (!isProjectScopedResource(required.resource) && !user.orgId) {

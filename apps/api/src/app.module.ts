@@ -28,8 +28,8 @@ import { ProjectsModule } from './projects/projects.module';
   providers: [
     AppService,
     // Last registered global guard runs first — JwtAuthGuard must run before PermissionsGuard.
-    { provide: APP_GUARD, useClass: PermissionsGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: PermissionsGuard },
   ],
 })
 export class AppModule {}

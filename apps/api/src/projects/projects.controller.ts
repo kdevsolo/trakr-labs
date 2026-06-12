@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { AddProjectMemberInput, AddProjectMemberSchema, CreateProjectSchema, type CreateProjectInput, type UpdateProjectInput } from '@trakr/schemas';
 import { AuthenticatedUser } from 'src/auth/interfaces/authenticated-user.interface';
@@ -7,12 +7,15 @@ import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
 import { RequirePermission } from 'src/auth/decorators/require-permission.decorator';
 import { PermissionAction, PermissionResource } from 'src/generated/prisma/enums';
 import { requireOrgId } from 'src/auth/utils/require-org-id';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
 
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) { }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @RequirePermission(PermissionResource.PROJECT, PermissionAction.CREATE)
   create(@CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(CreateProjectSchema))

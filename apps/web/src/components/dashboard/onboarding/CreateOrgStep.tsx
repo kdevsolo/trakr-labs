@@ -13,12 +13,13 @@ import { useOnboardingStore } from '@/stores/use-onboarding-store'
 import { CreateOrganizationInput } from '@trakr/schemas'
 
 export default function CreateOrgStep() {
-  const { orgName, setOrgName, setStep } = useOnboardingStore()
+  const { orgName, setOrgName, setOrgId, setStep } = useOnboardingStore()
   const canContinue = orgName.trim().length > 0
 
   const { mutate: createOrg } = useMutation({
     mutationFn: (input: CreateOrganizationInput) => createOrganization(input),
     onSuccess: (data) => {
+      setOrgId(data.id)
       setStep(2)
     },
     onError: (error) => {

@@ -8,11 +8,14 @@ import { useOnboardingStore } from '@/stores/use-onboarding-store'
 import { useEffect } from 'react'
 
 export default function OnboardingWizard({ data }: { data: User }) {
-  const { step, setStep } = useOnboardingStore()
+  const { step, setStep, setOrgId, orgId } = useOnboardingStore()
 
   useEffect(() => {
     if (data.orgId) {
       setStep(2)
+      if(!orgId) {
+        setOrgId(data.orgId)
+      }
     }
   }, [data.orgId])
 

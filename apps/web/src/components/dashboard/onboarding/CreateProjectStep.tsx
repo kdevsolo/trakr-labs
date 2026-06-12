@@ -1,27 +1,30 @@
 'use client'
 
-import { Rocket } from 'lucide-react'
+import { Loader2, Rocket } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useMutation } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { createProject } from '@/lib/api/projects'
+import { useOnboardingStore } from '@/stores/use-onboarding-store'
 
 import { OnboardingCard } from './OnboardingCard'
 import { FieldLabel } from './FieldLabel'
-import { useOnboardingStore } from '@/stores/use-onboarding-store'
-import { CreateProjectInput } from '@trakr/schemas'
-import { useMutation } from '@tanstack/react-query'
 
 export default function CreateProjectStep() {
-  const { setProjectName, projectName } = useOnboardingStore()
-  // const { mutate: createProject } = useMutation({
-  //   mutationFn: (input: CreateProjectInput) => createProject(input),
-  //   onSuccess: () => {
-  //     // setStep(4)
-  //   },
-  //   onError: (error) => {
-  //     console.error(error)
-  //   },
-  // })
+  const router = useRouter()
+  const { setProjectName, projectName, orgId } = useOnboardingStore()
+
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: () => createProject({ name: projectName, orgId }),
+    onSuccess: () => {
+      router.push('/dashboard')
+    },
+  })
+
+  const canFinish = projectName.trim().length > 0 && orgId.length > 0
+
   return (
     <OnboardingCard step={3}>
       <div className="space-y-2">
@@ -43,68 +46,34 @@ export default function CreateProjectStep() {
             onChange={(event) => setProjectName(event.target.value)}
           />
         </div>
-
-        {/* <div className="space-y-3">
-          <p className="text-sm font-semibold text-foreground">
-            Environment Context
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {environments.map(({ value, label, description, icon: Icon }) => {
-              const selected = environment === value
-
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => onEnvironmentChange(value)}
-                  className={cn(
-                    'flex items-start gap-3 rounded-lg border p-4 text-left transition-colors',
-                    selected
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border bg-card hover:border-primary/30',
-                  )}
-                >
-                  <div
-                    className={cn(
-                      'flex size-9 shrink-0 items-center justify-center rounded-md',
-                      selected
-                        ? 'bg-primary/10 text-primary'
-                        : 'bg-muted text-muted-foreground',
-                    )}
-                  >
-                    <Icon className="size-4" />
-                  </div>
-                  <div>
-                    <p
-                      className={cn(
-                        'text-sm font-semibold',
-                        selected ? 'text-foreground' : 'text-muted-foreground',
-                      )}
-                    >
-                      {label}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {description}
-                    </p>
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-        </div> */}
       </div>
 
+      {error && (
+        <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {error instanceof Error ? error.message : 'Failed to create project. Please try again.'}
+        </p>
+      )}
+
       <div className="flex items-center justify-between border-t border-border pt-6">
-        <Button variant="ghost" onClick={() => {}}>
+        <Button variant="ghost" disabled={isPending} onClick={() => router.push('/dashboard')}>
           Skip &amp; Finish
         </Button>
         <Button
           className="font-semibold"
-          // disabled={!canFinish}
-          // onClick={onFinish}
+          disabled={!canFinish || isPending}
+          onClick={() => mutate()}
         >
-          Finish &amp; Go to Dashboard
-          <Rocket className="size-4" />
+          {isPending ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              Creating…
+            </>
+          ) : (
+            <>
+              Finish &amp; Go to Dashboard
+              <Rocket className="size-4" />
+            </>
+          )}
         </Button>
       </div>
     </OnboardingCard>
