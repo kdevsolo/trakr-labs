@@ -6,8 +6,12 @@ export type HealthResponse = {
 export type {
   CreateIssueInput,
   CreateOrganizationInput,
+  InviteUserInput,
   Issue,
+  MemberPermissions,
   Organization,
+  PermissionGrant,
+  Project,
   UpdateIssueInput,
   UpdateProfileInput,
   User,

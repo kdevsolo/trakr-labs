@@ -6,26 +6,16 @@ import { type InviteUserInput } from '@trakr/schemas'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { inviteOrgMember } from '@/lib/api/users'
+import {
+  deriveOrgPermissions,
+  type OrgRole,
+} from '@/lib/permissions/org-role'
 
 import { OnboardingCard } from './OnboardingCard'
 import { FieldLabel } from './FieldLabel'
+import { OrgRoleSelect } from '../team/OrgRoleSelect'
 import { useOnboardingStore } from '@/stores/use-onboarding-store'
-
-// Invites are inherently organization-level: at onboarding no projects exist
-// yet, so only org-scoped grants are meaningful here. Per-project access is
-// granted later via "add member" once projects exist. The options below map
-// directly to the backend's ORG_ALLOWED_GRANTS:
-//   - USER: full CRUD (manage org members)
-//   - PROJECT: CREATE only (ability to create new projects)
-type OrgRole = 'admin' | 'project_creator' | 'member'
 
 type LocalInvite = {
   name: string
@@ -37,28 +27,6 @@ const DEFAULT_INVITE: LocalInvite = {
   name: '',
   email: '',
   orgRole: 'member',
-}
-
-const ORG_ROLE_GRANTS: Record<OrgRole, InviteUserInput['permissions']> = {
-  admin: [
-    { resource: 'USER', action: 'READ' },
-    { resource: 'USER', action: 'CREATE' },
-    { resource: 'USER', action: 'UPDATE' },
-    { resource: 'USER', action: 'DELETE' },
-    { resource: 'PROJECT', action: 'CREATE' },
-  ],
-  project_creator: [{ resource: 'PROJECT', action: 'CREATE' }],
-  member: [],
-}
-
-const ORG_ROLE_OPTIONS: { value: OrgRole; label: string; hint: string }[] = [
-  { value: 'admin', label: 'Admin', hint: 'Manage members & create projects' },
-  { value: 'project_creator', label: 'Project creator', hint: 'Can create projects' },
-  { value: 'member', label: 'Member', hint: 'Project access granted later' },
-]
-
-function derivePermissions(role: OrgRole): InviteUserInput['permissions'] {
-  return ORG_ROLE_GRANTS[role]
 }
 
 export default function InviteTeamStep() {
@@ -79,7 +47,7 @@ export default function InviteTeamStep() {
       .map(i => ({
         name: i.name,
         email: i.email,
-        permissions: derivePermissions(i.orgRole),
+        permissions: deriveOrgPermissions(i.orgRole),
       }))
 
     if (validInvites.length === 0) {
@@ -142,24 +110,12 @@ export default function InviteTeamStep() {
             </div>
             <div className="col-span-2 space-y-2">
               <FieldLabel>Organization Access</FieldLabel>
-              <Select
+              <OrgRoleSelect
                 value={invite.orgRole}
-                onValueChange={value => updateInvite(index, 'orgRole', value as OrgRole)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select access level" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ORG_ROLE_OPTIONS.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      <span className="flex flex-col">
-                        <span>{option.label}</span>
-                        <span className="text-xs text-muted-foreground">{option.hint}</span>
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onValueChange={(value) =>
+                  updateInvite(index, 'orgRole', value)
+                }
+              />
             </div>
           </div>
         ))}
