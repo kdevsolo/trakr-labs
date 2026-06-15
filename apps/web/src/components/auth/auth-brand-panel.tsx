@@ -1,5 +1,7 @@
 import { BarChart3, Shield, Zap } from "lucide-react";
 
+import { Logo } from "@/components/brand/logo";
+
 const features = [
   {
     icon: BarChart3,
@@ -30,14 +32,7 @@ export function AuthBrandPanel() {
         }}
       />
       <div className="relative z-10">
-        <div className="flex items-center gap-2.5">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-sm font-semibold text-primary">
-            T
-          </div>
-          <span className="text-lg font-semibold tracking-tight text-foreground">
-            Trakr Labs
-          </span>
-        </div>
+        <Logo iconClassName="size-9" textClassName="text-lg" />
       </div>
       <div className="relative z-10 space-y-8">
         <div className="space-y-3">

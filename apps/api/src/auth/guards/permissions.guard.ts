@@ -9,7 +9,6 @@ import { REQUIRE_PERMISSION_KEY } from '../constants/metadata';
 import { RequiredPermission } from '../decorators/require-permission.decorator';
 import { AuthenticatedUser } from '../interfaces/authenticated-user.interface';
 import { PermissionsService } from '../permissions.service';
-import { isProjectScopedResource } from '../constants/permissions';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -33,7 +32,6 @@ export class PermissionsGuard implements CanActivate {
       params: { projectId?: string };
     }>();
     const user = request.user;
-    console.log({user})
 
     if (!user) {
       throw new ForbiddenException('Authentication required');
@@ -43,13 +41,17 @@ export class PermissionsGuard implements CanActivate {
       return true;
     }
 
-    if (!isProjectScopedResource(required.resource) && !user.orgId) {
+    if (!user.orgId) {
       throw new ForbiddenException('Organization membership required');
     }
 
-    const projectId = isProjectScopedResource(required.resource)
-      ? request.params.projectId
-      : undefined;
+    let projectId: string | undefined;
+    if (required.scope === 'project') {
+      projectId = request.params.projectId;
+      if (!projectId) {
+        throw new ForbiddenException('Project ID is required');
+      }
+    }
 
     const allowed = this.permissionsService.hasPermission(
       user,

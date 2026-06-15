@@ -11,10 +11,7 @@
 
 export const PermissionResource = {
   PROJECT: 'PROJECT',
-  USER: 'USER',
-  ISSUE: 'ISSUE',
-  COMMENT: 'COMMENT',
-  ISSUE_MEDIA: 'ISSUE_MEDIA'
+  USER: 'USER'
 } as const
 
 export type PermissionResource = (typeof PermissionResource)[keyof typeof PermissionResource]

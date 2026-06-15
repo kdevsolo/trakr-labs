@@ -5,21 +5,57 @@ import {
 
 export { PermissionAction, PermissionResource };
 
-export const ORG_SCOPED_RESOURCES: PermissionResource[] = [
-  PermissionResource.USER,
-  PermissionResource.PROJECT,
+export type PermissionScope = 'org' | 'project';
+
+const ALL_ACTIONS: readonly PermissionAction[] = [
+  PermissionAction.READ,
+  PermissionAction.CREATE,
+  PermissionAction.UPDATE,
+  PermissionAction.DELETE,
 ];
 
-export const PROJECT_SCOPED_RESOURCES: PermissionResource[] = [
-  PermissionResource.ISSUE,
-  PermissionResource.COMMENT,
-  PermissionResource.ISSUE_MEDIA,
+/**
+ * Grants an org admin can assign at the organization level (projectId = null).
+ * - USER: full CRUD (managing org members).
+ * - PROJECT: CREATE only (ability to create new projects).
+ */
+export const ORG_ALLOWED_GRANTS: ReadonlyArray<{
+  resource: PermissionResource;
+  actions: readonly PermissionAction[];
+}> = [
+  { resource: PermissionResource.USER, actions: ALL_ACTIONS },
+  { resource: PermissionResource.PROJECT, actions: [PermissionAction.CREATE] },
 ];
 
-export function isProjectScopedResource(
+/**
+ * Grants an org admin can assign at the project level (projectId set).
+ * - PROJECT: READ/UPDATE/DELETE on a specific project. This grant also governs
+ *   the project's issues and comments (READ to read, UPDATE to create/update/delete).
+ */
+export const PROJECT_ALLOWED_GRANTS: ReadonlyArray<{
+  resource: PermissionResource;
+  actions: readonly PermissionAction[];
+}> = [
+  {
+    resource: PermissionResource.PROJECT,
+    actions: [
+      PermissionAction.READ,
+      PermissionAction.UPDATE,
+      PermissionAction.DELETE,
+    ],
+  },
+];
+
+export function isGrantAllowed(
+  scope: PermissionScope,
   resource: PermissionResource,
+  action: PermissionAction,
 ): boolean {
-  return PROJECT_SCOPED_RESOURCES.includes(resource);
+  const allowed =
+    scope === 'org' ? ORG_ALLOWED_GRANTS : PROJECT_ALLOWED_GRANTS;
+  return allowed.some(
+    (entry) => entry.resource === resource && entry.actions.includes(action),
+  );
 }
 
 export function toPermissionKey(

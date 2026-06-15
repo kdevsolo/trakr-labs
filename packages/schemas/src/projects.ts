@@ -12,10 +12,16 @@ export const CreateProjectSchema = z.object({
   orgId: z.string().min(1),
 });
 
+export const ProjectMemberActionSchema = z.enum([
+  PermissionAction.READ,
+  PermissionAction.UPDATE,
+  PermissionAction.DELETE,
+]);
+
 export const AddProjectMemberSchema = z.object({
   projectId: z.string().min(1),
   userId: z.string().min(1),
-  actions: z.array(z.enum(Object.values(PermissionAction) as [string, ...string[]])).optional(),
+  actions: z.array(ProjectMemberActionSchema).optional(),
 });
 
 export const UpdateProjectSchema = CreateProjectSchema.partial();

@@ -1,5 +1,6 @@
 "use client";
 
+import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { useHealth } from "@/hooks/api/use-health";
 import { useAppStore } from "@/stores/use-app-store";
@@ -11,7 +12,7 @@ export function HomeDemo() {
   return (
     <div className="flex w-full max-w-xl flex-col gap-6 rounded-xl border bg-card p-8 text-card-foreground shadow-sm">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Trakr Labs</h1>
+        <Logo iconClassName="size-9" textClassName="text-2xl" />
         <p className="text-sm text-muted-foreground">
           Monorepo starter with Next.js, NestJS, Prisma, shadcn/ui, Zustand,
           and React Query.

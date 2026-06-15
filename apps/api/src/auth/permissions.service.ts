@@ -9,11 +9,7 @@ import {
   PermissionResource,
 } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  isProjectScopedResource,
-  ORG_SCOPED_RESOURCES,
-  PROJECT_SCOPED_RESOURCES,
-} from './constants/permissions';
+import { isGrantAllowed, PermissionScope } from './constants/permissions';
 import { AuthenticatedUser } from './interfaces/authenticated-user.interface';
 import { PermissionGrant } from './interfaces/permission-grant.interface';
 import { requireOrgId } from './utils/require-org-id';
@@ -38,10 +34,7 @@ export class PermissionsService {
       return true;
     }
 
-    if (isProjectScopedResource(resource)) {
-      if (!projectId) {
-        return false;
-      }
+    if (projectId) {
       const grants = user.projectGrants[projectId] ?? [];
       return grants.some(
         (grant) => grant.resource === resource && grant.action === action,
@@ -104,7 +97,7 @@ export class PermissionsService {
   ) {
     this.assertOrgAdmin(actor);
     const orgId = requireOrgId(actor.orgId);
-    this.validateGrants(grants, ORG_SCOPED_RESOURCES, null);
+    this.validateGrants(grants, 'org', null);
 
     const target = await this.prisma.user.findFirst({
       where: { id: targetUserId, orgId },
@@ -148,7 +141,7 @@ export class PermissionsService {
   ) {
     this.assertOrgAdmin(actor);
     const orgId = requireOrgId(actor.orgId);
-    this.validateGrants(grants, PROJECT_SCOPED_RESOURCES, projectId);
+    this.validateGrants(grants, 'project', projectId);
 
     const project = await this.prisma.project.findFirst({
       where: { id: projectId, orgId },
@@ -191,37 +184,6 @@ export class PermissionsService {
     return this.getMemberPermissions(orgId, targetUserId);
   }
 
-  async addProjectMember(
-    actor: AuthenticatedUser,
-    projectId: string,
-    userId: string,
-  ) {
-    this.assertOrgAdmin(actor);
-    const orgId = requireOrgId(actor.orgId);
-
-    const [project, user] = await Promise.all([
-      this.prisma.project.findFirst({
-        where: { id: projectId, orgId },
-      }),
-      this.prisma.user.findFirst({
-        where: { id: userId, orgId },
-      }),
-    ]);
-
-    if (!project) {
-      throw new NotFoundException('Project not found in this organization');
-    }
-    if (!user) {
-      throw new NotFoundException('Member not found in this organization');
-    }
-
-    return this.prisma.projectMember.upsert({
-      where: { projectId_userId: { projectId, userId } },
-      create: { projectId, userId, addedBy: actor.id },
-      update: {},
-    });
-  }
-
   async removeProjectMember(
     actor: AuthenticatedUser,
     projectId: string,
@@ -261,13 +223,13 @@ export class PermissionsService {
 
   private validateGrants(
     grants: PermissionGrant[],
-    allowedResources: readonly PermissionResource[],
+    scope: PermissionScope,
     projectId: string | null,
   ) {
     for (const grant of grants) {
-      if (!allowedResources.includes(grant.resource)) {
+      if (!isGrantAllowed(scope, grant.resource, grant.action)) {
         throw new BadRequestException(
-          `Resource ${grant.resource} is not allowed in this scope`,
+          `${grant.resource}:${grant.action} is not allowed in the ${scope} scope`,
         );
       }
       if (projectId && grant.projectId && grant.projectId !== projectId) {

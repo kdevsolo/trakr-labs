@@ -34,7 +34,7 @@ export class IssuesController {
   constructor(private readonly issuesService: IssuesService) {}
 
   @Get()
-  @RequirePermission(PermissionResource.ISSUE, PermissionAction.READ)
+  @RequirePermission(PermissionResource.PROJECT, PermissionAction.READ, 'project')
   list(
     @Param('projectId') projectId: string,
     @CurrentUser() user: AuthenticatedUser,
@@ -43,7 +43,7 @@ export class IssuesController {
   }
 
   @Post()
-  @RequirePermission(PermissionResource.ISSUE, PermissionAction.CREATE)
+  @RequirePermission(PermissionResource.PROJECT, PermissionAction.UPDATE, 'project')
   create(
     @Param('projectId') projectId: string,
     @CurrentUser() user: AuthenticatedUser,
@@ -59,7 +59,7 @@ export class IssuesController {
   }
 
   @Patch(':id')
-  @RequirePermission(PermissionResource.ISSUE, PermissionAction.UPDATE)
+  @RequirePermission(PermissionResource.PROJECT, PermissionAction.UPDATE, 'project')
   update(
     @Param('projectId') projectId: string,
     @Param('id') id: string,
@@ -77,7 +77,7 @@ export class IssuesController {
   }
 
   @Delete(':id')
-  @RequirePermission(PermissionResource.ISSUE, PermissionAction.DELETE)
+  @RequirePermission(PermissionResource.PROJECT, PermissionAction.UPDATE, 'project')
   remove(
     @Param('projectId') projectId: string,
     @Param('id') id: string,

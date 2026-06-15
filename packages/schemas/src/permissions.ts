@@ -1,12 +1,6 @@
 import * as z from 'zod';
 
-export const PermissionResourceSchema = z.enum([
-  'PROJECT',
-  'USER',
-  'ISSUE',
-  'COMMENT',
-  'ISSUE_MEDIA',
-]);
+export const PermissionResourceSchema = z.enum(['PROJECT', 'USER']);
 
 export const PermissionActionSchema = z.enum([
   'READ',

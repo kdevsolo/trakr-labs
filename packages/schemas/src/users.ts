@@ -32,15 +32,13 @@ export const UserSchema = z.object({
 export const InviteUserSchema = z.object({
   name: z.string().min(1).max(100),
   email: z.string().email(),
-  permissions: z
-    .array(
-      z.object({
-        resource: PermissionResourceSchema,
-        action: PermissionActionSchema,
-        projectId: z.string().uuid().optional(),
-      }),
-    )
-    .min(1),
+  permissions: z.array(
+    z.object({
+      resource: PermissionResourceSchema,
+      action: PermissionActionSchema,
+      projectId: z.string().uuid().optional(),
+    }),
+  ),
 });
 
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;

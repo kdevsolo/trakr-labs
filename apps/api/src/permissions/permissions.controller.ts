@@ -4,14 +4,11 @@ import {
   Delete,
   Get,
   Param,
-  Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
 import {
-  AddProjectMemberByUserIdSchema,
   SetPermissionsSchema,
-  type AddProjectMemberByUserIdInput,
   type SetPermissionsInput,
 } from '@trakr/schemas';
 import { OrgAdminOnly } from '../auth/decorators/org-admin.decorator';
@@ -48,21 +45,6 @@ export class PermissionsController {
     dto: SetPermissionsInput,
   ) {
     return this.permissionsService.setOrgPermissions(user, userId, dto.grants);
-  }
-
-  @Post('projects/:projectId/members')
-  @OrgAdminOnly()
-  addProjectMember(
-    @CurrentUser() user: AuthenticatedUser,
-    @Param('projectId') projectId: string,
-    @Body(new ZodValidationPipe(AddProjectMemberByUserIdSchema))
-    dto: AddProjectMemberByUserIdInput,
-  ) {
-    return this.permissionsService.addProjectMember(
-      user,
-      projectId,
-      dto.userId,
-    );
   }
 
   @Put('projects/:projectId/members/:userId/permissions')

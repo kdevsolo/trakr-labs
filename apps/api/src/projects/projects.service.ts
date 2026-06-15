@@ -1,8 +1,16 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import type { AddProjectMemberInput, CreateProjectInput, UpdateProjectInput } from '@trakr/schemas';
 import {
-  PROJECT_SCOPED_RESOURCES,
-} from 'src/auth/constants/permissions';
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import type {
+  AddProjectMemberInput,
+  CreateProjectInput,
+  UpdateProjectInput,
+} from '@trakr/schemas';
+import { isGrantAllowed } from 'src/auth/constants/permissions';
+import { AuthenticatedUser } from 'src/auth/interfaces/authenticated-user.interface';
 import { PermissionsService } from 'src/auth/permissions.service';
 import { requireOrgId } from 'src/auth/utils/require-org-id';
 import {
@@ -12,9 +20,9 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { generateProjectKey } from 'src/utils/generate-project-key';
 
-const ALL_ACTIONS = [
+// Per-project actions that govern a project and its issues/comments.
+const PROJECT_MEMBER_ACTIONS = [
   PermissionAction.READ,
-  PermissionAction.CREATE,
   PermissionAction.UPDATE,
   PermissionAction.DELETE,
 ] as const;
@@ -49,27 +57,27 @@ export class ProjectsService {
         },
       });
 
-      // Grant all permissions to the creator and project scoped resources
+      // Creator keeps org-wide ability to create projects, and gets full
+      // per-project control (READ/UPDATE/DELETE) over the new project, which
+      // also governs that project's issues and comments.
       await tx.memberPermission.createMany({
         data: [
-          ...ALL_ACTIONS.map((action) => ({
+          {
             userId,
             orgId,
             projectId: null,
             resource: PermissionResource.PROJECT,
+            action: PermissionAction.CREATE,
+            grantedBy: userId,
+          },
+          ...PROJECT_MEMBER_ACTIONS.map((action) => ({
+            userId,
+            orgId,
+            projectId: created.id,
+            resource: PermissionResource.PROJECT,
             action,
             grantedBy: userId,
           })),
-          ...PROJECT_SCOPED_RESOURCES.flatMap((resource) =>
-            ALL_ACTIONS.map((action) => ({
-              userId,
-              orgId,
-              projectId: created.id,
-              resource,
-              action,
-              grantedBy: userId,
-            })),
-          ),
         ],
       });
 
@@ -80,39 +88,65 @@ export class ProjectsService {
     return project;
   }
 
-  async addProjectMember(userId: string, addProjectMemberDto: AddProjectMemberInput) {
+  async addProjectMember(
+    actor: AuthenticatedUser,
+    addProjectMemberDto: AddProjectMemberInput,
+  ) {
     const { projectId, userId: memberUserId, actions } = addProjectMemberDto;
+    const orgId = requireOrgId(actor.orgId);
 
-    const member = await this.prisma.user.findUnique({
-      where: { id: memberUserId },
-    });
+    const [project, member] = await Promise.all([
+      this.prisma.project.findFirst({ where: { id: projectId, orgId } }),
+      this.prisma.user.findFirst({ where: { id: memberUserId, orgId } }),
+    ]);
+
+    if (!project) {
+      throw new NotFoundException('Project not found in this organization');
+    }
     if (!member) {
-      throw new NotFoundException('Member not found');
+      throw new NotFoundException('Member not found in this organization');
     }
 
-    const orgId = requireOrgId(member.orgId);
-    if (!orgId) {
-      throw new ForbiddenException('You are not allowed to add members to this project');
+    const grantActions = (actions ?? []) as PermissionAction[];
+    for (const action of grantActions) {
+      if (!isGrantAllowed('project', PermissionResource.PROJECT, action)) {
+        throw new BadRequestException(
+          `${action} is not allowed as a project permission`,
+        );
+      }
     }
 
-    this.prisma.$transaction(async (tx) => {
-      await tx.projectMember.create({
-        data: { projectId, userId: memberUserId, addedBy: userId },
+    await this.prisma.$transaction(async (tx) => {
+      await tx.projectMember.upsert({
+        where: { projectId_userId: { projectId, userId: memberUserId } },
+        create: { projectId, userId: memberUserId, addedBy: actor.id },
+        update: {},
       });
-      if (actions && actions.length > 0) {
+
+      await tx.memberPermission.deleteMany({
+        where: {
+          userId: memberUserId,
+          orgId,
+          projectId,
+          resource: PermissionResource.PROJECT,
+        },
+      });
+
+      if (grantActions.length > 0) {
         await tx.memberPermission.createMany({
-          data: actions.map((action) => ({
+          data: grantActions.map((action) => ({
             userId: memberUserId,
             orgId,
             projectId,
             resource: PermissionResource.PROJECT,
-            action: action as PermissionAction,
-            grantedBy: userId,
+            action,
+            grantedBy: actor.id,
           })),
         });
       }
     });
-    this.permissionsService.invalidateUserCache(userId);
+
+    this.permissionsService.invalidateUserCache(memberUserId);
     return { success: true };
   }
 
@@ -128,15 +162,15 @@ export class ProjectsService {
     });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} project`;
   }
 
-  update(id: number, updateProjectDto: UpdateProjectInput) {
+  update(id: string, updateProjectDto: UpdateProjectInput) {
     return `This action updates a #${id} project`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} project`;
   }
 }

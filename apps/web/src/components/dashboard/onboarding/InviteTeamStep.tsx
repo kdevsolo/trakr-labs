@@ -19,40 +19,46 @@ import { OnboardingCard } from './OnboardingCard'
 import { FieldLabel } from './FieldLabel'
 import { useOnboardingStore } from '@/stores/use-onboarding-store'
 
-type PermissionGroup = 'admin' | 'developer' | 'qa' | 'viewer'
-type PermissionType = 'full' | 'read_write' | 'read_only'
+// Invites are inherently organization-level: at onboarding no projects exist
+// yet, so only org-scoped grants are meaningful here. Per-project access is
+// granted later via "add member" once projects exist. The options below map
+// directly to the backend's ORG_ALLOWED_GRANTS:
+//   - USER: full CRUD (manage org members)
+//   - PROJECT: CREATE only (ability to create new projects)
+type OrgRole = 'admin' | 'project_creator' | 'member'
 
 type LocalInvite = {
   name: string
   email: string
-  permissionGroup: PermissionGroup
-  permissionType: PermissionType
+  orgRole: OrgRole
 }
 
 const DEFAULT_INVITE: LocalInvite = {
   name: '',
   email: '',
-  permissionGroup: 'developer',
-  permissionType: 'read_write',
+  orgRole: 'member',
 }
 
-const PERMISSION_GROUP_RESOURCES: Record<PermissionGroup, InviteUserInput['permissions'][number]['resource'][]> = {
-  admin:     ['PROJECT', 'USER', 'ISSUE', 'COMMENT', 'ISSUE_MEDIA'],
-  developer: ['PROJECT', 'ISSUE', 'COMMENT', 'ISSUE_MEDIA'],
-  qa:        ['PROJECT', 'ISSUE', 'COMMENT'],
-  viewer:    ['PROJECT', 'ISSUE', 'COMMENT', 'ISSUE_MEDIA'],
+const ORG_ROLE_GRANTS: Record<OrgRole, InviteUserInput['permissions']> = {
+  admin: [
+    { resource: 'USER', action: 'READ' },
+    { resource: 'USER', action: 'CREATE' },
+    { resource: 'USER', action: 'UPDATE' },
+    { resource: 'USER', action: 'DELETE' },
+    { resource: 'PROJECT', action: 'CREATE' },
+  ],
+  project_creator: [{ resource: 'PROJECT', action: 'CREATE' }],
+  member: [],
 }
 
-const PERMISSION_TYPE_ACTIONS: Record<PermissionType, InviteUserInput['permissions'][number]['action'][]> = {
-  full:       ['READ', 'CREATE', 'UPDATE', 'DELETE'],
-  read_write: ['READ', 'CREATE', 'UPDATE'],
-  read_only:  ['READ'],
-}
+const ORG_ROLE_OPTIONS: { value: OrgRole; label: string; hint: string }[] = [
+  { value: 'admin', label: 'Admin', hint: 'Manage members & create projects' },
+  { value: 'project_creator', label: 'Project creator', hint: 'Can create projects' },
+  { value: 'member', label: 'Member', hint: 'Project access granted later' },
+]
 
-function derivePermissions(group: PermissionGroup, type: PermissionType): InviteUserInput['permissions'] {
-  return PERMISSION_GROUP_RESOURCES[group].flatMap(resource =>
-    PERMISSION_TYPE_ACTIONS[type].map(action => ({ resource, action }))
-  )
+function derivePermissions(role: OrgRole): InviteUserInput['permissions'] {
+  return ORG_ROLE_GRANTS[role]
 }
 
 export default function InviteTeamStep() {
@@ -73,7 +79,7 @@ export default function InviteTeamStep() {
       .map(i => ({
         name: i.name,
         email: i.email,
-        permissions: derivePermissions(i.permissionGroup, i.permissionType),
+        permissions: derivePermissions(i.orgRole),
       }))
 
     if (validInvites.length === 0) {
@@ -134,36 +140,24 @@ export default function InviteTeamStep() {
                 onChange={e => updateInvite(index, 'email', e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <FieldLabel>Permission Group</FieldLabel>
+            <div className="col-span-2 space-y-2">
+              <FieldLabel>Organization Access</FieldLabel>
               <Select
-                value={invite.permissionGroup}
-                onValueChange={value => updateInvite(index, 'permissionGroup', value as PermissionGroup)}
+                value={invite.orgRole}
+                onValueChange={value => updateInvite(index, 'orgRole', value as OrgRole)}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select group" />
+                  <SelectValue placeholder="Select access level" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="developer">Developer</SelectItem>
-                  <SelectItem value="qa">QA</SelectItem>
-                  <SelectItem value="viewer">Viewer</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <FieldLabel>Permission Type</FieldLabel>
-              <Select
-                value={invite.permissionType}
-                onValueChange={value => updateInvite(index, 'permissionType', value as PermissionType)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="full">Full Access</SelectItem>
-                  <SelectItem value="read_write">Read &amp; Write</SelectItem>
-                  <SelectItem value="read_only">Read Only</SelectItem>
+                  {ORG_ROLE_OPTIONS.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      <span className="flex flex-col">
+                        <span>{option.label}</span>
+                        <span className="text-xs text-muted-foreground">{option.hint}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

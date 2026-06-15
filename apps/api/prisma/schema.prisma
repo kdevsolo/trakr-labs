@@ -11,9 +11,6 @@ datasource db {
 enum PermissionResource {
   PROJECT
   USER
-  ISSUE
-  COMMENT
-  ISSUE_MEDIA
 }
 
 enum PermissionAction {
