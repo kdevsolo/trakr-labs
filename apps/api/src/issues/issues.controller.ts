@@ -9,6 +9,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  CreateIssueSchema,
+  UpdateIssueSchema,
+  type CreateIssueInput,
+  type UpdateIssueInput,
+} from '@trakr/schemas';
+import {
   PermissionAction,
   PermissionResource,
 } from '../generated/prisma/client';
@@ -17,9 +23,8 @@ import { ProjectScoped } from '../auth/decorators/project-scoped.decorator';
 import { RequirePermission } from '../auth/decorators/require-permission.decorator';
 import { ProjectMemberGuard } from '../auth/guards/project-member.guard';
 import { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
-import { CreateIssueDto } from './dto/create-issue.dto';
-import { UpdateIssueDto } from './dto/update-issue.dto';
 import { requireOrgId } from '../auth/utils/require-org-id';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { IssuesService } from './issues.service';
 
 @Controller('projects/:projectId/issues')
@@ -42,7 +47,8 @@ export class IssuesController {
   create(
     @Param('projectId') projectId: string,
     @CurrentUser() user: AuthenticatedUser,
-    @Body() dto: CreateIssueDto,
+    @Body(new ZodValidationPipe(CreateIssueSchema))
+    dto: CreateIssueInput,
   ) {
     return this.issuesService.create(
       projectId,
@@ -58,7 +64,8 @@ export class IssuesController {
     @Param('projectId') projectId: string,
     @Param('id') id: string,
     @CurrentUser() user: AuthenticatedUser,
-    @Body() dto: UpdateIssueDto,
+    @Body(new ZodValidationPipe(UpdateIssueSchema))
+    dto: UpdateIssueInput,
   ) {
     return this.issuesService.update(
       projectId,

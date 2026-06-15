@@ -13,9 +13,12 @@ export type HealthResponse = {
   timestamp: string;
 };
 
-export type UpdateProfileInput = {
-  name: string;
-};
+export type {
+  CreateIssueInput,
+  CreateOrganizationInput,
+  UpdateIssueInput,
+  UpdateProfileInput,
+} from '@trakr/schemas';
 
 export type Issue = {
   id: string;
@@ -28,22 +31,6 @@ export type Issue = {
   createdAt: string;
   updatedAt: string;
 };
-
-export type CreateIssueInput = {
-  title: string;
-  description?: string;
-  statusId: string;
-  assignedTo?: string;
-};
-
-export type UpdateIssueInput = {
-  title?: string;
-  description?: string;
-  statusId?: string;
-  assignedTo?: string | null;
-};
-
-export type { CreateOrganizationInput } from '@trakr/schemas';
 
 export type CreateOrganizationResponse = {
   id: string;

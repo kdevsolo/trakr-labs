@@ -1,0 +1,79 @@
+---
+description: Web app structure — pages, components, API, and React Query conventions
+globs: apps/web/**
+alwaysApply: false
+---
+
+# Web app conventions (`apps/web`)
+
+Follow this layout when adding or changing web features.
+
+## Directory layout
+
+| Layer | Location | Responsibility |
+|-------|----------|----------------|
+| Page | `src/app/**/page.tsx` | Thin route entry — compose a view component, no business logic |
+| Components | `src/components/<feature>/<page>/` | UI for a page/feature (e.g. `dashboard/issues/`) |
+| API | `src/lib/api/<resource>.ts` | Raw HTTP calls via `apiFetch` |
+| Hooks | `src/hooks/api/use-<resource>.ts` | React Query wrappers (`useQuery` / `useMutation`) |
+| Types | `@trakr/schemas` (+ `src/lib/api/types.ts` for web-only) | Model types from `packages/schemas`; app-local types only when not shared |
+| Query keys | `src/lib/api/query-keys.ts` | Centralized React Query key factory |
+
+Use the `@/` path alias for imports.
+
+## Adding a new page
+
+1. Create `src/app/<route>/page.tsx` — default export, minimal JSX.
+2. Create `src/components/<feature>/<page>/` with a `*View.tsx` (or similarly named) main component.
+3. Add API functions in `src/lib/api/<resource>.ts`.
+4. Add query keys in `src/lib/api/query-keys.ts`.
+5. Re-export from `src/lib/api/index.ts`.
+6. Add hooks in `src/hooks/api/use-<resource>.ts`.
+
+### Page (thin shell)
+
+```tsx
+import { IssuesView } from "@/components/dashboard/issues/IssuesView";
+
+export default function IssuesPage() {
+  return <IssuesView />;
+}
+```
+
+### API layer (`src/lib/api/issues.ts`)
+
+```ts
+import { apiFetch } from "./client";
+import type { Issue } from "./types";
+
+export function listIssues(projectId: string) {
+  return apiFetch<Issue[]>(`/projects/${projectId}/issues`);
+}
+```
+
+### React Query hook (`src/hooks/api/use-issues.ts`)
+
+```ts
+import { useQuery } from "@tanstack/react-query";
+import { listIssues, queryKeys } from "@/lib/api";
+
+export function useIssues(projectId: string) {
+  return useQuery({
+    queryKey: queryKeys.issues.list(projectId),
+    queryFn: () => listIssues(projectId),
+    enabled: Boolean(projectId),
+  });
+}
+```
+
+Mutations must invalidate related query keys in `onSuccess`.
+
+## Rules
+
+- **Never call `apiFetch` directly in components** — go through hooks in `src/hooks/api/`.
+- **Keep pages thin** — logic and UI live in `src/components/`.
+- **Model types** (`User`, `Project`, `CreateXInput`, etc.) come from `@trakr/schemas` — see the shared-models rule. Do not duplicate them in `lib/api/types.ts`.
+- **Colocate page-specific types** in the component folder (e.g. `types.ts`); web-only API types go in `src/lib/api/types.ts`.
+- **Use `"use client"`** only on components/hooks that need client features (state, effects, React Query).
+- **Shared UI primitives** live in `src/components/ui/` (shadcn) — do not put feature code there.
+- **Server actions** (auth, form actions) stay in `src/app/**/actions.ts` — separate from the `lib/api` REST layer.

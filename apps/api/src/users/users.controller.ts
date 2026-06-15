@@ -8,6 +8,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  CreateOrganizationSchema,
+  InviteUserSchema,
+  UpdateMemberSchema,
+  UpdateProfileSchema,
+  type CreateOrganizationInput,
+  type InviteUserInput,
+  type UpdateMemberInput,
+  type UpdateProfileInput,
+} from '@trakr/schemas';
+import {
   PermissionAction,
   PermissionResource,
 } from '../generated/prisma/client';
@@ -16,13 +26,10 @@ import { OrgAdminOnly } from '../auth/decorators/org-admin.decorator';
 import { RequirePermission } from '../auth/decorators/require-permission.decorator';
 import { OrgAdminGuard } from '../auth/guards/org-admin.guard';
 import { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
-import { InviteUserDto } from './dto/invite-user.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { requireOrgId } from '../auth/utils/require-org-id';
-import { CreateOrgDto } from './dto/create-org.dto';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 
 @Controller()
 export class UsersController {
@@ -37,7 +44,8 @@ export class UsersController {
   @Patch('users/me')
   updateMe(
     @CurrentUser() user: AuthenticatedUser,
-    @Body() dto: UpdateProfileDto,
+    @Body(new ZodValidationPipe(UpdateProfileSchema))
+    dto: UpdateProfileInput,
   ) {
     return this.usersService.updateProfile(user.id, dto);
   }
@@ -64,7 +72,8 @@ export class UsersController {
   updateMember(
     @CurrentUser() user: AuthenticatedUser,
     @Param('userId') userId: string,
-    @Body() dto: UpdateUserDto,
+    @Body(new ZodValidationPipe(UpdateMemberSchema))
+    dto: UpdateMemberInput,
   ) {
     return this.usersService.updateMember(requireOrgId(user.orgId), userId, dto);
   }
@@ -74,14 +83,19 @@ export class UsersController {
   @OrgAdminOnly()
   inviteMember(
     @CurrentUser() user: AuthenticatedUser,
-    @Body() dto: InviteUserDto,
+    @Body(new ZodValidationPipe(InviteUserSchema))
+    dto: InviteUserInput,
   ) {
     return this.usersService.inviteMember(requireOrgId(user.orgId), user.id, dto);
   }
 
   @UseGuards(OrgAdminGuard)
   @Post('/org/create')
-  createOrg(@CurrentUser() user: AuthenticatedUser, @Body() dto: CreateOrgDto) {
+  createOrg(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(CreateOrganizationSchema))
+    dto: CreateOrganizationInput,
+  ) {
     return this.usersService.createOrg(user.id, dto);
   }
 }

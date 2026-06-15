@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type { CreateIssueInput, UpdateIssueInput } from '@trakr/schemas';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateIssueDto } from './dto/create-issue.dto';
-import { UpdateIssueDto } from './dto/update-issue.dto';
 
 @Injectable()
 export class IssuesService {
@@ -21,7 +20,7 @@ export class IssuesService {
     projectId: string,
     orgId: string,
     userId: string,
-    dto: CreateIssueDto,
+    dto: CreateIssueInput,
   ) {
     await this.assertProjectInOrg(projectId, orgId);
 
@@ -45,7 +44,7 @@ export class IssuesService {
     orgId: string,
     issueId: string,
     userId: string,
-    dto: UpdateIssueDto,
+    dto: UpdateIssueInput,
   ) {
     await this.assertProjectInOrg(projectId, orgId);
     await this.assertIssueInProject(issueId, projectId);

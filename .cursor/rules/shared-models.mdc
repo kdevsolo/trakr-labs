@@ -1,0 +1,74 @@
+---
+description: Shared model types and Zod schemas in packages/ — used by API and web
+alwaysApply: true
+---
+
+# Shared models (`packages/`)
+
+Model-related types and validation schemas live in `packages/`, not duplicated in `apps/api` or `apps/web`.
+
+## Package: `@trakr/schemas`
+
+Location: `packages/schemas/src/`
+
+Each domain gets its own file (e.g. `users.ts`, `projects.ts`). Export from `packages/schemas/src/index.ts`.
+
+### What belongs here
+
+- **Entity types** — `User`, `Project`, `Organization`, etc.
+- **Input types** — `CreateXInput`, `UpdateXInput` (inferred from Zod)
+- **Zod schemas** — `CreateXSchema`, `UpdateXSchema`, `XSchema` for request validation
+
+### Schema pattern
+
+```ts
+import * as z from 'zod';
+
+export const CreateIssueSchema = z.object({
+  title: z.string().min(1),
+});
+
+export const UpdateIssueSchema = CreateIssueSchema.partial();
+
+export const IssueSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  // ...
+});
+
+export type CreateIssueInput = z.infer<typeof CreateIssueSchema>;
+export type UpdateIssueInput = z.infer<typeof UpdateIssueSchema>;
+export type Issue = z.infer<typeof IssueSchema>;
+```
+
+## Usage
+
+| App | Import | Purpose |
+|-----|--------|---------|
+| **API** (`apps/api`) | `@trakr/schemas` | Validate requests via `ZodValidationPipe(Schema)`; type service methods |
+| **Web** (`apps/web`) | `@trakr/schemas` | Type API functions, forms, and component props |
+
+```ts
+// API controller
+import { CreateProjectSchema, type CreateProjectInput } from '@trakr/schemas';
+
+@Body(new ZodValidationPipe(CreateProjectSchema)) dto: CreateProjectInput
+
+// Web API layer
+import type { CreateProjectInput, Project } from '@trakr/schemas';
+```
+
+## Rules
+
+- **Add new model types to `packages/schemas`** — never define the same entity/input type in both apps.
+- **Define Zod schema first**, then `z.infer` for the TypeScript type.
+- **After adding schemas**, run `pnpm --filter @trakr/schemas build` (or rely on `tsc --watch` in dev).
+- **Web** must list `@trakr/schemas` in `transpilePackages` (already configured in `next.config.ts`).
+- **App-local types only** for things that are not shared: UI state, query keys, health checks, server-action payloads. Re-export from `@trakr/schemas` in `apps/web/src/lib/api/types.ts` when convenient — do not redefine.
+
+## Adding a new model
+
+1. Create `packages/schemas/src/<model>.ts` with schemas + inferred types.
+2. Export from `packages/schemas/src/index.ts`.
+3. Use in API controller (validation) and service (typing).
+4. Import types in `apps/web/src/lib/api/<resource>.ts` and components.

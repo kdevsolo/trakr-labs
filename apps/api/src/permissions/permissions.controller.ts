@@ -8,16 +8,19 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import {
+  AddProjectMemberByUserIdSchema,
+  SetPermissionsSchema,
+  type AddProjectMemberByUserIdInput,
+  type SetPermissionsInput,
+} from '@trakr/schemas';
 import { OrgAdminOnly } from '../auth/decorators/org-admin.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { OrgAdminGuard } from '../auth/guards/org-admin.guard';
 import { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 import { PermissionsService } from '../auth/permissions.service';
 import { requireOrgId } from '../auth/utils/require-org-id';
-import {
-  AddProjectMemberDto,
-  SetPermissionsDto,
-} from './dto/set-permissions.dto';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 
 @Controller()
 @UseGuards(OrgAdminGuard)
@@ -41,7 +44,8 @@ export class PermissionsController {
   setOrgPermissions(
     @CurrentUser() user: AuthenticatedUser,
     @Param('userId') userId: string,
-    @Body() dto: SetPermissionsDto,
+    @Body(new ZodValidationPipe(SetPermissionsSchema))
+    dto: SetPermissionsInput,
   ) {
     return this.permissionsService.setOrgPermissions(user, userId, dto.grants);
   }
@@ -51,7 +55,8 @@ export class PermissionsController {
   addProjectMember(
     @CurrentUser() user: AuthenticatedUser,
     @Param('projectId') projectId: string,
-    @Body() dto: AddProjectMemberDto,
+    @Body(new ZodValidationPipe(AddProjectMemberByUserIdSchema))
+    dto: AddProjectMemberByUserIdInput,
   ) {
     return this.permissionsService.addProjectMember(
       user,
@@ -66,7 +71,8 @@ export class PermissionsController {
     @CurrentUser() user: AuthenticatedUser,
     @Param('projectId') projectId: string,
     @Param('userId') userId: string,
-    @Body() dto: SetPermissionsDto,
+    @Body(new ZodValidationPipe(SetPermissionsSchema))
+    dto: SetPermissionsInput,
   ) {
     return this.permissionsService.setProjectPermissions(
       user,

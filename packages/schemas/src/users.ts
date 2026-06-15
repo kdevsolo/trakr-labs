@@ -1,4 +1,8 @@
 import * as z from 'zod';
+import {
+  PermissionActionSchema,
+  PermissionResourceSchema,
+} from './permissions';
 
 export const CreateUserSchema = z.object({
   name: z.string().min(1).max(100),
@@ -8,6 +12,13 @@ export const CreateUserSchema = z.object({
 });
 
 export const UpdateUserSchema = CreateUserSchema.partial();
+export const UpdateProfileSchema = z.object({
+  name: z.string().min(1).max(100),
+});
+export const UpdateMemberSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  isOrgAdmin: z.boolean().optional(),
+});
 export const UserSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -16,24 +27,14 @@ export const UserSchema = z.object({
   isOrgAdmin: z.boolean().optional(),
 });
 
-const PermissionResourceEnum = z.enum([
-  'PROJECT',
-  'USER',
-  'ISSUE',
-  'COMMENT',
-  'ISSUE_MEDIA',
-]);
-
-const PermissionActionEnum = z.enum(['READ', 'CREATE', 'UPDATE', 'DELETE']);
-
 export const InviteUserSchema = z.object({
   name: z.string().min(1).max(100),
   email: z.string().email(),
   permissions: z
     .array(
       z.object({
-        resource: PermissionResourceEnum,
-        action: PermissionActionEnum,
+        resource: PermissionResourceSchema,
+        action: PermissionActionSchema,
         projectId: z.string().uuid().optional(),
       }),
     )
@@ -42,5 +43,7 @@ export const InviteUserSchema = z.object({
 
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;
 export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;
+export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;
+export type UpdateMemberInput = z.infer<typeof UpdateMemberSchema>;
 export type User = z.infer<typeof UserSchema>;
 export type InviteUserInput = z.infer<typeof InviteUserSchema>;

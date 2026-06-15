@@ -1,11 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import type {
+  CreateOrganizationInput,
+  InviteUserInput,
+  UpdateMemberInput,
+  UpdateProfileInput,
+} from '@trakr/schemas';
 import { PermissionsService } from '../auth/permissions.service';
 import { getSupabaseAdmin } from '../auth/supabase-admin';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateOrgDto } from './dto/create-org.dto';
-import { InviteUserDto } from './dto/invite-user.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 
 const userSelect = {
   id: true,
@@ -31,7 +33,7 @@ export class UsersService {
     });
   }
 
-  updateProfile(userId: string, dto: UpdateProfileDto) {
+  updateProfile(userId: string, dto: UpdateProfileInput) {
     return this.prisma.user.update({
       where: { id: userId },
       data: { name: dto.name },
@@ -51,7 +53,7 @@ export class UsersService {
     return this.assertUserInOrg(orgId, userId);
   }
 
-  async updateMember(orgId: string, userId: string, dto: UpdateUserDto) {
+  async updateMember(orgId: string, userId: string, dto: UpdateMemberInput) {
     await this.assertUserInOrg(orgId, userId);
 
     const updated = await this.prisma.user.update({
@@ -70,7 +72,7 @@ export class UsersService {
     return updated;
   }
 
-  async createOrg(userId: string, dto: CreateOrgDto) {
+  async createOrg(userId: string, dto: CreateOrganizationInput) {
     const user = await this.prisma.user.findUniqueOrThrow({
       where: { id: userId },
     });
@@ -83,19 +85,6 @@ export class UsersService {
       throw new BadRequestException('User is already an organization admin');
     }
 
-    if (dto.name.length < 3) {
-      throw new BadRequestException('Organization name must be at least 3 characters long');
-    }
-
-    if (dto.name.length > 255) {
-      throw new BadRequestException('Organization name must be less than 255 characters long');
-    }
-
-    if (dto.name.includes(' ')) {
-      throw new BadRequestException('Organization name must not contain spaces');
-    }
-    
-
     return this.prisma.organization.create({
       data: {
         name: dto.name,
@@ -106,7 +95,7 @@ export class UsersService {
     });
   }
 
-  async inviteMember(orgId: string, adminId: string, dto: InviteUserDto) {
+  async inviteMember(orgId: string, adminId: string, dto: InviteUserInput) {
     const { data, error } = await getSupabaseAdmin().auth.admin.inviteUserByEmail(
       dto.email,
     );
