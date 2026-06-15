@@ -14,5 +14,18 @@ export const UpdateIssueSchema = z.object({
   assignedTo: z.string().nullable().optional(),
 });
 
+export const IssueSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  projectId: z.string(),
+  statusId: z.string(),
+  reportedBy: z.string(),
+  assignedTo: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
 export type CreateIssueInput = z.infer<typeof CreateIssueSchema>;
 export type UpdateIssueInput = z.infer<typeof UpdateIssueSchema>;
+export type Issue = z.infer<typeof IssueSchema>;

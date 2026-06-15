@@ -23,8 +23,10 @@ export const UserSchema = z.object({
   id: z.string(),
   name: z.string(),
   email: z.string(),
-  orgId: z.string().optional(),
-  isOrgAdmin: z.boolean().optional(),
+  orgId: z.string().nullable(),
+  isOrgAdmin: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export const InviteUserSchema = z.object({
