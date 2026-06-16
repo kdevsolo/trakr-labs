@@ -96,8 +96,15 @@ export class UsersService {
   }
 
   async inviteMember(orgId: string, adminId: string, dto: InviteUserInput) {
+    const frontendUrl = process.env.FRONTEND_URL;
+    if (!frontendUrl) {
+      throw new BadRequestException('FRONTEND_URL is not configured');
+    }
+
+    const redirectTo = `${frontendUrl}/auth/callback?next=/auth/set-password`;
     const { data, error } = await getSupabaseAdmin().auth.admin.inviteUserByEmail(
       dto.email,
+      { redirectTo },
     );
 
     if (error) {

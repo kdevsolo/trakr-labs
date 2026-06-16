@@ -26,20 +26,35 @@ export async function middleware(request: NextRequest) {
   // Refresh session — do NOT use getSession() here
   const { data: { user } } = await supabase.auth.getUser()
 
-  const isAuthRoute =
-    request.nextUrl.pathname === '/auth/login' ||
-    request.nextUrl.pathname === '/auth/signup'
+  const pathname = request.nextUrl.pathname
 
-  if (isAuthRoute && user) {
+  const isGuestAuthRoute =
+    pathname === '/auth/login' ||
+    pathname === '/auth/signup' ||
+    pathname === '/auth/forgot-password'
+
+  const isPasswordSetupRoute =
+    pathname === '/auth/set-password' ||
+    pathname === '/auth/reset-password'
+
+  if (isGuestAuthRoute && user) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
-  } else if (request.nextUrl.pathname === '/' && !user) {
+  }
+
+  if (isPasswordSetupRoute && !user) {
+    const loginUrl = new URL('/auth/login', request.url)
+    loginUrl.searchParams.set('error', 'session_expired')
+    return NextResponse.redirect(loginUrl)
+  }
+
+  if (pathname === '/' && !user) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
-  } else if (request.nextUrl.pathname === '/' && user) {
+  } else if (pathname === '/' && user) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   // Redirect unauthenticated users away from protected routes
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+  if (!user && pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 

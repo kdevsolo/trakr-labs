@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
 import { signIn } from "@/app/auth/actions";
 import { AuthFieldLabel } from "@/components/auth/auth-field-label";
@@ -11,10 +12,33 @@ import { AuthOrDivider } from "@/components/auth/auth-or-divider";
 import { AuthSocialButtons } from "@/components/auth/auth-social-buttons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { hasAuthTokensInHash } from "@/lib/auth/callback";
 
-export default function LoginPage() {
+const ERROR_MESSAGES: Record<string, string> = {
+  auth_callback_failed:
+    "Your sign-in link is invalid or has expired. Try again or request a new link.",
+  session_expired:
+    "Your session expired. Use your invite or reset link again.",
+};
+
+function LoginForm() {
+  const searchParams = useSearchParams();
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
+
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (error && ERROR_MESSAGES[error]) {
+      setMessage(ERROR_MESSAGES[error]);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const { search, hash } = window.location;
+    if (hasAuthTokensInHash(hash)) {
+      window.location.replace(`/auth/callback${search}${hash}`);
+    }
+  }, []);
 
   async function handleSubmit(formData: FormData) {
     setMessage("");
@@ -56,7 +80,7 @@ export default function LoginPage() {
                 htmlFor="password"
                 action={
                   <Link
-                    href="#"
+                    href="/auth/forgot-password"
                     className="text-xs font-medium normal-case tracking-normal text-primary hover:underline"
                   >
                     Forgot password?
@@ -103,5 +127,13 @@ export default function LoginPage() {
       </p>
 
     </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }
