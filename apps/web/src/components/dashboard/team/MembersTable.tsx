@@ -102,7 +102,7 @@ export function MembersTable({
                     ? 'None'
                     : `${projectCount} project${projectCount === 1 ? '' : 's'}`}
                 </td>
-                {canManage && (
+                {canManage && orgLabel !== 'Org Admin' && (
                   <td className="px-4 py-3.5 text-right">
                     <Button
                       variant="outline"

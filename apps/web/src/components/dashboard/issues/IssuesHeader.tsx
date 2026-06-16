@@ -3,7 +3,6 @@
 import { ChevronDownIcon, FolderIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,20 +11,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Project } from "./types";
+import type { Project } from "@/lib/api";
 
 type IssuesHeaderProps = {
   projects: Project[];
   selectedProject: Project | null;
-  onSelectProject: (project: Project | null) => void;
+  onSelectProject: (project: Project) => void;
+  onCreateProject: () => void;
   issueCount: number;
+  isLoading?: boolean;
 };
 
 export function IssuesHeader({
   projects,
   selectedProject,
   onSelectProject,
+  onCreateProject,
   issueCount,
+  isLoading = false,
 }: IssuesHeaderProps) {
   const [open, setOpen] = useState(false);
 
@@ -34,33 +37,13 @@ export function IssuesHeader({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Active Issues
+            Issues
           </h1>
           <p className="mt-0.5 text-sm text-muted-foreground">
-            {issueCount} open issues requiring triage across{" "}
-            {projects.length} projects.
+            {selectedProject
+              ? `${issueCount} issue${issueCount === 1 ? "" : "s"} in ${selectedProject.name}.`
+              : "Select a project to view issues."}
           </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-1.5">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" x2="12" y1="15" y2="3" />
-            </svg>
-            Export CSV
-          </Button>
         </div>
       </div>
 
@@ -72,44 +55,49 @@ export function IssuesHeader({
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="flex h-8 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm font-medium transition-colors hover:bg-accent focus:outline-none"
+              disabled={isLoading}
+              className="flex h-8 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm font-medium transition-colors hover:bg-accent focus:outline-none disabled:opacity-50"
             >
               <FolderIcon className="size-3.5 text-muted-foreground" />
-              {selectedProject ? selectedProject.name : "All Projects"}
+              {isLoading
+                ? "Loading projects…"
+                : selectedProject
+                  ? selectedProject.name
+                  : projects.length > 0
+                    ? "Select project"
+                    : "No projects yet"}
               <ChevronDownIcon className="size-3.5 text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuLabel>Switch Project</DropdownMenuLabel>
+            <DropdownMenuLabel>Switch project</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {projects.length === 0 ? (
+              <DropdownMenuItem disabled>No projects available</DropdownMenuItem>
+            ) : (
+              projects.map((project) => (
+                <DropdownMenuItem
+                  key={project.id}
+                  onClick={() => {
+                    onSelectProject(project);
+                    setOpen(false);
+                  }}
+                  className="flex items-center justify-between"
+                >
+                  <span>{project.name}</span>
+                </DropdownMenuItem>
+              ))
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
+              className="font-medium text-primary"
               onClick={() => {
-                onSelectProject(null);
+                onCreateProject();
                 setOpen(false);
               }}
             >
-              <span className="font-medium">All Projects</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            {projects.map((project) => (
-              <DropdownMenuItem
-                key={project.id}
-                onClick={() => {
-                  onSelectProject(project);
-                  setOpen(false);
-                }}
-                className="flex items-center justify-between"
-              >
-                <span>{project.name}</span>
-                <span className="text-xs text-muted-foreground font-mono">
-                  {project.key}
-                </span>
-              </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-primary font-medium">
               <PlusIcon className="size-3.5" />
-              Create New Project
+              Create new project
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

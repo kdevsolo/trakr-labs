@@ -7,7 +7,13 @@ import {
   queryKeys,
   updateIssue,
 } from "@/lib/api";
-import type { CreateIssueInput, UpdateIssueInput } from "@/lib/api";
+import type {
+  CreateIssueInput,
+  IssueWithStatus,
+  UpdateIssueInput,
+} from "@/lib/api";
+
+export type { IssueWithStatus };
 
 export function useIssues(projectId: string) {
   return useQuery({

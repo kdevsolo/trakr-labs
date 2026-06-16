@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  BotIcon,
-  CopyIcon,
-  ExternalLinkIcon,
-  UserIcon,
-  XIcon,
-} from "lucide-react";
+import { XIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,12 +10,12 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { SeverityBadge } from "./SeverityBadge";
+
 import { StatusBadge } from "./StatusBadge";
-import type { Issue } from "./types";
+import type { IssueWithStatus } from "./types";
 
 type IssueDrawerProps = {
-  issue: Issue | null;
+  issue: IssueWithStatus | null;
   open: boolean;
   onClose: () => void;
 };
@@ -30,7 +24,7 @@ export function IssueDrawer({ issue, open, onClose }: IssueDrawerProps) {
   return (
     <Drawer
       open={open}
-      onOpenChange={(o) => !o && onClose()}
+      onOpenChange={(isOpen) => !isOpen && onClose()}
       direction="right"
     >
       <DrawerContent className="flex h-full w-full flex-col overflow-hidden sm:max-w-lg">
@@ -44,7 +38,7 @@ function IssueDrawerBody({
   issue,
   onClose,
 }: {
-  issue: Issue;
+  issue: IssueWithStatus;
   onClose: () => void;
 }) {
   return (
@@ -53,115 +47,49 @@ function IssueDrawerBody({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="mb-1.5 flex items-center gap-2">
-              <span className="font-mono text-xs font-semibold text-muted-foreground">
-                {issue.key}
-              </span>
-              <SeverityBadge severity={issue.severity} />
+              <StatusBadge status={issue.status?.title ?? "Unknown"} />
             </div>
             <DrawerTitle className="text-base font-semibold leading-snug text-foreground">
-              {issue.summary}
+              {issue.title}
             </DrawerTitle>
           </div>
-          <div className="flex shrink-0 items-center gap-1">
+          <DrawerClose asChild>
             <button
               type="button"
+              onClick={onClose}
               className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
-              <CopyIcon className="size-3.5" />
+              <XIcon className="size-3.5" />
             </button>
-            <button
-              type="button"
-              className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            >
-              <ExternalLinkIcon className="size-3.5" />
-            </button>
-            <DrawerClose asChild>
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              >
-                <XIcon className="size-3.5" />
-              </button>
-            </DrawerClose>
-          </div>
+          </DrawerClose>
         </div>
       </DrawerHeader>
 
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 gap-x-4 gap-y-4 border-b border-border px-5 py-4">
+          <MetaField label="Reported by" value={issue.reportedBy} />
           <MetaField
-            label="Assignee"
-            value={
-              issue.assignee ? (
-                <span className="flex items-center gap-1.5">
-                  <span className="flex size-5 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <UserIcon className="size-3" />
-                  </span>
-                  {issue.assignee}
-                </span>
-              ) : (
-                <span className="text-muted-foreground italic">Unassigned</span>
-              )
-            }
+            label="Assigned to"
+            value={issue.assignedTo ?? "Unassigned"}
           />
-          <MetaField label="Reporter" value={issue.reporter} />
-          <MetaField label="Component" value={issue.component} />
-          <MetaField label="Environment" value={issue.environment} />
+          <MetaField label="Assigned by" value={issue.assignedBy ?? "—"} />
+          <MetaField label="Modified by" value={issue.modifiedBy ?? "—"} />
           <MetaField label="Created" value={issue.createdAt} />
-          <MetaField
-            label="Impact"
-            value={
-              <span className="font-medium text-foreground">{issue.impact}</span>
-            }
-          />
+          <MetaField label="Updated" value={issue.updatedAt} />
         </div>
 
         <div className="space-y-5 px-5 py-4">
           <Section title="Description">
             <p className="text-sm leading-relaxed text-foreground/80">
-              {issue.description}
+              {issue.description ?? "No description provided."}
             </p>
           </Section>
-
-          {issue.stackTrace && (
-            <Section title="Stack Trace">
-              <pre className="overflow-x-auto rounded-lg border border-border bg-muted/60 p-3 text-xs leading-relaxed text-foreground/80 font-mono">
-                {issue.stackTrace}
-              </pre>
-            </Section>
-          )}
-
-          {(issue.aiTriage || issue.aiSuggestedFix) && (
-            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <BotIcon className="size-4 text-primary" />
-                <span className="text-sm font-semibold text-foreground">
-                  AI Triage &amp; Suggested Fix
-                </span>
-              </div>
-              {issue.aiTriage && (
-                <p className="mb-2 text-sm leading-relaxed text-foreground/80">
-                  {issue.aiTriage}
-                </p>
-              )}
-              {issue.aiSuggestedFix && (
-                <p className="text-sm leading-relaxed text-foreground/80">
-                  <span className="font-semibold">Suggested action:</span>{" "}
-                  {issue.aiSuggestedFix}
-                </p>
-              )}
-            </div>
-          )}
         </div>
       </div>
 
       <div className="flex shrink-0 items-center gap-2 border-t border-border px-5 py-4">
         <Button variant="outline" size="sm" className="flex-1">
-          Acknowledge
-        </Button>
-        <Button size="sm" className="flex-1">
-          Start Progress
+          Close
         </Button>
       </div>
     </>

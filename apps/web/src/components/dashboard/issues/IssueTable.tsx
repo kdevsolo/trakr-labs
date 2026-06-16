@@ -1,96 +1,109 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { SeverityBadge } from "./SeverityBadge";
-import type { Issue } from "./types";
+
+import { StatusBadge } from "./StatusBadge";
+import type { IssueWithStatus } from "./types";
 
 type IssueTableProps = {
-  issues: Issue[];
+  issues: IssueWithStatus[];
   selectedIssueId: string | null;
-  onSelectIssue: (issue: Issue) => void;
+  onSelectIssue: (issue: IssueWithStatus) => void;
+  isLoading?: boolean;
 };
+
+const DATE_FORMAT = new Intl.DateTimeFormat(undefined, {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
+function formatDate(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "—" : DATE_FORMAT.format(date);
+}
+
+function truncate(value: string | null | undefined, maxLength = 60) {
+  if (!value) return "—";
+  return value.length > maxLength ? `${value.slice(0, maxLength)}…` : value;
+}
 
 export function IssueTable({
   issues,
   selectedIssueId,
   onSelectIssue,
+  isLoading = false,
 }: IssueTableProps) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center rounded-lg border border-border bg-white py-16">
+        <p className="text-sm text-muted-foreground">Loading issues…</p>
+      </div>
+    );
+  }
+
+  if (issues.length === 0) {
+    return (
+      <div className="flex items-center justify-center rounded-lg border border-border bg-white py-16">
+        <p className="text-sm text-muted-foreground">
+          No issues found for this project.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-lg border border-border bg-white">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-border bg-muted/40">
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Key
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Summary
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Component
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Severity
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {issues.map((issue) => (
-            <IssueRow
-              key={issue.id}
-              issue={issue}
-              isSelected={selectedIssueId === issue.id}
-              onClick={() => onSelectIssue(issue)}
-            />
-          ))}
-        </tbody>
-      </table>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[960px] text-sm">
+          <thead>
+            <tr className="border-b border-border bg-muted/40">
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Title
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Description
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Status
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Reported By
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Assigned To
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Created
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Updated
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {issues.map((issue) => (
+              <IssueRow
+                key={issue.id}
+                issue={issue}
+                isSelected={selectedIssueId === issue.id}
+                onClick={() => onSelectIssue(issue)}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <div className="flex items-center justify-between border-t border-border px-4 py-3">
         <p className="text-sm text-muted-foreground">
-          Showing 1-{issues.length} of {issues.length} issues
+          Showing {issues.length} issue{issues.length === 1 ? "" : "s"}
         </p>
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            disabled
-            className="flex size-8 items-center justify-center rounded-md border border-input text-sm text-muted-foreground hover:bg-accent disabled:opacity-40"
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            className="flex size-8 items-center justify-center rounded-md bg-primary text-sm font-medium text-primary-foreground"
-          >
-            1
-          </button>
-          <button
-            type="button"
-            className="flex size-8 items-center justify-center rounded-md border border-input text-sm text-muted-foreground hover:bg-accent"
-          >
-            2
-          </button>
-          <button
-            type="button"
-            className="flex size-8 items-center justify-center rounded-md border border-input text-sm text-muted-foreground hover:bg-accent"
-          >
-            3
-          </button>
-          <span className="px-1 text-sm text-muted-foreground">...</span>
-          <button
-            type="button"
-            className="flex size-8 items-center justify-center rounded-md border border-input text-sm text-muted-foreground hover:bg-accent"
-          >
-            ›
-          </button>
-        </div>
       </div>
     </div>
   );
 }
 
 type IssueRowProps = {
-  issue: Issue;
+  issue: IssueWithStatus;
   isSelected: boolean;
   onClick: () => void;
 };
@@ -104,11 +117,6 @@ function IssueRow({ issue, isSelected, onClick }: IssueRowProps) {
         isSelected && "bg-primary/5 hover:bg-primary/5",
       )}
     >
-      <td className="px-4 py-3.5">
-        <span className="font-mono text-xs font-semibold text-muted-foreground">
-          {issue.key}
-        </span>
-      </td>
       <td className="max-w-xs px-4 py-3.5">
         <span
           className={cn(
@@ -116,16 +124,26 @@ function IssueRow({ issue, isSelected, onClick }: IssueRowProps) {
             isSelected && "text-primary",
           )}
         >
-          {issue.summary.length > 55
-            ? `${issue.summary.slice(0, 55)}...`
-            : issue.summary}
+          {issue.title}
         </span>
       </td>
-      <td className="px-4 py-3.5">
-        <span className="text-muted-foreground">{issue.component}</span>
+      <td className="max-w-sm px-4 py-3.5 text-muted-foreground">
+        {truncate(issue.description)}
       </td>
       <td className="px-4 py-3.5">
-        <SeverityBadge severity={issue.severity} />
+        <StatusBadge status={issue.status?.title ?? "Unknown"} />
+      </td>
+      <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">
+        {truncate(issue.reportedBy, 24)}
+      </td>
+      <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">
+        {issue.assignedTo ? truncate(issue.assignedTo, 24) : "Unassigned"}
+      </td>
+      <td className="px-4 py-3.5 text-muted-foreground">
+        {formatDate(issue.createdAt)}
+      </td>
+      <td className="px-4 py-3.5 text-muted-foreground">
+        {formatDate(issue.updatedAt)}
       </td>
     </tr>
   );

@@ -1,12 +1,26 @@
 import { apiFetch } from "./client";
 import type { CreateIssueInput, Issue, UpdateIssueInput } from "./types";
 
+export type IssueStatusInfo = {
+  id: string;
+  title: string;
+  sortOrder: number;
+  active: boolean;
+};
+
+export type IssueWithStatus = Issue & {
+  status?: IssueStatusInfo;
+  assignedBy?: string | null;
+  modifiedBy?: string;
+  metadata?: unknown;
+};
+
 export function listIssues(projectId: string) {
-  return apiFetch<Issue[]>(`/projects/${projectId}/issues`);
+  return apiFetch<IssueWithStatus[]>(`/projects/${projectId}/issues`);
 }
 
 export function createIssue(projectId: string, input: CreateIssueInput) {
-  return apiFetch<Issue>(`/projects/${projectId}/issues`, {
+  return apiFetch<IssueWithStatus>(`/projects/${projectId}/issues`, {
     method: "POST",
     json: input,
   });
@@ -17,7 +31,7 @@ export function updateIssue(
   issueId: string,
   input: UpdateIssueInput,
 ) {
-  return apiFetch<Issue>(`/projects/${projectId}/issues/${issueId}`, {
+  return apiFetch<IssueWithStatus>(`/projects/${projectId}/issues/${issueId}`, {
     method: "PATCH",
     json: input,
   });
