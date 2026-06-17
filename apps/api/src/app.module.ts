@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -12,10 +13,17 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { ProjectsModule } from './projects/projects.module';
+import { WidgetModule } from './widget/widget.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60_000,
+        limit: 100,
+      },
+    ]),
     PrismaModule,
     AuthModule,
     PermissionsModule,
@@ -23,6 +31,7 @@ import { ProjectsModule } from './projects/projects.module';
     UsersModule,
     OrganizationsModule,
     ProjectsModule,
+    WidgetModule,
   ],
   controllers: [AppController],
   providers: [
@@ -30,6 +39,7 @@ import { ProjectsModule } from './projects/projects.module';
     // Last registered global guard runs first — JwtAuthGuard must run before PermissionsGuard.
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: PermissionsGuard },
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}

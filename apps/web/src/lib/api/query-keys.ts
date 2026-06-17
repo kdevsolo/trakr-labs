@@ -24,4 +24,8 @@ export const queryKeys = {
     all: () => [...queryKeys.all, "projects"] as const,
     list: () => [...queryKeys.projects.all(), "list"] as const,
   },
+  widget: {
+    config: (projectId: string) =>
+      [...queryKeys.all, "widget", projectId] as const,
+  },
 } as const;

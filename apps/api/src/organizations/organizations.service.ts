@@ -3,6 +3,7 @@ import type {
   CreateOrganizationInput,
   UpdateOrganizationInput,
 } from '@trakr/schemas';
+import { DEFAULT_STATUSES } from 'src/common/constants/default-statuses';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -33,6 +34,14 @@ export class OrganizationsService {
       await tx.user.update({
         where: { id: userId },
         data: { orgId: organization.id, isOrgAdmin: true },
+      });
+
+      await tx.statusMaster.createMany({
+        data: DEFAULT_STATUSES.map((status) => ({
+          orgId: organization.id,
+          title: status.title,
+          sortOrder: status.sortOrder,
+        })),
       });
 
       return organization;

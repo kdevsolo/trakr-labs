@@ -123,6 +123,8 @@ export const ProjectScalarFieldEnum = {
   name: 'name',
   projectKey: 'projectKey',
   orgId: 'orgId',
+  widgetEnabled: 'widgetEnabled',
+  widgetSecretHash: 'widgetSecretHash',
   createdBy: 'createdBy',
   modifiedBy: 'modifiedBy',
   createdAt: 'createdAt',

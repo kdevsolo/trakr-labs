@@ -26,11 +26,11 @@ enum UserInviteStatus {
 }
 
 model User {
-  id         String   @id
+  id         String  @id
   name       String
-  email      String   @unique
+  email      String  @unique
   orgId      String?
-  isOrgAdmin Boolean  @default(false)
+  isOrgAdmin Boolean @default(false)
 
   org            Organization?      @relation(fields: [orgId], references: [id])
   projectMembers ProjectMember[]
@@ -43,13 +43,13 @@ model User {
 }
 
 model UserInvite {
-  id        String            @id @default(uuid())
-  userId    String            @unique
+  id        String           @id @default(uuid())
+  userId    String           @unique
   orgId     String
   invitedBy String
-  status    UserInviteStatus  @default(PENDING)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  status    UserInviteStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -73,14 +73,16 @@ model Organization {
 }
 
 model Project {
-  id         String   @id @default(uuid())
-  name       String
-  projectKey String   @unique
-  orgId      String
-  createdBy  String
-  modifiedBy String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id               String   @id @default(uuid())
+  name             String
+  projectKey       String   @unique
+  orgId            String
+  widgetEnabled    Boolean  @default(false)
+  widgetSecretHash String? // bcrypt/sha256 hash; null until enabled
+  createdBy        String
+  modifiedBy       String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   org         Organization       @relation(fields: [orgId], references: [id])
   members     ProjectMember[]

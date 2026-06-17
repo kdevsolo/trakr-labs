@@ -5,7 +5,7 @@ import { readFileSync } from "fs";
 const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@trakr/schemas"],
+  transpilePackages: ["@trakr/schemas", "@trakr/widget-ui"],
   turbopack: {
     root: path.join(__dirname, "../.."),
   },

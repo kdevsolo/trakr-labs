@@ -6,3 +6,4 @@ export * from "./users";
 export * from "./issues";
 export * from "./permissions";
 export * from "./projects";
+export * from "./widget";

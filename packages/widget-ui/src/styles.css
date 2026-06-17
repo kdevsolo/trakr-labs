@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-trakr-primary: #6d28d9;
+  --color-trakr-primary-hover: #5b21b6;
+  --color-trakr-border: #e4e4e7;
+  --color-trakr-muted: #71717a;
+  --color-trakr-bg: #ffffff;
+  --color-trakr-danger: #dc2626;
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+}
+
+.trakr-widget {
+  font-family: var(--font-sans);
+  color: #18181b;
+  box-sizing: border-box;
+}
+
+.trakr-widget *,
+.trakr-widget *::before,
+.trakr-widget *::after {
+  box-sizing: border-box;
+}
