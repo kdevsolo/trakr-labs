@@ -159,7 +159,7 @@ export class ProjectsService {
     }
     return this.prisma.project.findMany({
       where: { orgId, members: { some: { userId } } },
-    });
+    },);
   }
 
   findOne(id: string) {

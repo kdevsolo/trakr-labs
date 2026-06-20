@@ -1,5 +1,25 @@
 import * as z from 'zod';
 
+export const IssueUserSummarySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+export const IssueStatusSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  sortOrder: z.number(),
+  active: z.boolean(),
+});
+
+export const IssueMediaSchema = z.object({
+  id: z.string(),
+  issueId: z.string(),
+  url: z.string(),
+  fileType: z.string().nullable(),
+  createdAt: z.string(),
+});
+
 export const CreateIssueSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
@@ -22,10 +42,24 @@ export const IssueSchema = z.object({
   statusId: z.string(),
   reportedBy: z.string(),
   assignedTo: z.string().nullable(),
+  assignedBy: z.string().nullable().optional(),
+  modifiedBy: z.string().optional(),
+  metadata: z.unknown().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
+});
+
+export const IssueWithRelationsSchema = IssueSchema.extend({
+  status: IssueStatusSchema.optional(),
+  reporter: IssueUserSummarySchema.nullable().optional(),
+  assignee: IssueUserSummarySchema.nullable().optional(),
+  media: z.array(IssueMediaSchema).optional(),
 });
 
 export type CreateIssueInput = z.infer<typeof CreateIssueSchema>;
 export type UpdateIssueInput = z.infer<typeof UpdateIssueSchema>;
 export type Issue = z.infer<typeof IssueSchema>;
+export type IssueUserSummary = z.infer<typeof IssueUserSummarySchema>;
+export type IssueStatus = z.infer<typeof IssueStatusSchema>;
+export type IssueMedia = z.infer<typeof IssueMediaSchema>;
+export type IssueWithRelations = z.infer<typeof IssueWithRelationsSchema>;

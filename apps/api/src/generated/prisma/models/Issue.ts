@@ -236,6 +236,8 @@ export type IssueWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   status?: Prisma.XOR<Prisma.StatusMasterScalarRelationFilter, Prisma.StatusMasterWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  reporter?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  assignee?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   comments?: Prisma.CommentListRelationFilter
   media?: Prisma.IssueMediaListRelationFilter
 }
@@ -255,6 +257,8 @@ export type IssueOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   status?: Prisma.StatusMasterOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
+  reporter?: Prisma.UserOrderByWithRelationInput
+  assignee?: Prisma.UserOrderByWithRelationInput
   comments?: Prisma.CommentOrderByRelationAggregateInput
   media?: Prisma.IssueMediaOrderByRelationAggregateInput
 }
@@ -277,6 +281,8 @@ export type IssueWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   status?: Prisma.XOR<Prisma.StatusMasterScalarRelationFilter, Prisma.StatusMasterWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  reporter?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  assignee?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   comments?: Prisma.CommentListRelationFilter
   media?: Prisma.IssueMediaListRelationFilter
 }, "id">
@@ -322,14 +328,14 @@ export type IssueCreateInput = {
   title: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  reportedBy: string
-  assignedTo?: string | null
   assignedBy?: string | null
   modifiedBy: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
+  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  assignee?: Prisma.UserCreateNestedOneWithoutAssignedIssuesInput
   comments?: Prisma.CommentCreateNestedManyWithoutIssueInput
   media?: Prisma.IssueMediaCreateNestedManyWithoutIssueInput
 }
@@ -356,14 +362,14 @@ export type IssueUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  assignee?: Prisma.UserUpdateOneWithoutAssignedIssuesNestedInput
   comments?: Prisma.CommentUpdateManyWithoutIssueNestedInput
   media?: Prisma.IssueMediaUpdateManyWithoutIssueNestedInput
 }
@@ -405,8 +411,6 @@ export type IssueUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -484,6 +488,90 @@ export type IssueMinOrderByAggregateInput = {
 export type IssueScalarRelationFilter = {
   is?: Prisma.IssueWhereInput
   isNot?: Prisma.IssueWhereInput
+}
+
+export type IssueCreateNestedManyWithoutReporterInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutReporterInput, Prisma.IssueUncheckedCreateWithoutReporterInput> | Prisma.IssueCreateWithoutReporterInput[] | Prisma.IssueUncheckedCreateWithoutReporterInput[]
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutReporterInput | Prisma.IssueCreateOrConnectWithoutReporterInput[]
+  createMany?: Prisma.IssueCreateManyReporterInputEnvelope
+  connect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+}
+
+export type IssueCreateNestedManyWithoutAssigneeInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutAssigneeInput, Prisma.IssueUncheckedCreateWithoutAssigneeInput> | Prisma.IssueCreateWithoutAssigneeInput[] | Prisma.IssueUncheckedCreateWithoutAssigneeInput[]
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutAssigneeInput | Prisma.IssueCreateOrConnectWithoutAssigneeInput[]
+  createMany?: Prisma.IssueCreateManyAssigneeInputEnvelope
+  connect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+}
+
+export type IssueUncheckedCreateNestedManyWithoutReporterInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutReporterInput, Prisma.IssueUncheckedCreateWithoutReporterInput> | Prisma.IssueCreateWithoutReporterInput[] | Prisma.IssueUncheckedCreateWithoutReporterInput[]
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutReporterInput | Prisma.IssueCreateOrConnectWithoutReporterInput[]
+  createMany?: Prisma.IssueCreateManyReporterInputEnvelope
+  connect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+}
+
+export type IssueUncheckedCreateNestedManyWithoutAssigneeInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutAssigneeInput, Prisma.IssueUncheckedCreateWithoutAssigneeInput> | Prisma.IssueCreateWithoutAssigneeInput[] | Prisma.IssueUncheckedCreateWithoutAssigneeInput[]
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutAssigneeInput | Prisma.IssueCreateOrConnectWithoutAssigneeInput[]
+  createMany?: Prisma.IssueCreateManyAssigneeInputEnvelope
+  connect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+}
+
+export type IssueUpdateManyWithoutReporterNestedInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutReporterInput, Prisma.IssueUncheckedCreateWithoutReporterInput> | Prisma.IssueCreateWithoutReporterInput[] | Prisma.IssueUncheckedCreateWithoutReporterInput[]
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutReporterInput | Prisma.IssueCreateOrConnectWithoutReporterInput[]
+  upsert?: Prisma.IssueUpsertWithWhereUniqueWithoutReporterInput | Prisma.IssueUpsertWithWhereUniqueWithoutReporterInput[]
+  createMany?: Prisma.IssueCreateManyReporterInputEnvelope
+  set?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  disconnect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  delete?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  connect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  update?: Prisma.IssueUpdateWithWhereUniqueWithoutReporterInput | Prisma.IssueUpdateWithWhereUniqueWithoutReporterInput[]
+  updateMany?: Prisma.IssueUpdateManyWithWhereWithoutReporterInput | Prisma.IssueUpdateManyWithWhereWithoutReporterInput[]
+  deleteMany?: Prisma.IssueScalarWhereInput | Prisma.IssueScalarWhereInput[]
+}
+
+export type IssueUpdateManyWithoutAssigneeNestedInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutAssigneeInput, Prisma.IssueUncheckedCreateWithoutAssigneeInput> | Prisma.IssueCreateWithoutAssigneeInput[] | Prisma.IssueUncheckedCreateWithoutAssigneeInput[]
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutAssigneeInput | Prisma.IssueCreateOrConnectWithoutAssigneeInput[]
+  upsert?: Prisma.IssueUpsertWithWhereUniqueWithoutAssigneeInput | Prisma.IssueUpsertWithWhereUniqueWithoutAssigneeInput[]
+  createMany?: Prisma.IssueCreateManyAssigneeInputEnvelope
+  set?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  disconnect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  delete?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  connect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  update?: Prisma.IssueUpdateWithWhereUniqueWithoutAssigneeInput | Prisma.IssueUpdateWithWhereUniqueWithoutAssigneeInput[]
+  updateMany?: Prisma.IssueUpdateManyWithWhereWithoutAssigneeInput | Prisma.IssueUpdateManyWithWhereWithoutAssigneeInput[]
+  deleteMany?: Prisma.IssueScalarWhereInput | Prisma.IssueScalarWhereInput[]
+}
+
+export type IssueUncheckedUpdateManyWithoutReporterNestedInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutReporterInput, Prisma.IssueUncheckedCreateWithoutReporterInput> | Prisma.IssueCreateWithoutReporterInput[] | Prisma.IssueUncheckedCreateWithoutReporterInput[]
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutReporterInput | Prisma.IssueCreateOrConnectWithoutReporterInput[]
+  upsert?: Prisma.IssueUpsertWithWhereUniqueWithoutReporterInput | Prisma.IssueUpsertWithWhereUniqueWithoutReporterInput[]
+  createMany?: Prisma.IssueCreateManyReporterInputEnvelope
+  set?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  disconnect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  delete?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  connect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  update?: Prisma.IssueUpdateWithWhereUniqueWithoutReporterInput | Prisma.IssueUpdateWithWhereUniqueWithoutReporterInput[]
+  updateMany?: Prisma.IssueUpdateManyWithWhereWithoutReporterInput | Prisma.IssueUpdateManyWithWhereWithoutReporterInput[]
+  deleteMany?: Prisma.IssueScalarWhereInput | Prisma.IssueScalarWhereInput[]
+}
+
+export type IssueUncheckedUpdateManyWithoutAssigneeNestedInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutAssigneeInput, Prisma.IssueUncheckedCreateWithoutAssigneeInput> | Prisma.IssueCreateWithoutAssigneeInput[] | Prisma.IssueUncheckedCreateWithoutAssigneeInput[]
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutAssigneeInput | Prisma.IssueCreateOrConnectWithoutAssigneeInput[]
+  upsert?: Prisma.IssueUpsertWithWhereUniqueWithoutAssigneeInput | Prisma.IssueUpsertWithWhereUniqueWithoutAssigneeInput[]
+  createMany?: Prisma.IssueCreateManyAssigneeInputEnvelope
+  set?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  disconnect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  delete?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  connect?: Prisma.IssueWhereUniqueInput | Prisma.IssueWhereUniqueInput[]
+  update?: Prisma.IssueUpdateWithWhereUniqueWithoutAssigneeInput | Prisma.IssueUpdateWithWhereUniqueWithoutAssigneeInput[]
+  updateMany?: Prisma.IssueUpdateManyWithWhereWithoutAssigneeInput | Prisma.IssueUpdateManyWithWhereWithoutAssigneeInput[]
+  deleteMany?: Prisma.IssueScalarWhereInput | Prisma.IssueScalarWhereInput[]
 }
 
 export type IssueCreateNestedManyWithoutProjectInput = {
@@ -598,18 +686,152 @@ export type IssueUncheckedUpdateManyWithoutStatusNestedInput = {
   deleteMany?: Prisma.IssueScalarWhereInput | Prisma.IssueScalarWhereInput[]
 }
 
-export type IssueCreateWithoutProjectInput = {
+export type IssueCreateWithoutReporterInput = {
   id?: string
   title: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  reportedBy: string
-  assignedTo?: string | null
   assignedBy?: string | null
   modifiedBy: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
+  project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
+  assignee?: Prisma.UserCreateNestedOneWithoutAssignedIssuesInput
+  comments?: Prisma.CommentCreateNestedManyWithoutIssueInput
+  media?: Prisma.IssueMediaCreateNestedManyWithoutIssueInput
+}
+
+export type IssueUncheckedCreateWithoutReporterInput = {
+  id?: string
+  title: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  statusId: string
+  projectId: string
+  assignedTo?: string | null
+  assignedBy?: string | null
+  modifiedBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutIssueInput
+  media?: Prisma.IssueMediaUncheckedCreateNestedManyWithoutIssueInput
+}
+
+export type IssueCreateOrConnectWithoutReporterInput = {
+  where: Prisma.IssueWhereUniqueInput
+  create: Prisma.XOR<Prisma.IssueCreateWithoutReporterInput, Prisma.IssueUncheckedCreateWithoutReporterInput>
+}
+
+export type IssueCreateManyReporterInputEnvelope = {
+  data: Prisma.IssueCreateManyReporterInput | Prisma.IssueCreateManyReporterInput[]
+  skipDuplicates?: boolean
+}
+
+export type IssueCreateWithoutAssigneeInput = {
+  id?: string
+  title: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  assignedBy?: string | null
+  modifiedBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
+  project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
+  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  comments?: Prisma.CommentCreateNestedManyWithoutIssueInput
+  media?: Prisma.IssueMediaCreateNestedManyWithoutIssueInput
+}
+
+export type IssueUncheckedCreateWithoutAssigneeInput = {
+  id?: string
+  title: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  statusId: string
+  projectId: string
+  reportedBy: string
+  assignedBy?: string | null
+  modifiedBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutIssueInput
+  media?: Prisma.IssueMediaUncheckedCreateNestedManyWithoutIssueInput
+}
+
+export type IssueCreateOrConnectWithoutAssigneeInput = {
+  where: Prisma.IssueWhereUniqueInput
+  create: Prisma.XOR<Prisma.IssueCreateWithoutAssigneeInput, Prisma.IssueUncheckedCreateWithoutAssigneeInput>
+}
+
+export type IssueCreateManyAssigneeInputEnvelope = {
+  data: Prisma.IssueCreateManyAssigneeInput | Prisma.IssueCreateManyAssigneeInput[]
+  skipDuplicates?: boolean
+}
+
+export type IssueUpsertWithWhereUniqueWithoutReporterInput = {
+  where: Prisma.IssueWhereUniqueInput
+  update: Prisma.XOR<Prisma.IssueUpdateWithoutReporterInput, Prisma.IssueUncheckedUpdateWithoutReporterInput>
+  create: Prisma.XOR<Prisma.IssueCreateWithoutReporterInput, Prisma.IssueUncheckedCreateWithoutReporterInput>
+}
+
+export type IssueUpdateWithWhereUniqueWithoutReporterInput = {
+  where: Prisma.IssueWhereUniqueInput
+  data: Prisma.XOR<Prisma.IssueUpdateWithoutReporterInput, Prisma.IssueUncheckedUpdateWithoutReporterInput>
+}
+
+export type IssueUpdateManyWithWhereWithoutReporterInput = {
+  where: Prisma.IssueScalarWhereInput
+  data: Prisma.XOR<Prisma.IssueUpdateManyMutationInput, Prisma.IssueUncheckedUpdateManyWithoutReporterInput>
+}
+
+export type IssueScalarWhereInput = {
+  AND?: Prisma.IssueScalarWhereInput | Prisma.IssueScalarWhereInput[]
+  OR?: Prisma.IssueScalarWhereInput[]
+  NOT?: Prisma.IssueScalarWhereInput | Prisma.IssueScalarWhereInput[]
+  id?: Prisma.StringFilter<"Issue"> | string
+  title?: Prisma.StringFilter<"Issue"> | string
+  description?: Prisma.StringNullableFilter<"Issue"> | string | null
+  metadata?: Prisma.JsonNullableFilter<"Issue">
+  statusId?: Prisma.StringFilter<"Issue"> | string
+  projectId?: Prisma.StringFilter<"Issue"> | string
+  reportedBy?: Prisma.StringFilter<"Issue"> | string
+  assignedTo?: Prisma.StringNullableFilter<"Issue"> | string | null
+  assignedBy?: Prisma.StringNullableFilter<"Issue"> | string | null
+  modifiedBy?: Prisma.StringFilter<"Issue"> | string
+  createdAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
+}
+
+export type IssueUpsertWithWhereUniqueWithoutAssigneeInput = {
+  where: Prisma.IssueWhereUniqueInput
+  update: Prisma.XOR<Prisma.IssueUpdateWithoutAssigneeInput, Prisma.IssueUncheckedUpdateWithoutAssigneeInput>
+  create: Prisma.XOR<Prisma.IssueCreateWithoutAssigneeInput, Prisma.IssueUncheckedCreateWithoutAssigneeInput>
+}
+
+export type IssueUpdateWithWhereUniqueWithoutAssigneeInput = {
+  where: Prisma.IssueWhereUniqueInput
+  data: Prisma.XOR<Prisma.IssueUpdateWithoutAssigneeInput, Prisma.IssueUncheckedUpdateWithoutAssigneeInput>
+}
+
+export type IssueUpdateManyWithWhereWithoutAssigneeInput = {
+  where: Prisma.IssueScalarWhereInput
+  data: Prisma.XOR<Prisma.IssueUpdateManyMutationInput, Prisma.IssueUncheckedUpdateManyWithoutAssigneeInput>
+}
+
+export type IssueCreateWithoutProjectInput = {
+  id?: string
+  title: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  assignedBy?: string | null
+  modifiedBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
+  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  assignee?: Prisma.UserCreateNestedOneWithoutAssignedIssuesInput
   comments?: Prisma.CommentCreateNestedManyWithoutIssueInput
   media?: Prisma.IssueMediaCreateNestedManyWithoutIssueInput
 }
@@ -656,37 +878,19 @@ export type IssueUpdateManyWithWhereWithoutProjectInput = {
   data: Prisma.XOR<Prisma.IssueUpdateManyMutationInput, Prisma.IssueUncheckedUpdateManyWithoutProjectInput>
 }
 
-export type IssueScalarWhereInput = {
-  AND?: Prisma.IssueScalarWhereInput | Prisma.IssueScalarWhereInput[]
-  OR?: Prisma.IssueScalarWhereInput[]
-  NOT?: Prisma.IssueScalarWhereInput | Prisma.IssueScalarWhereInput[]
-  id?: Prisma.StringFilter<"Issue"> | string
-  title?: Prisma.StringFilter<"Issue"> | string
-  description?: Prisma.StringNullableFilter<"Issue"> | string | null
-  metadata?: Prisma.JsonNullableFilter<"Issue">
-  statusId?: Prisma.StringFilter<"Issue"> | string
-  projectId?: Prisma.StringFilter<"Issue"> | string
-  reportedBy?: Prisma.StringFilter<"Issue"> | string
-  assignedTo?: Prisma.StringNullableFilter<"Issue"> | string | null
-  assignedBy?: Prisma.StringNullableFilter<"Issue"> | string | null
-  modifiedBy?: Prisma.StringFilter<"Issue"> | string
-  createdAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
-}
-
 export type IssueCreateWithoutCommentsInput = {
   id?: string
   title: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  reportedBy: string
-  assignedTo?: string | null
   assignedBy?: string | null
   modifiedBy: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
+  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  assignee?: Prisma.UserCreateNestedOneWithoutAssignedIssuesInput
   media?: Prisma.IssueMediaCreateNestedManyWithoutIssueInput
 }
 
@@ -727,14 +931,14 @@ export type IssueUpdateWithoutCommentsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  assignee?: Prisma.UserUpdateOneWithoutAssignedIssuesNestedInput
   media?: Prisma.IssueMediaUpdateManyWithoutIssueNestedInput
 }
 
@@ -759,14 +963,14 @@ export type IssueCreateWithoutMediaInput = {
   title: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  reportedBy: string
-  assignedTo?: string | null
   assignedBy?: string | null
   modifiedBy: string
   createdAt?: Date | string
   updatedAt?: Date | string
   status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
+  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  assignee?: Prisma.UserCreateNestedOneWithoutAssignedIssuesInput
   comments?: Prisma.CommentCreateNestedManyWithoutIssueInput
 }
 
@@ -807,14 +1011,14 @@ export type IssueUpdateWithoutMediaInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  assignee?: Prisma.UserUpdateOneWithoutAssignedIssuesNestedInput
   comments?: Prisma.CommentUpdateManyWithoutIssueNestedInput
 }
 
@@ -839,13 +1043,13 @@ export type IssueCreateWithoutStatusInput = {
   title: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  reportedBy: string
-  assignedTo?: string | null
   assignedBy?: string | null
   modifiedBy: string
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
+  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  assignee?: Prisma.UserCreateNestedOneWithoutAssignedIssuesInput
   comments?: Prisma.CommentCreateNestedManyWithoutIssueInput
   media?: Prisma.IssueMediaCreateNestedManyWithoutIssueInput
 }
@@ -892,6 +1096,126 @@ export type IssueUpdateManyWithWhereWithoutStatusInput = {
   data: Prisma.XOR<Prisma.IssueUpdateManyMutationInput, Prisma.IssueUncheckedUpdateManyWithoutStatusInput>
 }
 
+export type IssueCreateManyReporterInput = {
+  id?: string
+  title: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  statusId: string
+  projectId: string
+  assignedTo?: string | null
+  assignedBy?: string | null
+  modifiedBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type IssueCreateManyAssigneeInput = {
+  id?: string
+  title: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  statusId: string
+  projectId: string
+  reportedBy: string
+  assignedBy?: string | null
+  modifiedBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type IssueUpdateWithoutReporterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
+  assignee?: Prisma.UserUpdateOneWithoutAssignedIssuesNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutIssueNestedInput
+  media?: Prisma.IssueMediaUpdateManyWithoutIssueNestedInput
+}
+
+export type IssueUncheckedUpdateWithoutReporterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  statusId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutIssueNestedInput
+  media?: Prisma.IssueMediaUncheckedUpdateManyWithoutIssueNestedInput
+}
+
+export type IssueUncheckedUpdateManyWithoutReporterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  statusId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type IssueUpdateWithoutAssigneeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutIssueNestedInput
+  media?: Prisma.IssueMediaUpdateManyWithoutIssueNestedInput
+}
+
+export type IssueUncheckedUpdateWithoutAssigneeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  statusId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutIssueNestedInput
+  media?: Prisma.IssueMediaUncheckedUpdateManyWithoutIssueNestedInput
+}
+
+export type IssueUncheckedUpdateManyWithoutAssigneeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  statusId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type IssueCreateManyProjectInput = {
   id?: string
   title: string
@@ -911,13 +1235,13 @@ export type IssueUpdateWithoutProjectInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  assignee?: Prisma.UserUpdateOneWithoutAssignedIssuesNestedInput
   comments?: Prisma.CommentUpdateManyWithoutIssueNestedInput
   media?: Prisma.IssueMediaUpdateManyWithoutIssueNestedInput
 }
@@ -971,13 +1295,13 @@ export type IssueUpdateWithoutStatusInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
-  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  assignee?: Prisma.UserUpdateOneWithoutAssignedIssuesNestedInput
   comments?: Prisma.CommentUpdateManyWithoutIssueNestedInput
   media?: Prisma.IssueMediaUpdateManyWithoutIssueNestedInput
 }
@@ -1067,6 +1391,8 @@ export type IssueSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   updatedAt?: boolean
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
   comments?: boolean | Prisma.Issue$commentsArgs<ExtArgs>
   media?: boolean | Prisma.Issue$mediaArgs<ExtArgs>
   _count?: boolean | Prisma.IssueCountOutputTypeDefaultArgs<ExtArgs>
@@ -1087,6 +1413,8 @@ export type IssueSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   updatedAt?: boolean
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
 }, ExtArgs["result"]["issue"]>
 
 export type IssueSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1104,6 +1432,8 @@ export type IssueSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   updatedAt?: boolean
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
 }, ExtArgs["result"]["issue"]>
 
 export type IssueSelectScalar = {
@@ -1125,6 +1455,8 @@ export type IssueOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
 export type IssueInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
   comments?: boolean | Prisma.Issue$commentsArgs<ExtArgs>
   media?: boolean | Prisma.Issue$mediaArgs<ExtArgs>
   _count?: boolean | Prisma.IssueCountOutputTypeDefaultArgs<ExtArgs>
@@ -1132,10 +1464,14 @@ export type IssueInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type IssueIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
 }
 export type IssueIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
 }
 
 export type $IssuePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1143,6 +1479,8 @@ export type $IssuePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   objects: {
     status: Prisma.$StatusMasterPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs>
+    reporter: Prisma.$UserPayload<ExtArgs>
+    assignee: Prisma.$UserPayload<ExtArgs> | null
     comments: Prisma.$CommentPayload<ExtArgs>[]
     media: Prisma.$IssueMediaPayload<ExtArgs>[]
   }
@@ -1555,6 +1893,8 @@ export interface Prisma__IssueClient<T, Null = never, ExtArgs extends runtime.Ty
   readonly [Symbol.toStringTag]: "PrismaPromise"
   status<T extends Prisma.StatusMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StatusMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__StatusMasterClient<runtime.Types.Result.GetResult<Prisma.$StatusMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  reporter<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  assignee<T extends Prisma.Issue$assigneeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$assigneeArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   comments<T extends Prisma.Issue$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   media<T extends Prisma.Issue$mediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$mediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IssueMediaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1996,6 +2336,25 @@ export type IssueDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Issues to delete.
    */
   limit?: number
+}
+
+/**
+ * Issue.assignee
+ */
+export type Issue$assigneeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

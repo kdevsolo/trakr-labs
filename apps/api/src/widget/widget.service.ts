@@ -116,7 +116,7 @@ export class WidgetService {
         data: {
           title: dto.title,
           description: dto.description,
-          statusId: openStatus.id,
+          statusId: openStatus?.id,
           projectId: context.projectId,
           reportedBy: context.createdBy,
           modifiedBy: context.createdBy,

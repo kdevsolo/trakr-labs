@@ -67,10 +67,13 @@ function IssueDrawerBody({
 
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 gap-x-4 gap-y-4 border-b border-border px-5 py-4">
-          <MetaField label="Reported by" value={issue.reportedBy} />
+          <MetaField
+            label="Reported by"
+            value={issue.reporter?.name ?? issue.reportedBy ?? "—"}
+          />
           <MetaField
             label="Assigned to"
-            value={issue.assignedTo ?? "Unassigned"}
+            value={issue.assignee?.name ?? (issue.assignedTo ? issue.assignedTo : "Unassigned")}
           />
           <MetaField label="Assigned by" value={issue.assignedBy ?? "—"} />
           <MetaField label="Modified by" value={issue.modifiedBy ?? "—"} />
@@ -84,6 +87,30 @@ function IssueDrawerBody({
               {issue.description ?? "No description provided."}
             </p>
           </Section>
+
+          {issue.media && issue.media.length > 0 && (
+            <Section title="Attachments">
+              <ul className="grid grid-cols-2 gap-3">
+                {issue.media.map((item) => (
+                  <li key={item.id}>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block overflow-hidden rounded-md border border-border bg-muted/20 transition-colors hover:bg-muted/40"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.url}
+                        alt=""
+                        className="aspect-video w-full object-cover"
+                      />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
         </div>
       </div>
 

@@ -1,6 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { CreateIssueInput, UpdateIssueInput } from '@trakr/schemas';
+import { withSignedIssueMedia, withSignedIssueMediaList } from '../widget/utils/widget-storage';
 import { PrismaService } from '../prisma/prisma.service';
+
+const issueInclude = {
+  status: true,
+  media: { orderBy: { createdAt: 'asc' as const } },
+  reporter: { select: { id: true, name: true } },
+  assignee: { select: { id: true, name: true } },
+} as const;
 
 @Injectable()
 export class IssuesService {
@@ -9,11 +17,13 @@ export class IssuesService {
   async list(projectId: string, orgId: string) {
     await this.assertProjectInOrg(projectId, orgId);
 
-    return this.prisma.issue.findMany({
-      where: { projectId },
-      include: { status: true },
-      orderBy: { createdAt: 'desc' },
-    });
+    return withSignedIssueMediaList(
+      await this.prisma.issue.findMany({
+        where: { projectId },
+        include: issueInclude,
+        orderBy: { createdAt: 'desc' },
+      }),
+    );
   }
 
   async create(
@@ -24,19 +34,21 @@ export class IssuesService {
   ) {
     await this.assertProjectInOrg(projectId, orgId);
 
-    return this.prisma.issue.create({
-      data: {
-        title: dto.title,
-        description: dto.description,
-        statusId: dto.statusId,
-        projectId,
-        reportedBy: userId,
-        assignedTo: dto.assignedTo,
-        assignedBy: dto.assignedTo ? userId : null,
-        modifiedBy: userId,
-      },
-      include: { status: true },
-    });
+    return withSignedIssueMedia(
+      await this.prisma.issue.create({
+        data: {
+          title: dto.title,
+          description: dto.description,
+          statusId: dto.statusId,
+          projectId,
+          reportedBy: userId,
+          assignedTo: dto.assignedTo,
+          assignedBy: dto.assignedTo ? userId : null,
+          modifiedBy: userId,
+        },
+        include: issueInclude,
+      }),
+    );
   }
 
   async update(
@@ -49,18 +61,20 @@ export class IssuesService {
     await this.assertProjectInOrg(projectId, orgId);
     await this.assertIssueInProject(issueId, projectId);
 
-    return this.prisma.issue.update({
-      where: { id: issueId },
-      data: {
-        title: dto.title,
-        description: dto.description,
-        statusId: dto.statusId,
-        assignedTo: dto.assignedTo,
-        assignedBy: dto.assignedTo !== undefined ? userId : undefined,
-        modifiedBy: userId,
-      },
-      include: { status: true },
-    });
+    return withSignedIssueMedia(
+      await this.prisma.issue.update({
+        where: { id: issueId },
+        data: {
+          title: dto.title,
+          description: dto.description,
+          statusId: dto.statusId,
+          assignedTo: dto.assignedTo,
+          assignedBy: dto.assignedTo !== undefined ? userId : undefined,
+          modifiedBy: userId,
+        },
+        include: issueInclude,
+      }),
+    );
   }
 
   async remove(projectId: string, orgId: string, issueId: string) {

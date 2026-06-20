@@ -32,10 +32,12 @@ model User {
   orgId      String?
   isOrgAdmin Boolean @default(false)
 
-  org            Organization?      @relation(fields: [orgId], references: [id])
-  projectMembers ProjectMember[]
-  permissions    MemberPermission[]
-  invite         UserInvite?
+  org              Organization?      @relation(fields: [orgId], references: [id])
+  projectMembers   ProjectMember[]
+  permissions      MemberPermission[]
+  invite           UserInvite?
+  reportedIssues   Issue[]            @relation("IssueReporter")
+  assignedIssues   Issue[]            @relation("IssueAssignee")
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
 
@@ -141,11 +143,15 @@ model Issue {
 
   status   StatusMaster @relation(fields: [statusId], references: [id])
   project  Project      @relation(fields: [projectId], references: [id])
+  reporter User         @relation("IssueReporter", fields: [reportedBy], references: [id])
+  assignee User?        @relation("IssueAssignee", fields: [assignedTo], references: [id])
   comments Comment[]
   media    IssueMedia[]
 
   @@index([projectId])
   @@index([statusId])
+  @@index([reportedBy])
+  @@index([assignedTo])
 }
 
 model Comment {

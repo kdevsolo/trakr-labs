@@ -21,6 +21,11 @@ import {
 } from "@/hooks/api/use-widget";
 import { useProjects } from "@/hooks/api/use-projects";
 import type { Project } from "@/lib/api";
+import {
+  clearWidgetSecret,
+  readWidgetSecret,
+  storeWidgetSecret,
+} from "@/lib/widget-secret-storage";
 
 import "@trakr/widget-ui/styles.css";
 
@@ -69,6 +74,15 @@ export function WidgetSettingsView() {
     });
   }, [projects]);
 
+  useEffect(() => {
+    if (!projectId) {
+      setRevealedSecret(null);
+      return;
+    }
+
+    setRevealedSecret(readWidgetSecret(projectId));
+  }, [projectId]);
+
   const embedSnippet = useMemo(() => {
     if (!widgetConfig?.projectKey || !revealedSecret) {
       return null;
@@ -78,16 +92,19 @@ export function WidgetSettingsView() {
 
   async function handleEnable() {
     const result = await enableWidget.mutateAsync();
+    storeWidgetSecret(projectId, result.widgetSecret);
     setRevealedSecret(result.widgetSecret);
   }
 
   async function handleRotate() {
     const result = await rotateSecret.mutateAsync();
+    storeWidgetSecret(projectId, result.widgetSecret);
     setRevealedSecret(result.widgetSecret);
   }
 
   async function handleDisable() {
     await disableWidget.mutateAsync();
+    clearWidgetSecret(projectId);
     setRevealedSecret(null);
   }
 
@@ -129,7 +146,6 @@ export function WidgetSettingsView() {
                 key={project.id}
                 onClick={() => {
                   setSelectedProject(project);
-                  setRevealedSecret(null);
                   setProjectMenuOpen(false);
                 }}
               >
@@ -203,17 +219,7 @@ export function WidgetSettingsView() {
               </dl>
             ) : null}
 
-            {revealedSecret ? (
-              <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
-                Copy your widget secret now. It will not be shown again after you
-                leave this page.
-                <p className="mt-2 break-all font-mono text-xs">{revealedSecret}</p>
-              </div>
-            ) : widgetConfig?.enabled && widgetConfig.hasSecret ? (
-              <p className="mt-4 text-sm text-muted-foreground">
-                Rotate the secret to reveal a new embed credential.
-              </p>
-            ) : null}
+            
           </section>
 
           {embedSnippet ? (
@@ -251,9 +257,13 @@ export function WidgetSettingsView() {
                     apiUrl={API_URL}
                   />
                 </div>
+              ) : widgetConfig?.enabled && widgetConfig.hasSecret ? (
+                <p className="text-center text-sm text-muted-foreground">
+                  Rotate the secret to restore the live preview in this browser tab.
+                </p>
               ) : (
                 <p className="text-center text-sm text-muted-foreground">
-                  Enable the widget and copy the secret to preview submissions here.
+                  Enable the widget to preview submissions here.
                 </p>
               )}
             </div>

@@ -133,11 +133,11 @@ function IssueRow({ issue, isSelected, onClick }: IssueRowProps) {
       <td className="px-4 py-3.5">
         <StatusBadge status={issue.status?.title ?? "Unknown"} />
       </td>
-      <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">
-        {truncate(issue.reportedBy, 24)}
+      <td className="px-4 py-3.5 text-muted-foreground">
+        {issue.reporter?.name ?? issue.reportedBy ?? "—"}
       </td>
-      <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">
-        {issue.assignedTo ? truncate(issue.assignedTo, 24) : "Unassigned"}
+      <td className="px-4 py-3.5 text-muted-foreground">
+        {issue.assignee?.name ?? (issue.assignedTo ? issue.assignedTo : "Unassigned")}
       </td>
       <td className="px-4 py-3.5 text-muted-foreground">
         {formatDate(issue.createdAt)}

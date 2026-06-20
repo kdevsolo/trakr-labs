@@ -8,6 +8,8 @@ export type {
   CreateOrganizationInput,
   InviteUserInput,
   Issue,
+  IssueMedia,
+  IssueWithRelations,
   MemberPermissions,
   Organization,
   PermissionGrant,
