@@ -1,4 +1,9 @@
 import { createClient } from "@/utils/supabase/client";
+import {
+  isApiErrorResponse,
+  parseApiErrorMessage,
+  unwrapApiResponse,
+} from "@trakr/schemas";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -68,7 +73,13 @@ export async function apiFetch<T>(
     return undefined as T;
   }
 
-  return JSON.parse(text) as T;
+  const responseBody: unknown = JSON.parse(text);
+
+  if (isApiErrorResponse(responseBody)) {
+    throw new ApiError(response.status, responseBody.error.message);
+  }
+
+  return unwrapApiResponse<T>(responseBody);
 }
 
 async function parseErrorMessage(response: Response): Promise<string> {
@@ -76,18 +87,7 @@ async function parseErrorMessage(response: Response): Promise<string> {
 
   try {
     const errorBody: unknown = await response.json();
-
-    if (typeof errorBody === "object" && errorBody !== null && "message" in errorBody) {
-      const { message } = errorBody;
-
-      if (typeof message === "string") {
-        return message;
-      }
-
-      if (Array.isArray(message)) {
-        return message.join(", ");
-      }
-    }
+    return parseApiErrorMessage(errorBody, fallback);
   } catch {
     // Response body is not JSON — use fallback.
   }

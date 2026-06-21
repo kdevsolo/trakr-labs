@@ -1,4 +1,5 @@
 import { FormEvent, useState } from 'react';
+import { getCapturedContext } from './context-capture';
 import { MediaUpload } from './media-upload';
 import { useMediaUpload } from './use-media-upload';
 import { submitFeedback } from './widget-api';
@@ -38,6 +39,11 @@ export function FeedbackForm({
       return;
     }
 
+    if (!email.trim()) {
+      setSubmitError('Email is required');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -47,9 +53,10 @@ export function FeedbackForm({
       await submitFeedback(auth, {
         title: title.trim(),
         description: description.trim() || undefined,
-        email: email.trim() || undefined,
+        email: email.trim(),
         pageUrl,
         media: items.map(({ url, fileType }) => ({ url, fileType })),
+        context: getCapturedContext(),
       });
 
       setSubmitted(true);
@@ -114,7 +121,7 @@ export function FeedbackForm({
 
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-medium text-zinc-700" htmlFor="trakr-email">
-          Email (optional)
+          Email
         </label>
         <input
           id="trakr-email"
@@ -123,6 +130,7 @@ export function FeedbackForm({
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder="you@example.com"
+          required
         />
       </div>
 

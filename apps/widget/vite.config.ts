@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { serveWidgetBundleInDev } from './vite-plugin-serve-bundle';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), serveWidgetBundleInDev()],
   root: '.',
   build: {
     lib: {

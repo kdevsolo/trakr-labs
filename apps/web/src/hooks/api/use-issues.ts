@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
   createIssue,
@@ -12,11 +12,12 @@ import type {
   IssueWithStatus,
   UpdateIssueInput,
 } from "@/lib/api";
+import { useClientQuery } from "@/hooks/use-client-query";
 
 export type { IssueWithStatus };
 
 export function useIssues(projectId: string) {
-  return useQuery({
+  return useClientQuery({
     queryKey: queryKeys.issues.list(projectId),
     queryFn: () => listIssues(projectId),
     enabled: Boolean(projectId),

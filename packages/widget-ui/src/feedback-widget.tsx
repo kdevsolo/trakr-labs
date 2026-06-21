@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { installContextCapture } from './context-capture';
 import { FeedbackForm } from './feedback-form';
 
 export type FeedbackWidgetProps = {
@@ -19,6 +20,10 @@ export function FeedbackWidget({
   onError,
 }: FeedbackWidgetProps) {
   const [open, setOpen] = useState(mode === 'inline');
+
+  useEffect(() => {
+    installContextCapture({ apiUrl });
+  }, [apiUrl]);
 
   if (mode === 'inline') {
     return (

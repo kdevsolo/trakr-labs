@@ -7,8 +7,9 @@ export async function getMe() {
     try {
         const supabase = await createClient()
         const { data: { session } } = await supabase.auth.getSession()
-        return fetchMe(session?.access_token)
+        return await fetchMe(session?.access_token)
     } catch (error) {
-        console.error({error})
+        console.error({ error })
+        return null
     }
 }

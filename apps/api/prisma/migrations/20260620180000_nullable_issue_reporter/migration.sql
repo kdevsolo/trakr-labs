@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "Issue" DROP CONSTRAINT "Issue_reportedBy_fkey";
+
+ALTER TABLE "Issue" ALTER COLUMN "reportedBy" DROP NOT NULL;
+ALTER TABLE "Issue" ALTER COLUMN "modifiedBy" DROP NOT NULL;
+
+ALTER TABLE "Issue" ADD CONSTRAINT "Issue_reportedBy_fkey" FOREIGN KEY ("reportedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

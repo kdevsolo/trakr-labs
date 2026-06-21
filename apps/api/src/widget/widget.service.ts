@@ -83,6 +83,7 @@ export class WidgetService {
   async submitFeedback(
     context: WidgetProjectContext,
     dto: SubmitFeedbackInput,
+    serverContext?: { userAgent?: string },
   ): Promise<{ id: string }> {
     const media = dto.media ?? [];
 
@@ -118,13 +119,15 @@ export class WidgetService {
           description: dto.description,
           statusId: openStatus?.id,
           projectId: context.projectId,
-          reportedBy: context.createdBy,
-          modifiedBy: context.createdBy,
           metadata: {
             source: 'widget',
-            email: dto.email ?? null,
+            email: dto.email,
             pageUrl: dto.pageUrl ?? null,
             submittedAt: new Date().toISOString(),
+            ...(dto.context ? { context: dto.context } : {}),
+            ...(serverContext?.userAgent
+              ? { server: { userAgent: serverContext.userAgent } }
+              : {}),
           },
         },
       });

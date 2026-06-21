@@ -21,6 +21,17 @@ export const OrganizationSchema = z.object({
   updatedAt: z.string(),
 });
 
+export const StatusMasterSchema = z.object({
+  id: z.string(),
+  orgId: z.string(),
+  title: z.string(),
+  sortOrder: z.number(),
+  active: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
 export type CreateOrganizationInput = z.infer<typeof CreateOrganizationSchema>;
 export type UpdateOrganizationInput = z.infer<typeof UpdateOrganizationSchema>;
 export type Organization = z.infer<typeof OrganizationSchema>;
+export type StatusMaster = z.infer<typeof StatusMasterSchema>;

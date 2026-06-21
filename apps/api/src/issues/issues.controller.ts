@@ -85,4 +85,5 @@ export class IssuesController {
   ) {
     return this.issuesService.remove(projectId, requireOrgId(user.orgId), id);
   }
+
 }

@@ -192,10 +192,10 @@ export type IssueGroupByOutputType = {
   metadata: runtime.JsonValue | null
   statusId: string
   projectId: string
-  reportedBy: string
+  reportedBy: string | null
   assignedTo: string | null
   assignedBy: string | null
-  modifiedBy: string
+  modifiedBy: string | null
   createdAt: Date
   updatedAt: Date
   _count: IssueCountAggregateOutputType | null
@@ -228,15 +228,15 @@ export type IssueWhereInput = {
   metadata?: Prisma.JsonNullableFilter<"Issue">
   statusId?: Prisma.StringFilter<"Issue"> | string
   projectId?: Prisma.StringFilter<"Issue"> | string
-  reportedBy?: Prisma.StringFilter<"Issue"> | string
+  reportedBy?: Prisma.StringNullableFilter<"Issue"> | string | null
   assignedTo?: Prisma.StringNullableFilter<"Issue"> | string | null
   assignedBy?: Prisma.StringNullableFilter<"Issue"> | string | null
-  modifiedBy?: Prisma.StringFilter<"Issue"> | string
+  modifiedBy?: Prisma.StringNullableFilter<"Issue"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   status?: Prisma.XOR<Prisma.StatusMasterScalarRelationFilter, Prisma.StatusMasterWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
-  reporter?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  reporter?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   assignee?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   comments?: Prisma.CommentListRelationFilter
   media?: Prisma.IssueMediaListRelationFilter
@@ -249,10 +249,10 @@ export type IssueOrderByWithRelationInput = {
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   statusId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
-  reportedBy?: Prisma.SortOrder
+  reportedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   assignedTo?: Prisma.SortOrderInput | Prisma.SortOrder
   assignedBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  modifiedBy?: Prisma.SortOrder
+  modifiedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   status?: Prisma.StatusMasterOrderByWithRelationInput
@@ -273,15 +273,15 @@ export type IssueWhereUniqueInput = Prisma.AtLeast<{
   metadata?: Prisma.JsonNullableFilter<"Issue">
   statusId?: Prisma.StringFilter<"Issue"> | string
   projectId?: Prisma.StringFilter<"Issue"> | string
-  reportedBy?: Prisma.StringFilter<"Issue"> | string
+  reportedBy?: Prisma.StringNullableFilter<"Issue"> | string | null
   assignedTo?: Prisma.StringNullableFilter<"Issue"> | string | null
   assignedBy?: Prisma.StringNullableFilter<"Issue"> | string | null
-  modifiedBy?: Prisma.StringFilter<"Issue"> | string
+  modifiedBy?: Prisma.StringNullableFilter<"Issue"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   status?: Prisma.XOR<Prisma.StatusMasterScalarRelationFilter, Prisma.StatusMasterWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
-  reporter?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  reporter?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   assignee?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   comments?: Prisma.CommentListRelationFilter
   media?: Prisma.IssueMediaListRelationFilter
@@ -294,10 +294,10 @@ export type IssueOrderByWithAggregationInput = {
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   statusId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
-  reportedBy?: Prisma.SortOrder
+  reportedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   assignedTo?: Prisma.SortOrderInput | Prisma.SortOrder
   assignedBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  modifiedBy?: Prisma.SortOrder
+  modifiedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.IssueCountOrderByAggregateInput
@@ -315,10 +315,10 @@ export type IssueScalarWhereWithAggregatesInput = {
   metadata?: Prisma.JsonNullableWithAggregatesFilter<"Issue">
   statusId?: Prisma.StringWithAggregatesFilter<"Issue"> | string
   projectId?: Prisma.StringWithAggregatesFilter<"Issue"> | string
-  reportedBy?: Prisma.StringWithAggregatesFilter<"Issue"> | string
+  reportedBy?: Prisma.StringNullableWithAggregatesFilter<"Issue"> | string | null
   assignedTo?: Prisma.StringNullableWithAggregatesFilter<"Issue"> | string | null
   assignedBy?: Prisma.StringNullableWithAggregatesFilter<"Issue"> | string | null
-  modifiedBy?: Prisma.StringWithAggregatesFilter<"Issue"> | string
+  modifiedBy?: Prisma.StringNullableWithAggregatesFilter<"Issue"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Issue"> | Date | string
 }
@@ -329,12 +329,12 @@ export type IssueCreateInput = {
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
-  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  reporter?: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
   assignee?: Prisma.UserCreateNestedOneWithoutAssignedIssuesInput
   comments?: Prisma.CommentCreateNestedManyWithoutIssueInput
   media?: Prisma.IssueMediaCreateNestedManyWithoutIssueInput
@@ -347,10 +347,10 @@ export type IssueUncheckedCreateInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId: string
   projectId: string
-  reportedBy: string
+  reportedBy?: string | null
   assignedTo?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutIssueInput
@@ -363,12 +363,12 @@ export type IssueUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
-  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneWithoutReportedIssuesNestedInput
   assignee?: Prisma.UserUpdateOneWithoutAssignedIssuesNestedInput
   comments?: Prisma.CommentUpdateManyWithoutIssueNestedInput
   media?: Prisma.IssueMediaUpdateManyWithoutIssueNestedInput
@@ -381,10 +381,10 @@ export type IssueUncheckedUpdateInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutIssueNestedInput
@@ -398,10 +398,10 @@ export type IssueCreateManyInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId: string
   projectId: string
-  reportedBy: string
+  reportedBy?: string | null
   assignedTo?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -412,7 +412,7 @@ export type IssueUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -424,10 +424,10 @@ export type IssueUncheckedUpdateManyInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -692,7 +692,7 @@ export type IssueCreateWithoutReporterInput = {
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
@@ -711,7 +711,7 @@ export type IssueUncheckedCreateWithoutReporterInput = {
   projectId: string
   assignedTo?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutIssueInput
@@ -734,12 +734,12 @@ export type IssueCreateWithoutAssigneeInput = {
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
-  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  reporter?: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
   comments?: Prisma.CommentCreateNestedManyWithoutIssueInput
   media?: Prisma.IssueMediaCreateNestedManyWithoutIssueInput
 }
@@ -751,9 +751,9 @@ export type IssueUncheckedCreateWithoutAssigneeInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId: string
   projectId: string
-  reportedBy: string
+  reportedBy?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutIssueInput
@@ -796,10 +796,10 @@ export type IssueScalarWhereInput = {
   metadata?: Prisma.JsonNullableFilter<"Issue">
   statusId?: Prisma.StringFilter<"Issue"> | string
   projectId?: Prisma.StringFilter<"Issue"> | string
-  reportedBy?: Prisma.StringFilter<"Issue"> | string
+  reportedBy?: Prisma.StringNullableFilter<"Issue"> | string | null
   assignedTo?: Prisma.StringNullableFilter<"Issue"> | string | null
   assignedBy?: Prisma.StringNullableFilter<"Issue"> | string | null
-  modifiedBy?: Prisma.StringFilter<"Issue"> | string
+  modifiedBy?: Prisma.StringNullableFilter<"Issue"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
 }
@@ -826,11 +826,11 @@ export type IssueCreateWithoutProjectInput = {
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
-  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  reporter?: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
   assignee?: Prisma.UserCreateNestedOneWithoutAssignedIssuesInput
   comments?: Prisma.CommentCreateNestedManyWithoutIssueInput
   media?: Prisma.IssueMediaCreateNestedManyWithoutIssueInput
@@ -842,10 +842,10 @@ export type IssueUncheckedCreateWithoutProjectInput = {
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId: string
-  reportedBy: string
+  reportedBy?: string | null
   assignedTo?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutIssueInput
@@ -884,12 +884,12 @@ export type IssueCreateWithoutCommentsInput = {
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
-  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  reporter?: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
   assignee?: Prisma.UserCreateNestedOneWithoutAssignedIssuesInput
   media?: Prisma.IssueMediaCreateNestedManyWithoutIssueInput
 }
@@ -901,10 +901,10 @@ export type IssueUncheckedCreateWithoutCommentsInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId: string
   projectId: string
-  reportedBy: string
+  reportedBy?: string | null
   assignedTo?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   media?: Prisma.IssueMediaUncheckedCreateNestedManyWithoutIssueInput
@@ -932,12 +932,12 @@ export type IssueUpdateWithoutCommentsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
-  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneWithoutReportedIssuesNestedInput
   assignee?: Prisma.UserUpdateOneWithoutAssignedIssuesNestedInput
   media?: Prisma.IssueMediaUpdateManyWithoutIssueNestedInput
 }
@@ -949,10 +949,10 @@ export type IssueUncheckedUpdateWithoutCommentsInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   media?: Prisma.IssueMediaUncheckedUpdateManyWithoutIssueNestedInput
@@ -964,12 +964,12 @@ export type IssueCreateWithoutMediaInput = {
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   status: Prisma.StatusMasterCreateNestedOneWithoutIssuesInput
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
-  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  reporter?: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
   assignee?: Prisma.UserCreateNestedOneWithoutAssignedIssuesInput
   comments?: Prisma.CommentCreateNestedManyWithoutIssueInput
 }
@@ -981,10 +981,10 @@ export type IssueUncheckedCreateWithoutMediaInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId: string
   projectId: string
-  reportedBy: string
+  reportedBy?: string | null
   assignedTo?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutIssueInput
@@ -1012,12 +1012,12 @@ export type IssueUpdateWithoutMediaInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
-  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneWithoutReportedIssuesNestedInput
   assignee?: Prisma.UserUpdateOneWithoutAssignedIssuesNestedInput
   comments?: Prisma.CommentUpdateManyWithoutIssueNestedInput
 }
@@ -1029,10 +1029,10 @@ export type IssueUncheckedUpdateWithoutMediaInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutIssueNestedInput
@@ -1044,11 +1044,11 @@ export type IssueCreateWithoutStatusInput = {
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
-  reporter: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
+  reporter?: Prisma.UserCreateNestedOneWithoutReportedIssuesInput
   assignee?: Prisma.UserCreateNestedOneWithoutAssignedIssuesInput
   comments?: Prisma.CommentCreateNestedManyWithoutIssueInput
   media?: Prisma.IssueMediaCreateNestedManyWithoutIssueInput
@@ -1060,10 +1060,10 @@ export type IssueUncheckedCreateWithoutStatusInput = {
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   projectId: string
-  reportedBy: string
+  reportedBy?: string | null
   assignedTo?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutIssueInput
@@ -1105,7 +1105,7 @@ export type IssueCreateManyReporterInput = {
   projectId: string
   assignedTo?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1117,9 +1117,9 @@ export type IssueCreateManyAssigneeInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId: string
   projectId: string
-  reportedBy: string
+  reportedBy?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1130,7 +1130,7 @@ export type IssueUpdateWithoutReporterInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
@@ -1149,7 +1149,7 @@ export type IssueUncheckedUpdateWithoutReporterInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutIssueNestedInput
@@ -1165,7 +1165,7 @@ export type IssueUncheckedUpdateManyWithoutReporterInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1176,12 +1176,12 @@ export type IssueUpdateWithoutAssigneeInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
-  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneWithoutReportedIssuesNestedInput
   comments?: Prisma.CommentUpdateManyWithoutIssueNestedInput
   media?: Prisma.IssueMediaUpdateManyWithoutIssueNestedInput
 }
@@ -1193,9 +1193,9 @@ export type IssueUncheckedUpdateWithoutAssigneeInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutIssueNestedInput
@@ -1209,9 +1209,9 @@ export type IssueUncheckedUpdateManyWithoutAssigneeInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1222,10 +1222,10 @@ export type IssueCreateManyProjectInput = {
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId: string
-  reportedBy: string
+  reportedBy?: string | null
   assignedTo?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1236,11 +1236,11 @@ export type IssueUpdateWithoutProjectInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StatusMasterUpdateOneRequiredWithoutIssuesNestedInput
-  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneWithoutReportedIssuesNestedInput
   assignee?: Prisma.UserUpdateOneWithoutAssignedIssuesNestedInput
   comments?: Prisma.CommentUpdateManyWithoutIssueNestedInput
   media?: Prisma.IssueMediaUpdateManyWithoutIssueNestedInput
@@ -1252,10 +1252,10 @@ export type IssueUncheckedUpdateWithoutProjectInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId?: Prisma.StringFieldUpdateOperationsInput | string
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutIssueNestedInput
@@ -1268,10 +1268,10 @@ export type IssueUncheckedUpdateManyWithoutProjectInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   statusId?: Prisma.StringFieldUpdateOperationsInput | string
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1282,10 +1282,10 @@ export type IssueCreateManyStatusInput = {
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   projectId: string
-  reportedBy: string
+  reportedBy?: string | null
   assignedTo?: string | null
   assignedBy?: string | null
-  modifiedBy: string
+  modifiedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1296,11 +1296,11 @@ export type IssueUpdateWithoutStatusInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
-  reporter?: Prisma.UserUpdateOneRequiredWithoutReportedIssuesNestedInput
+  reporter?: Prisma.UserUpdateOneWithoutReportedIssuesNestedInput
   assignee?: Prisma.UserUpdateOneWithoutAssignedIssuesNestedInput
   comments?: Prisma.CommentUpdateManyWithoutIssueNestedInput
   media?: Prisma.IssueMediaUpdateManyWithoutIssueNestedInput
@@ -1312,10 +1312,10 @@ export type IssueUncheckedUpdateWithoutStatusInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutIssueNestedInput
@@ -1328,10 +1328,10 @@ export type IssueUncheckedUpdateManyWithoutStatusInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  reportedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reportedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1391,7 +1391,7 @@ export type IssueSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   updatedAt?: boolean
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
-  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.Issue$reporterArgs<ExtArgs>
   assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
   comments?: boolean | Prisma.Issue$commentsArgs<ExtArgs>
   media?: boolean | Prisma.Issue$mediaArgs<ExtArgs>
@@ -1413,7 +1413,7 @@ export type IssueSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   updatedAt?: boolean
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
-  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.Issue$reporterArgs<ExtArgs>
   assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
 }, ExtArgs["result"]["issue"]>
 
@@ -1432,7 +1432,7 @@ export type IssueSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   updatedAt?: boolean
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
-  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.Issue$reporterArgs<ExtArgs>
   assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
 }, ExtArgs["result"]["issue"]>
 
@@ -1455,7 +1455,7 @@ export type IssueOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
 export type IssueInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
-  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.Issue$reporterArgs<ExtArgs>
   assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
   comments?: boolean | Prisma.Issue$commentsArgs<ExtArgs>
   media?: boolean | Prisma.Issue$mediaArgs<ExtArgs>
@@ -1464,13 +1464,13 @@ export type IssueInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type IssueIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
-  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.Issue$reporterArgs<ExtArgs>
   assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
 }
 export type IssueIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   status?: boolean | Prisma.StatusMasterDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
-  reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  reporter?: boolean | Prisma.Issue$reporterArgs<ExtArgs>
   assignee?: boolean | Prisma.Issue$assigneeArgs<ExtArgs>
 }
 
@@ -1479,7 +1479,7 @@ export type $IssuePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   objects: {
     status: Prisma.$StatusMasterPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs>
-    reporter: Prisma.$UserPayload<ExtArgs>
+    reporter: Prisma.$UserPayload<ExtArgs> | null
     assignee: Prisma.$UserPayload<ExtArgs> | null
     comments: Prisma.$CommentPayload<ExtArgs>[]
     media: Prisma.$IssueMediaPayload<ExtArgs>[]
@@ -1491,10 +1491,10 @@ export type $IssuePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     metadata: runtime.JsonValue | null
     statusId: string
     projectId: string
-    reportedBy: string
+    reportedBy: string | null
     assignedTo: string | null
     assignedBy: string | null
-    modifiedBy: string
+    modifiedBy: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["issue"]>
@@ -1893,7 +1893,7 @@ export interface Prisma__IssueClient<T, Null = never, ExtArgs extends runtime.Ty
   readonly [Symbol.toStringTag]: "PrismaPromise"
   status<T extends Prisma.StatusMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StatusMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__StatusMasterClient<runtime.Types.Result.GetResult<Prisma.$StatusMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  reporter<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  reporter<T extends Prisma.Issue$reporterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$reporterArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   assignee<T extends Prisma.Issue$assigneeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$assigneeArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   comments<T extends Prisma.Issue$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   media<T extends Prisma.Issue$mediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$mediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IssueMediaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2336,6 +2336,25 @@ export type IssueDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Issues to delete.
    */
   limit?: number
+}
+
+/**
+ * Issue.reporter
+ */
+export type Issue$reporterArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

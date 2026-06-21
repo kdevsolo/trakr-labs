@@ -134,16 +134,16 @@ model Issue {
   metadata    Json?
   statusId    String
   projectId   String
-  reportedBy  String
+  reportedBy  String?
   assignedTo  String?
   assignedBy  String?
-  modifiedBy  String
+  modifiedBy  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   status   StatusMaster @relation(fields: [statusId], references: [id])
   project  Project      @relation(fields: [projectId], references: [id])
-  reporter User         @relation("IssueReporter", fields: [reportedBy], references: [id])
+  reporter User?        @relation("IssueReporter", fields: [reportedBy], references: [id])
   assignee User?        @relation("IssueAssignee", fields: [assignedTo], references: [id])
   comments Comment[]
   media    IssueMedia[]

@@ -7,6 +7,7 @@ import { getMemberPermissions, queryKeys } from '@/lib/api'
 import type { MemberPermissions, User } from '@/lib/api/types'
 import { useMe } from '@/hooks/api/use-me'
 import { useOrgMembers } from '@/hooks/api/use-org-members'
+import { useIsClient } from '@/hooks/use-is-client'
 
 import { AddMemberDrawer } from './AddMemberDrawer'
 import { MemberPermissionsDrawer } from './MemberPermissionsDrawer'
@@ -14,6 +15,7 @@ import { MembersTable } from './MembersTable'
 import { TeamHeader } from './TeamHeader'
 
 export function TeamView() {
+  const isClient = useIsClient()
   const { data: me } = useMe()
   const { data: members = [], isLoading: membersLoading } = useOrgMembers()
   const canManage = me?.isOrgAdmin ?? false
@@ -26,7 +28,7 @@ export function TeamView() {
     queries: members.map((member) => ({
       queryKey: queryKeys.permissions.member(member.id),
       queryFn: () => getMemberPermissions(member.id),
-      enabled: canManage && members.length > 0,
+      enabled: isClient && canManage && members.length > 0,
     })),
   })
 

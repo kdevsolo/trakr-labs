@@ -4,6 +4,7 @@ export * from "./types";
 export * from "./health";
 export * from "./users";
 export * from "./issues";
+export * from "./organization";
 export * from "./permissions";
 export * from "./projects";
 export * from "./widget";

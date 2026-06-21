@@ -24,6 +24,11 @@ export const queryKeys = {
     all: () => [...queryKeys.all, "projects"] as const,
     list: () => [...queryKeys.projects.all(), "list"] as const,
   },
+  organizations: {
+    all: () => [...queryKeys.all, "organizations"] as const,
+    statusMaster: () =>
+      [...queryKeys.organizations.all(), "status-master"] as const,
+  },
   widget: {
     config: (projectId: string) =>
       [...queryKeys.all, "widget", projectId] as const,

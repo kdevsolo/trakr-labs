@@ -63,4 +63,13 @@ export class OrganizationsService {
   remove(id: number) {
     return `This action removes a #${id} organization`;
   }
+
+  async getStatusMaster(orgId: string) {
+    return this.prisma.statusMaster.findMany({
+      where: { orgId },
+      orderBy: {
+        sortOrder: 'asc',
+      },
+    });
+  }
 }

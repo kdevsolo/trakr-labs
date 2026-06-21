@@ -1,5 +1,10 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
+import { TableFilter } from "@/components/shared/TableFilter";
+import { TablePagination } from "@/components/shared/TablePagination";
+import { usePagination } from "@/hooks/use-pagination";
 import { cn } from "@/lib/utils";
 
 import { StatusBadge } from "./StatusBadge";
@@ -7,6 +12,7 @@ import type { IssueWithStatus } from "./types";
 
 type IssueTableProps = {
   issues: IssueWithStatus[];
+  projectKey?: string;
   selectedIssueId: string | null;
   onSelectIssue: (issue: IssueWithStatus) => void;
   isLoading?: boolean;
@@ -22,20 +28,95 @@ function formatDate(value: string) {
   return Number.isNaN(date.getTime()) ? "—" : DATE_FORMAT.format(date);
 }
 
-function truncate(value: string | null | undefined, maxLength = 60) {
-  if (!value) return "—";
-  return value.length > maxLength ? `${value.slice(0, maxLength)}…` : value;
+function formatRelativeTime(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  const diffMs = Date.now() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+  if (diffHours < 1) return "Just now";
+  if (diffHours < 24) {
+    return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+  }
+
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) {
+    return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
+  }
+
+  return formatDate(value);
+}
+
+function formatIssueKey(projectKey: string | undefined, issueId: string) {
+  const prefix = (projectKey ?? "ISSUE").toUpperCase().slice(0, 6);
+  const suffix = issueId.replace(/-/g, "").slice(-3).toUpperCase() || "001";
+  return `${prefix}-${suffix}`;
 }
 
 export function IssueTable({
   issues,
+  projectKey,
   selectedIssueId,
   onSelectIssue,
   isLoading = false,
 }: IssueTableProps) {
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [assigneeFilter, setAssigneeFilter] = useState("all");
+
+  const statusOptions = useMemo(() => {
+    const statuses = new Set(
+      issues.map((issue) => issue.status?.title ?? "Unknown"),
+    );
+    return [
+      { value: "all", label: "All" },
+      ...Array.from(statuses).map((status) => ({ value: status, label: status })),
+    ];
+  }, [issues]);
+
+  const assigneeOptions = useMemo(() => {
+    const assignees = new Set<string>();
+    for (const issue of issues) {
+      assignees.add(
+        issue.assignee?.name ??
+          (issue.assignedTo ? issue.assignedTo : "Unassigned"),
+      );
+    }
+    return [
+      { value: "all", label: "All" },
+      ...Array.from(assignees).map((assignee) => ({
+        value: assignee,
+        label: assignee,
+      })),
+    ];
+  }, [issues]);
+
+  const filteredIssues = useMemo(() => {
+    return issues.filter((issue) => {
+      const status = issue.status?.title ?? "Unknown";
+      const assignee =
+        issue.assignee?.name ??
+        (issue.assignedTo ? issue.assignedTo : "Unassigned");
+
+      if (statusFilter !== "all" && status !== statusFilter) return false;
+      if (assigneeFilter !== "all" && assignee !== assigneeFilter) return false;
+      return true;
+    });
+  }, [issues, statusFilter, assigneeFilter]);
+
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    rangeStart,
+    rangeEnd,
+    paginatedItems,
+  } = usePagination(filteredIssues, { pageSize: 8 });
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center rounded-lg border border-border bg-white py-16">
+      <div className="flex flex-1 items-center justify-center rounded-lg border border-border bg-white">
         <p className="text-sm text-muted-foreground">Loading issues…</p>
       </div>
     );
@@ -43,7 +124,7 @@ export function IssueTable({
 
   if (issues.length === 0) {
     return (
-      <div className="flex items-center justify-center rounded-lg border border-border bg-white py-16">
+      <div className="flex flex-1 items-center justify-center rounded-lg border border-border bg-white">
         <p className="text-sm text-muted-foreground">
           No issues found for this project.
         </p>
@@ -52,99 +133,125 @@ export function IssueTable({
   }
 
   return (
-    <div className="rounded-lg border border-border bg-white">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[960px] text-sm">
-          <thead>
-            <tr className="border-b border-border bg-muted/40">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-white">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
+        <TableFilter
+          label="Status"
+          value={statusFilter}
+          options={statusOptions}
+          onChange={setStatusFilter}
+        />
+        <TableFilter
+          label="Assignee"
+          value={assigneeFilter}
+          options={assigneeOptions}
+          onChange={setAssigneeFilter}
+        />
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-auto">
+        <table className="w-full min-w-[720px] text-sm">
+          <thead className="sticky top-0 z-10 bg-white">
+            <tr className="border-b border-border">
               <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Title
+                Key
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Description
+                Summary
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Status
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Reported By
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Assigned To
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Created
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Updated
+                Assignee
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
-            {issues.map((issue) => (
-              <IssueRow
-                key={issue.id}
-                issue={issue}
-                isSelected={selectedIssueId === issue.id}
-                onClick={() => onSelectIssue(issue)}
-              />
-            ))}
+          <tbody>
+            {paginatedItems.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={4}
+                  className="px-4 py-12 text-center text-sm text-muted-foreground"
+                >
+                  No issues match the selected filters.
+                </td>
+              </tr>
+            ) : (
+              paginatedItems.map((issue) => (
+                <IssueRow
+                  key={issue.id}
+                  issue={issue}
+                  issueKey={formatIssueKey(projectKey, issue.id)}
+                  isSelected={selectedIssueId === issue.id}
+                  onClick={() => onSelectIssue(issue)}
+                />
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
-      <div className="flex items-center justify-between border-t border-border px-4 py-3">
-        <p className="text-sm text-muted-foreground">
-          Showing {issues.length} issue{issues.length === 1 ? "" : "s"}
-        </p>
-      </div>
+      <TablePagination
+        page={page}
+        totalPages={totalPages}
+        rangeStart={rangeStart}
+        rangeEnd={rangeEnd}
+        totalItems={totalItems}
+        onPageChange={setPage}
+        itemLabel="issue"
+      />
     </div>
   );
 }
 
 type IssueRowProps = {
   issue: IssueWithStatus;
+  issueKey: string;
   isSelected: boolean;
   onClick: () => void;
 };
 
-function IssueRow({ issue, isSelected, onClick }: IssueRowProps) {
+function IssueRow({ issue, issueKey, isSelected, onClick }: IssueRowProps) {
+  const assignee =
+    issue.assignee?.name ??
+    (issue.assignedTo ? issue.assignedTo : "Unassigned");
+
   return (
     <tr
       onClick={onClick}
       className={cn(
-        "cursor-pointer transition-colors hover:bg-muted/30",
-        isSelected && "bg-primary/5 hover:bg-primary/5",
+        "cursor-pointer border-b border-border transition-colors hover:bg-muted/20",
+        isSelected && "border-l-4 border-l-primary bg-primary/5 hover:bg-primary/5",
+        !isSelected && "border-l-4 border-l-transparent",
       )}
     >
-      <td className="max-w-xs px-4 py-3.5">
-        <span
+      <td className="px-4 py-3.5 font-mono text-xs font-medium text-muted-foreground">
+        {issueKey}
+      </td>
+      <td className="max-w-md px-4 py-3.5">
+        <p
           className={cn(
             "truncate font-medium text-foreground",
             isSelected && "text-primary",
           )}
         >
           {issue.title}
-        </span>
-      </td>
-      <td className="max-w-sm px-4 py-3.5 text-muted-foreground">
-        {truncate(issue.description)}
+        </p>
+        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+          {issue.description ?? "No description"}
+        </p>
       </td>
       <td className="px-4 py-3.5">
         <StatusBadge status={issue.status?.title ?? "Unknown"} />
       </td>
       <td className="px-4 py-3.5 text-muted-foreground">
-        {issue.reporter?.name ?? issue.reportedBy ?? "—"}
-      </td>
-      <td className="px-4 py-3.5 text-muted-foreground">
-        {issue.assignee?.name ?? (issue.assignedTo ? issue.assignedTo : "Unassigned")}
-      </td>
-      <td className="px-4 py-3.5 text-muted-foreground">
-        {formatDate(issue.createdAt)}
-      </td>
-      <td className="px-4 py-3.5 text-muted-foreground">
-        {formatDate(issue.updatedAt)}
+        <span className={assignee === "Unassigned" ? "italic" : undefined}>
+          {assignee}
+        </span>
       </td>
     </tr>
   );
 }
+
+export { formatRelativeTime, formatIssueKey };

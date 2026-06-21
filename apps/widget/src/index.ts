@@ -1,3 +1,4 @@
+import { installContextCapture } from '@trakr/widget-ui';
 import { mountWidget } from './mount';
 
 declare global {
@@ -40,6 +41,8 @@ function autoMount() {
     );
     return;
   }
+
+  installContextCapture({ apiUrl });
 
   const host = document.createElement('div');
   host.id = 'trakr-widget-root';

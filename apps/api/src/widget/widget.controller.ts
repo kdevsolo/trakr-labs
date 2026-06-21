@@ -6,13 +6,14 @@ import {
   type RequestUploadUrlInput,
   type SubmitFeedbackInput,
 } from '@trakr/schemas';
+import type { Request } from 'express';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
 import { WidgetAuthGuard } from './guards/widget-auth.guard';
 import { WidgetProjectContext } from './interfaces/widget-project-context.interface';
 import { WidgetService } from './widget.service';
 
-type WidgetRequest = {
+type WidgetRequest = Request & {
   widgetProject: WidgetProjectContext;
 };
 
@@ -39,6 +40,9 @@ export class WidgetController {
     @Body(new ZodValidationPipe(SubmitFeedbackSchema))
     dto: SubmitFeedbackInput,
   ) {
-    return this.widgetService.submitFeedback(request.widgetProject, dto);
+    const userAgent = request.headers['user-agent'];
+    return this.widgetService.submitFeedback(request.widgetProject, dto, {
+      userAgent: typeof userAgent === 'string' ? userAgent : undefined,
+    });
   }
 }

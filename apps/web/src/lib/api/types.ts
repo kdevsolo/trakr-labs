@@ -4,6 +4,8 @@ export type HealthResponse = {
 };
 
 export type {
+  ApiErrorResponse,
+  ApiSuccessResponse,
   CreateIssueInput,
   CreateOrganizationInput,
   InviteUserInput,
@@ -14,6 +16,7 @@ export type {
   Organization,
   PermissionGrant,
   Project,
+  StatusMaster,
   UpdateIssueInput,
   UpdateProfileInput,
   User,

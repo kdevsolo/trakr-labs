@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build && vite build --watch & vite",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "vite preview --port 5173",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

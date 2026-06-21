@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
   disableWidget,
@@ -7,9 +7,10 @@ import {
   queryKeys,
   rotateWidgetSecret,
 } from "@/lib/api";
+import { useClientQuery } from "@/hooks/use-client-query";
 
 export function useWidgetConfig(projectId: string) {
-  return useQuery({
+  return useClientQuery({
     queryKey: queryKeys.widget.config(projectId),
     queryFn: () => getWidgetConfig(projectId),
     enabled: Boolean(projectId),

@@ -22,15 +22,11 @@ export function TeamHeader({
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Team
           </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Manage team members and their permissions.
+          <p className="mt-1 text-sm text-muted-foreground">
+            {memberCount > 0
+              ? `${memberCount} member${memberCount === 1 ? '' : 's'} in your organization.`
+              : 'Manage team members and their permissions.'}
           </p>
-          {memberCount > 0 && (
-            <p className="mt-1 text-xs text-muted-foreground">
-              {memberCount} member{memberCount === 1 ? '' : 's'} in your
-              organization
-            </p>
-          )}
         </div>
 
         {canManage && (

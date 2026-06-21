@@ -2,12 +2,15 @@
 
 import Sidebar from "./Sidebar";
 import TopNav from "./TopNav";
+import { useLoadStatusMaster } from "@/hooks/api/use-status-master";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
 };
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  useLoadStatusMaster();
+
   return (
     <div className="flex h-screen overflow-hidden bg-[#f8f9fb]">
       <Sidebar />

@@ -13,6 +13,8 @@ import {
 
 import { StatusBadge } from "./StatusBadge";
 import type { IssueWithStatus } from "./types";
+import { getIssueReporterDisplay } from "./reporter-display";
+import { WidgetTechnicalDetails } from "./WidgetTechnicalDetails";
 
 type IssueDrawerProps = {
   issue: IssueWithStatus | null;
@@ -69,7 +71,7 @@ function IssueDrawerBody({
         <div className="grid grid-cols-2 gap-x-4 gap-y-4 border-b border-border px-5 py-4">
           <MetaField
             label="Reported by"
-            value={issue.reporter?.name ?? issue.reportedBy ?? "—"}
+            value={getIssueReporterDisplay(issue)}
           />
           <MetaField
             label="Assigned to"
@@ -111,6 +113,8 @@ function IssueDrawerBody({
               </ul>
             </Section>
           )}
+
+          <WidgetTechnicalDetails metadata={issue.metadata} />
         </div>
       </div>
 

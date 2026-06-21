@@ -9,6 +9,7 @@ import {
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { AuthenticatedUser } from 'src/auth/interfaces/authenticated-user.interface';
+import { requireOrgId } from 'src/auth/utils/require-org-id';
 
 @Controller('organizations')
 export class OrganizationsController {
@@ -26,6 +27,11 @@ export class OrganizationsController {
   @Get()
   findAll() {
     return this.organizationsService.findAll();
+  }
+
+  @Get('status-master')
+  getStatusMaster(@CurrentUser() user: AuthenticatedUser) {
+    return this.organizationsService.getStatusMaster(requireOrgId(user.orgId));
   }
 
   @Get(':id')
