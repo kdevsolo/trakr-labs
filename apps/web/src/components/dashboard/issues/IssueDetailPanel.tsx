@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useUpdateIssue } from "@/hooks/api/use-issues";
 
 import { formatIssueKey, formatRelativeTime } from "./IssueTable";
+import { IssueAssigneeSelect } from "./IssueAssigneeSelect";
+import { IssueComments } from "./IssueComments";
 import { IssueStatusSelect } from "./IssueStatusSelect";
 import type { IssueWithStatus } from "./types";
 import { getIssueReporterDisplay } from "./reporter-display";
@@ -29,15 +31,25 @@ export function IssueDetailPanel({
   const updateIssue = useUpdateIssue(projectId);
 
   const issueKey = formatIssueKey(projectKey, issue.id);
-  const assignee =
-    issue.assignee?.name ??
-    (issue.assignedTo ? issue.assignedTo : "Unassigned");
 
   function handleStatusChange(statusId: string) {
     if (statusId === issue.statusId) return;
 
     updateIssue.mutate(
       { issueId: issue.id, input: { statusId } },
+      {
+        onSuccess: (updatedIssue) => {
+          onIssueUpdated?.(updatedIssue);
+        },
+      },
+    );
+  }
+
+  function handleAssigneeChange(assignedTo: string | null) {
+    if (assignedTo === issue.assignedTo) return;
+
+    updateIssue.mutate(
+      { issueId: issue.id, input: { assignedTo } },
       {
         onSuccess: (updatedIssue) => {
           onIssueUpdated?.(updatedIssue);
@@ -66,12 +78,12 @@ export function IssueDetailPanel({
         </div>
 
         <div className="flex items-center gap-1">
-          <IconButton aria-label="Copy issue link">
+          {/* <IconButton aria-label="Copy issue link">
             <LinkIcon className="size-3.5" />
           </IconButton>
           <IconButton aria-label="Open issue">
             <ExternalLinkIcon className="size-3.5" />
-          </IconButton>
+          </IconButton> */}
           <IconButton aria-label="Close issue panel" onClick={onClose}>
             <XIcon className="size-3.5" />
           </IconButton>
@@ -83,9 +95,11 @@ export function IssueDetailPanel({
           <MetaField
             label="Assignee"
             value={
-              <span className={assignee === "Unassigned" ? "italic" : undefined}>
-                {assignee}
-              </span>
+              <IssueAssigneeSelect
+                value={issue.assignedTo}
+                onValueChange={handleAssigneeChange}
+                disabled={updateIssue.isPending}
+              />
             }
           />
           <MetaField
@@ -130,17 +144,19 @@ export function IssueDetailPanel({
           )}
 
           <WidgetTechnicalDetails metadata={issue.metadata} />
+
+          <IssueComments projectId={projectId} issueId={issue.id} />
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2 border-t border-border px-5 py-4">
+      {/* <div className="flex shrink-0 items-center gap-2 border-t border-border px-5 py-4">
         <Button variant="outline" size="sm" className="flex-1" onClick={onClose}>
           Acknowledge
         </Button>
         <Button size="sm" className="flex-1">
           Start Progress
         </Button>
-      </div>
+      </div> */}
     </aside>
   );
 }

@@ -9,7 +9,7 @@ export function useInviteMember() {
   return useMutation({
     mutationFn: (input: InviteUserInput) => inviteOrgMember(input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.members() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.membersPrefix() });
     },
   });
 }

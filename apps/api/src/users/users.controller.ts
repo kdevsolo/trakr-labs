@@ -5,17 +5,22 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
   CreateOrganizationSchema,
   InviteUserSchema,
+  PaginationQuerySchema,
   UpdateMemberSchema,
   UpdateProfileSchema,
+  AcceptTermsSchema,
   type CreateOrganizationInput,
   type InviteUserInput,
+  type PaginationQuery,
   type UpdateMemberInput,
   type UpdateProfileInput,
+  type AcceptTermsInput,
 } from '@trakr/schemas';
 import {
   PermissionAction,
@@ -26,6 +31,7 @@ import { OrgAdminOnly } from '../auth/decorators/org-admin.decorator';
 import { RequirePermission } from '../auth/decorators/require-permission.decorator';
 import { OrgAdminGuard } from '../auth/guards/org-admin.guard';
 import { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
+import { PermissionsService } from '../auth/permissions.service';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { requireOrgId } from '../auth/utils/require-org-id';
@@ -33,12 +39,24 @@ import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 
 @Controller()
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly permissionsService: PermissionsService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('users/me')
   getMe(@CurrentUser() user: AuthenticatedUser) {
     return this.usersService.getMe(user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('users/me/permissions')
+  getMyPermissions(@CurrentUser() user: AuthenticatedUser) {
+    return this.permissionsService.getMemberPermissions(
+      requireOrgId(user.orgId),
+      user.id,
+    );
   }
 
   @Patch('users/me')
@@ -50,10 +68,24 @@ export class UsersController {
     return this.usersService.updateProfile(user.id, dto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Patch('users/me/terms')
+  acceptTerms(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(AcceptTermsSchema))
+    _dto: AcceptTermsInput,
+  ) {
+    return this.usersService.acceptTerms(user.id);
+  }
+
   @Get('org/members')
   @RequirePermission(PermissionResource.USER, PermissionAction.READ)
-  listMembers(@CurrentUser() user: AuthenticatedUser) {
-    return this.usersService.listByOrg(requireOrgId(user.orgId));
+  listMembers(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query(new ZodValidationPipe(PaginationQuerySchema))
+    query: PaginationQuery,
+  ) {
+    return this.usersService.listByOrg(requireOrgId(user.orgId), query);
   }
 
   @Get('org/members/:userId')

@@ -1,21 +1,34 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { TableFilter } from "@/components/shared/TableFilter";
 import { TablePagination } from "@/components/shared/TablePagination";
-import { usePagination } from "@/hooks/use-pagination";
+import type { PaginationMeta } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { useOrgMembersStore } from "@/stores/use-org-members-store";
+import { useStatusStore } from "@/stores/use-status-store";
 
 import { StatusBadge } from "./StatusBadge";
 import type { IssueWithStatus } from "./types";
 
+const ALL_FILTER = "all";
+const UNASSIGNED_FILTER = "unassigned";
+
 type IssueTableProps = {
   issues: IssueWithStatus[];
+  meta: PaginationMeta;
   projectKey?: string;
   selectedIssueId: string | null;
   onSelectIssue: (issue: IssueWithStatus) => void;
   isLoading?: boolean;
+  canCreateIssue?: boolean;
+  onCreateIssue?: () => void;
+  statusFilter: string;
+  assigneeFilter: string;
+  onStatusFilterChange: (value: string) => void;
+  onAssigneeFilterChange: (value: string) => void;
+  onPageChange: (page: number) => void;
 };
 
 const DATE_FORMAT = new Intl.DateTimeFormat(undefined, {
@@ -56,63 +69,48 @@ function formatIssueKey(projectKey: string | undefined, issueId: string) {
 
 export function IssueTable({
   issues,
+  meta,
   projectKey,
   selectedIssueId,
   onSelectIssue,
   isLoading = false,
+  canCreateIssue = false,
+  onCreateIssue,
+  statusFilter,
+  assigneeFilter,
+  onStatusFilterChange,
+  onAssigneeFilterChange,
+  onPageChange,
 }: IssueTableProps) {
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [assigneeFilter, setAssigneeFilter] = useState("all");
+  const activeStatuses = useStatusStore((state) => state.activeStatuses);
+  const members = useOrgMembersStore((state) => state.members);
 
-  const statusOptions = useMemo(() => {
-    const statuses = new Set(
-      issues.map((issue) => issue.status?.title ?? "Unknown"),
-    );
-    return [
-      { value: "all", label: "All" },
-      ...Array.from(statuses).map((status) => ({ value: status, label: status })),
-    ];
-  }, [issues]);
-
-  const assigneeOptions = useMemo(() => {
-    const assignees = new Set<string>();
-    for (const issue of issues) {
-      assignees.add(
-        issue.assignee?.name ??
-          (issue.assignedTo ? issue.assignedTo : "Unassigned"),
-      );
-    }
-    return [
-      { value: "all", label: "All" },
-      ...Array.from(assignees).map((assignee) => ({
-        value: assignee,
-        label: assignee,
+  const statusOptions = useMemo(
+    () => [
+      { value: ALL_FILTER, label: "All" },
+      ...activeStatuses.map((status) => ({
+        value: status.id,
+        label: status.title,
       })),
-    ];
-  }, [issues]);
+    ],
+    [activeStatuses],
+  );
 
-  const filteredIssues = useMemo(() => {
-    return issues.filter((issue) => {
-      const status = issue.status?.title ?? "Unknown";
-      const assignee =
-        issue.assignee?.name ??
-        (issue.assignedTo ? issue.assignedTo : "Unassigned");
+  const assigneeOptions = useMemo(
+    () => [
+      { value: ALL_FILTER, label: "All" },
+      { value: UNASSIGNED_FILTER, label: "Unassigned" },
+      ...[...members]
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((member) => ({ value: member.id, label: member.name })),
+    ],
+    [members],
+  );
 
-      if (statusFilter !== "all" && status !== statusFilter) return false;
-      if (assigneeFilter !== "all" && assignee !== assigneeFilter) return false;
-      return true;
-    });
-  }, [issues, statusFilter, assigneeFilter]);
-
-  const {
-    page,
-    setPage,
-    totalPages,
-    totalItems,
-    rangeStart,
-    rangeEnd,
-    paginatedItems,
-  } = usePagination(filteredIssues, { pageSize: 8 });
+  const totalPages = Math.max(1, Math.ceil(meta.total / meta.pageSize));
+  const rangeStart =
+    meta.total === 0 ? 0 : (meta.page - 1) * meta.pageSize + 1;
+  const rangeEnd = Math.min(meta.page * meta.pageSize, meta.total);
 
   if (isLoading) {
     return (
@@ -122,12 +120,37 @@ export function IssueTable({
     );
   }
 
-  if (issues.length === 0) {
+  if (meta.total === 0) {
     return (
-      <div className="flex flex-1 items-center justify-center rounded-lg border border-border bg-white">
-        <p className="text-sm text-muted-foreground">
-          No issues found for this project.
-        </p>
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-white">
+        <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
+          <TableFilter
+            label="Status"
+            value={statusFilter}
+            options={statusOptions}
+            onChange={onStatusFilterChange}
+          />
+          <TableFilter
+            label="Assignee"
+            value={assigneeFilter}
+            options={assigneeOptions}
+            onChange={onAssigneeFilterChange}
+          />
+        </div>
+        <div className="flex flex-1 flex-col items-center justify-center gap-2">
+          <p className="text-sm text-muted-foreground">
+            No issues found for this project.
+          </p>
+          {canCreateIssue && onCreateIssue ? (
+            <button
+              type="button"
+              onClick={onCreateIssue}
+              className="text-sm font-medium text-primary hover:underline"
+            >
+              Create issue
+            </button>
+          ) : null}
+        </div>
       </div>
     );
   }
@@ -139,13 +162,13 @@ export function IssueTable({
           label="Status"
           value={statusFilter}
           options={statusOptions}
-          onChange={setStatusFilter}
+          onChange={onStatusFilterChange}
         />
         <TableFilter
           label="Assignee"
           value={assigneeFilter}
           options={assigneeOptions}
-          onChange={setAssigneeFilter}
+          onChange={onAssigneeFilterChange}
         />
       </div>
 
@@ -168,17 +191,17 @@ export function IssueTable({
             </tr>
           </thead>
           <tbody>
-            {paginatedItems.length === 0 ? (
+            {issues.length === 0 ? (
               <tr>
                 <td
                   colSpan={4}
                   className="px-4 py-12 text-center text-sm text-muted-foreground"
                 >
-                  No issues match the selected filters.
+                  No issues on this page.
                 </td>
               </tr>
             ) : (
-              paginatedItems.map((issue) => (
+              issues.map((issue) => (
                 <IssueRow
                   key={issue.id}
                   issue={issue}
@@ -193,12 +216,12 @@ export function IssueTable({
       </div>
 
       <TablePagination
-        page={page}
+        page={meta.page}
         totalPages={totalPages}
         rangeStart={rangeStart}
         rangeEnd={rangeEnd}
-        totalItems={totalItems}
-        onPageChange={setPage}
+        totalItems={meta.total}
+        onPageChange={onPageChange}
         itemLabel="issue"
       />
     </div>

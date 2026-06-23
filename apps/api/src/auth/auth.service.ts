@@ -43,11 +43,21 @@ export class AuthService {
       payload.user_metadata?.full_name ??
       email.split('@')[0];
 
+    const tncAcceptedAt = payload.user_metadata?.tnc_accepted_at;
+    const tncData =
+      tncAcceptedAt && !Number.isNaN(Date.parse(tncAcceptedAt))
+        ? {
+            tncAccepted: true,
+            tncAcceptingTimestamp: new Date(tncAcceptedAt),
+          }
+        : {};
+
     return this.prisma.user.create({
       data: {
         id: payload.sub,
         email,
         name,
+        ...tncData,
       },
       include: { permissions: true },
     });

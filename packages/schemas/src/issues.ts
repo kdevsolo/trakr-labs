@@ -1,6 +1,20 @@
 import * as z from 'zod';
 
+import { PaginationQuerySchema } from './pagination';
 import { FeedbackContextSchema } from './widget';
+
+const uuidSchema = z.string().uuid();
+
+export const ListIssuesQuerySchema = PaginationQuerySchema.extend({
+  statusId: uuidSchema.optional(),
+  assignedTo: z
+    .string()
+    .refine(
+      (value) => value === 'unassigned' || uuidSchema.safeParse(value).success,
+      { message: 'assignedTo must be a UUID or "unassigned"' },
+    )
+    .optional(),
+});
 
 export const IssueUserSummarySchema = z.object({
   id: z.string(),
@@ -71,6 +85,7 @@ export const WidgetIssueMetadataSchema = z.object({
     .optional(),
 });
 
+export type ListIssuesQuery = z.infer<typeof ListIssuesQuerySchema>;
 export type CreateIssueInput = z.infer<typeof CreateIssueSchema>;
 export type UpdateIssueInput = z.infer<typeof UpdateIssueSchema>;
 export type Issue = z.infer<typeof IssueSchema>;

@@ -7,5 +7,6 @@ export interface JwtPayload {
   user_metadata?: {
     name?: string;
     full_name?: string;
+    tnc_accepted_at?: string;
   };
 }

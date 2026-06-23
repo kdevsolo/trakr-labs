@@ -1198,6 +1198,8 @@ export const UserScalarFieldEnum = {
   email: 'email',
   orgId: 'orgId',
   isOrgAdmin: 'isOrgAdmin',
+  tncAccepted: 'tncAccepted',
+  tncAcceptingTimestamp: 'tncAcceptingTimestamp',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

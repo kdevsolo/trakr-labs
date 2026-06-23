@@ -8,6 +8,7 @@ import {
   resolveNextPath,
 } from "@/lib/auth/callback";
 import { createClient } from "@/utils/supabase/client";
+import { persistTermsAcceptance } from "@/app/auth/actions";
 
 export function AuthCallbackHandler() {
   const router = useRouter();
@@ -44,6 +45,8 @@ export function AuthCallbackHandler() {
             return;
           }
 
+          await persistTermsAcceptance();
+
           window.history.replaceState(
             null,
             "",
@@ -64,6 +67,8 @@ export function AuthCallbackHandler() {
           router.replace("/auth/login?error=auth_callback_failed");
           return;
         }
+
+        await persistTermsAcceptance();
 
         router.replace(resolveNextPath(next));
         return;

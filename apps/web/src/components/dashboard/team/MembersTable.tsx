@@ -4,38 +4,36 @@ import { Loader2 } from 'lucide-react'
 
 import { TablePagination } from '@/components/shared/TablePagination'
 import { Button } from '@/components/ui/button'
-import { usePagination } from '@/hooks/use-pagination'
-import type { MemberPermissions, User } from '@/lib/api/types'
+import type { MemberPermissions, PaginationMeta, User } from '@/lib/api/types'
 import { orgRoleLabel } from '@/lib/permissions/org-role'
 
 import { OrgAccessBadge } from './OrgAccessBadge'
 
 type MembersTableProps = {
   members: User[]
+  meta: PaginationMeta
   permissionsByUserId: Record<string, MemberPermissions | undefined>
   permissionsLoading: boolean
   canManage: boolean
   onManage: (member: User) => void
   onAddMember?: () => void
+  onPageChange: (page: number) => void
 }
 
 export function MembersTable({
   members,
+  meta,
   permissionsByUserId,
   permissionsLoading,
   canManage,
   onManage,
   onAddMember,
+  onPageChange,
 }: MembersTableProps) {
-  const {
-    page,
-    setPage,
-    totalPages,
-    totalItems,
-    rangeStart,
-    rangeEnd,
-    paginatedItems,
-  } = usePagination(members, { pageSize: 8 });
+  const totalPages = Math.max(1, Math.ceil(meta.total / meta.pageSize))
+  const rangeStart =
+    meta.total === 0 ? 0 : (meta.page - 1) * meta.pageSize + 1
+  const rangeEnd = Math.min(meta.page * meta.pageSize, meta.total)
 
   if (permissionsLoading && members.length > 0) {
     return (
@@ -45,7 +43,7 @@ export function MembersTable({
     )
   }
 
-  if (members.length === 0) {
+  if (meta.total === 0) {
     return (
       <div className="rounded-lg border border-border bg-white px-6 py-16 text-center">
         <p className="text-sm font-medium text-foreground">
@@ -89,7 +87,7 @@ export function MembersTable({
             </tr>
           </thead>
           <tbody>
-            {paginatedItems.map((member) => {
+            {members.map((member) => {
               const permissions = permissionsByUserId[member.id]
               const projectCount = permissions
                 ? Object.keys(permissions.byProject).length
@@ -139,12 +137,12 @@ export function MembersTable({
       </div>
 
       <TablePagination
-        page={page}
+        page={meta.page}
         totalPages={totalPages}
         rangeStart={rangeStart}
         rangeEnd={rangeEnd}
-        totalItems={totalItems}
-        onPageChange={setPage}
+        totalItems={meta.total}
+        onPageChange={onPageChange}
         itemLabel="member"
       />
     </div>

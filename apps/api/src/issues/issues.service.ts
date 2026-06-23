@@ -1,5 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { CreateIssueInput, UpdateIssueInput } from '@trakr/schemas';
+import type {
+  CreateIssueInput,
+  ListIssuesQuery,
+  UpdateIssueInput,
+} from '@trakr/schemas';
 import { withSignedIssueMedia, withSignedIssueMediaList } from '../widget/utils/widget-storage';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -14,16 +18,35 @@ const issueInclude = {
 export class IssuesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async list(projectId: string, orgId: string) {
+  async list(projectId: string, orgId: string, query: ListIssuesQuery) {
     await this.assertProjectInOrg(projectId, orgId);
 
-    return withSignedIssueMediaList(
-      await this.prisma.issue.findMany({
-        where: { projectId },
+    const { page, pageSize, statusId, assignedTo } = query;
+    const skip = (page - 1) * pageSize;
+
+    const where = {
+      projectId,
+      ...(statusId && { statusId }),
+      ...(assignedTo === 'unassigned'
+        ? { assignedTo: null }
+        : assignedTo && { assignedTo }),
+    };
+
+    const [items, total] = await Promise.all([
+      this.prisma.issue.findMany({
+        where,
         include: issueInclude,
         orderBy: { createdAt: 'desc' },
+        skip,
+        take: pageSize,
       }),
-    );
+      this.prisma.issue.count({ where }),
+    ]);
+
+    return {
+      items: await withSignedIssueMediaList(items),
+      meta: { page, pageSize, total },
+    };
   }
 
   async create(

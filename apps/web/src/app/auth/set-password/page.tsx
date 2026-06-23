@@ -7,6 +7,7 @@ import { updatePassword } from "@/app/auth/actions";
 import { AuthFieldLabel } from "@/components/auth/auth-field-label";
 import { AuthFormCard } from "@/components/auth/auth-form-card";
 import { AuthMessage } from "@/components/auth/auth-message";
+import { AuthTermsAcceptance } from "@/components/auth/auth-terms-acceptance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
@@ -17,6 +18,7 @@ export default function SetPasswordPage() {
     "error",
   );
   const [pending, setPending] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [sessionChecked, setSessionChecked] = useState(false);
   const [hasSession, setHasSession] = useState(false);
 
@@ -47,6 +49,12 @@ export default function SetPasswordPage() {
     if (password.length < 8) {
       setMessageVariant("error");
       setMessage("Password must be at least 8 characters.");
+      return;
+    }
+
+    if (!termsAccepted) {
+      setMessageVariant("error");
+      setMessage("You must accept the Terms of Service and Privacy Policy.");
       return;
     }
 
@@ -130,6 +138,12 @@ export default function SetPasswordPage() {
               />
             </div>
 
+            <AuthTermsAcceptance
+              checked={termsAccepted}
+              onCheckedChange={setTermsAccepted}
+              disabled={pending}
+            />
+
             {message && (
               <AuthMessage message={message} variant={messageVariant} />
             )}
@@ -137,7 +151,7 @@ export default function SetPasswordPage() {
             <Button
               type="submit"
               className="h-11 w-full text-base"
-              disabled={pending}
+              disabled={pending || !termsAccepted}
             >
               {pending ? "Saving password…" : "Continue to dashboard"}
             </Button>

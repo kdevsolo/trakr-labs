@@ -37,14 +37,26 @@ function GitHubIcon() {
   );
 }
 
-export function AuthSocialButtons() {
+export function AuthSocialButtons({
+  requireTermsAcceptance = false,
+  termsAccepted = false,
+}: {
+  requireTermsAcceptance?: boolean;
+  termsAccepted?: boolean;
+}) {
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState<"google" | "github" | null>(null);
+
+  const oauthDisabled =
+    pending !== null || (requireTermsAcceptance && !termsAccepted);
 
   async function handleOAuth(provider: "google" | "github") {
     setMessage("");
     setPending(provider);
-    const result = await signInWithOAuth(provider);
+    const result = await signInWithOAuth(provider, {
+      requireTerms: requireTermsAcceptance,
+      termsAccepted: requireTermsAcceptance ? termsAccepted : undefined,
+    });
     if (result?.error) {
       setMessage(result.error);
       setPending(null);
@@ -53,13 +65,19 @@ export function AuthSocialButtons() {
 
   return (
     <div className="space-y-3">
+      {requireTermsAcceptance && !termsAccepted && (
+        <p className="text-xs text-muted-foreground">
+          Accept the Terms of Service and Privacy Policy above to continue with
+          Google or GitHub.
+        </p>
+      )}
       {message && <AuthMessage message={message} variant="error" />}
       <div className="grid grid-cols-2 gap-3">
         <Button
           type="button"
           variant="outline"
           className="h-10 bg-card"
-          disabled={pending !== null}
+          disabled={oauthDisabled}
           onClick={() => handleOAuth("google")}
         >
           <GoogleIcon />
@@ -69,7 +87,7 @@ export function AuthSocialButtons() {
           type="button"
           variant="outline"
           className="h-10 bg-card"
-          disabled={pending !== null}
+          disabled={oauthDisabled}
           onClick={() => handleOAuth("github")}
         >
           <GitHubIcon />

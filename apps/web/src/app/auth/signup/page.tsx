@@ -9,6 +9,7 @@ import { AuthFormCard } from "@/components/auth/auth-form-card";
 import { AuthMessage } from "@/components/auth/auth-message";
 import { AuthOrDivider } from "@/components/auth/auth-or-divider";
 import { AuthSocialButtons } from "@/components/auth/auth-social-buttons";
+import { AuthTermsAcceptance } from "@/components/auth/auth-terms-acceptance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -18,11 +19,18 @@ export default function SignUpPage() {
     "error",
   );
   const [pending, setPending] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   async function handleSubmit(formData: FormData) {
     setMessage("");
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (!termsAccepted) {
+      setMessageVariant("error");
+      setMessage("You must accept the Terms of Service and Privacy Policy.");
+      return;
+    }
 
     if (password !== confirmPassword) {
       setMessageVariant("error");
@@ -106,6 +114,12 @@ export default function SignUpPage() {
               />
             </div>
 
+            <AuthTermsAcceptance
+              checked={termsAccepted}
+              onCheckedChange={setTermsAccepted}
+              disabled={pending}
+            />
+
             {message && (
               <AuthMessage message={message} variant={messageVariant} />
             )}
@@ -113,14 +127,17 @@ export default function SignUpPage() {
             <Button
               type="submit"
               className="h-11 w-full text-base"
-              disabled={pending}
+              disabled={pending || !termsAccepted}
             >
               {pending ? "Creating account…" : "Sign up"}
             </Button>
           </form>
 
           <AuthOrDivider />
-          <AuthSocialButtons />
+          <AuthSocialButtons
+            requireTermsAcceptance
+            termsAccepted={termsAccepted}
+          />
         </div>
       </AuthFormCard>
 

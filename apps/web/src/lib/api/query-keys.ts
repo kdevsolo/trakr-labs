@@ -4,21 +4,27 @@ export const queryKeys = {
   users: {
     all: () => [...queryKeys.all, "users"] as const,
     me: () => [...queryKeys.users.all(), "me"] as const,
-    members: () => [...queryKeys.users.all(), "members"] as const,
+    membersPrefix: () => [...queryKeys.users.all(), "members"] as const,
+    members: (params?: Record<string, unknown>) =>
+      [...queryKeys.users.membersPrefix(), params ?? {}] as const,
     member: (userId: string) =>
       [...queryKeys.users.members(), userId] as const,
   },
   issues: {
     all: (projectId: string) =>
       [...queryKeys.all, "issues", projectId] as const,
-    list: (projectId: string) =>
-      [...queryKeys.issues.all(projectId), "list"] as const,
+    list: (projectId: string, params?: Record<string, unknown>) =>
+      [...queryKeys.issues.all(projectId), "list", params ?? {}] as const,
     detail: (projectId: string, issueId: string) =>
       [...queryKeys.issues.all(projectId), issueId] as const,
+    comments: (projectId: string, issueId: string) =>
+      [...queryKeys.issues.detail(projectId, issueId), "comments"] as const,
   },
   permissions: {
+    all: () => [...queryKeys.all, "permissions"] as const,
+    me: () => [...queryKeys.permissions.all(), "me"] as const,
     member: (userId: string) =>
-      [...queryKeys.all, "permissions", userId] as const,
+      [...queryKeys.permissions.all(), userId] as const,
   },
   projects: {
     all: () => [...queryKeys.all, "projects"] as const,

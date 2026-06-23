@@ -30,14 +30,17 @@ model User {
   name       String
   email      String  @unique
   orgId      String?
-  isOrgAdmin Boolean @default(false)
+  isOrgAdmin            Boolean   @default(false)
+  tncAccepted           Boolean   @default(false)
+  tncAcceptingTimestamp DateTime?
 
   org              Organization?      @relation(fields: [orgId], references: [id])
   projectMembers   ProjectMember[]
   permissions      MemberPermission[]
   invite           UserInvite?
   reportedIssues   Issue[]            @relation("IssueReporter")
-  assignedIssues   Issue[]            @relation("IssueAssignee")
+  assignedIssues Issue[]            @relation("IssueAssignee")
+  comments         Comment[]
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
 
@@ -161,9 +164,11 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
 
-  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  issue  Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  author User  @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([issueId])
+  @@index([authorId])
 }
 
 model IssueMedia {

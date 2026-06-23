@@ -19,7 +19,7 @@ export function useSetOrgPermissions(userId: string) {
       queryClient.invalidateQueries({
         queryKey: queryKeys.permissions.member(userId),
       });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.members() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.membersPrefix() });
     },
   });
 }

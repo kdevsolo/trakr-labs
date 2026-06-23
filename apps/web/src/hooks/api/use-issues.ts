@@ -10,16 +10,24 @@ import {
 import type {
   CreateIssueInput,
   IssueWithStatus,
+  ListIssuesParams,
   UpdateIssueInput,
 } from "@/lib/api";
 import { useClientQuery } from "@/hooks/use-client-query";
 
 export type { IssueWithStatus };
 
-export function useIssues(projectId: string) {
+const DEFAULT_ISSUE_LIST_PARAMS: ListIssuesParams = {
+  page: 1,
+  pageSize: 8,
+};
+
+export function useIssues(projectId: string, params?: ListIssuesParams) {
+  const queryParams = params ?? DEFAULT_ISSUE_LIST_PARAMS;
+
   return useClientQuery({
-    queryKey: queryKeys.issues.list(projectId),
-    queryFn: () => listIssues(projectId),
+    queryKey: queryKeys.issues.list(projectId, queryParams),
+    queryFn: () => listIssues(projectId, queryParams),
     enabled: Boolean(projectId),
   });
 }
@@ -31,7 +39,7 @@ export function useCreateIssue(projectId: string) {
     mutationFn: (input: CreateIssueInput) => createIssue(projectId, input),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.issues.list(projectId),
+        queryKey: queryKeys.issues.all(projectId),
       });
     },
   });
@@ -50,7 +58,7 @@ export function useUpdateIssue(projectId: string) {
     }) => updateIssue(projectId, issueId, input),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.issues.list(projectId),
+        queryKey: queryKeys.issues.all(projectId),
       });
     },
   });
@@ -63,7 +71,7 @@ export function useDeleteIssue(projectId: string) {
     mutationFn: (issueId: string) => deleteIssue(projectId, issueId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.issues.list(projectId),
+        queryKey: queryKeys.issues.all(projectId),
       });
     },
   });

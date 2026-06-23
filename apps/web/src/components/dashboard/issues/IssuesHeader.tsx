@@ -1,6 +1,6 @@
 "use client";
 
-import { DownloadIcon, FolderIcon, PlusIcon } from "lucide-react";
+import { DownloadIcon, FolderIcon, Loader2, PlusIcon } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -22,9 +22,13 @@ type IssuesHeaderProps = {
   selectedProject: Project | null;
   onSelectProject: (project: Project) => void;
   onCreateProject: () => void;
-  issues: IssueWithStatus[];
+  onCreateIssue: () => void;
+  canCreateIssue: boolean;
+  totalIssues: number;
   projectCount: number;
   isLoading?: boolean;
+  isExporting?: boolean;
+  onExport: () => Promise<IssueWithStatus[] | undefined>;
 };
 
 function exportIssuesCsv(issues: IssueWithStatus[], projectName: string) {
@@ -58,14 +62,24 @@ export function IssuesHeader({
   selectedProject,
   onSelectProject,
   onCreateProject,
-  issues,
+  onCreateIssue,
+  canCreateIssue,
+  totalIssues,
   projectCount,
   isLoading = false,
+  isExporting = false,
+  onExport,
 }: IssuesHeaderProps) {
   const [open, setOpen] = useState(false);
-  const openIssueCount = issues.filter(
-    (issue) => issue.status?.title?.toLowerCase() !== "closed",
-  ).length;
+
+  async function handleExport() {
+    if (!selectedProject) return;
+
+    const issues = await onExport();
+    if (issues && issues.length > 0) {
+      exportIssuesCsv(issues, selectedProject.name);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-4 border-b border-border pb-4">
@@ -76,23 +90,38 @@ export function IssuesHeader({
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {selectedProject
-              ? `${openIssueCount} open issue${openIssueCount === 1 ? "" : "s"} requiring triage across ${projectCount} project${projectCount === 1 ? "" : "s"}.`
+              ? `${totalIssues} issue${totalIssues === 1 ? "" : "s"} across ${projectCount} project${projectCount === 1 ? "" : "s"}.`
               : "Select a project to view issues."}
           </p>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          className="shrink-0 gap-2"
-          disabled={!selectedProject || issues.length === 0}
-          onClick={() =>
-            selectedProject && exportIssuesCsv(issues, selectedProject.name)
-          }
-        >
-          <DownloadIcon className="size-4" />
-          Export CSV
-        </Button>
+        <div className="flex shrink-0 items-center gap-2">
+          {canCreateIssue ? (
+            <Button
+              size="sm"
+              className="gap-2"
+              disabled={!selectedProject}
+              onClick={onCreateIssue}
+            >
+              <PlusIcon className="size-4" />
+              New Issue
+            </Button>
+          ) : null}
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            disabled={!selectedProject || totalIssues === 0 || isExporting}
+            onClick={handleExport}
+          >
+            {isExporting ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <DownloadIcon className="size-4" />
+            )}
+            Export CSV
+          </Button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">

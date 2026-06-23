@@ -1,6 +1,7 @@
-import type { InviteUserInput } from "@trakr/schemas";
+import type { InviteUserInput, PaginatedResponse, PaginationQuery } from "@trakr/schemas";
 
 import { apiFetch } from "./client";
+import { toSearchParams } from "./search-params";
 import type { UpdateProfileInput, User } from "./types";
 
 export function getMe(accessToken?: string) {
@@ -14,8 +15,18 @@ export function updateMe(input: UpdateProfileInput) {
   });
 }
 
-export function listOrgMembers() {
-  return apiFetch<User[]>("/org/members");
+export function acceptTerms(accessToken?: string) {
+  return apiFetch<User>("/users/me/terms", {
+    method: "PATCH",
+    json: { tncAccepted: true },
+    accessToken,
+  });
+}
+
+export function listOrgMembers(params?: PaginationQuery) {
+  return apiFetch<PaginatedResponse<User>>(
+    `/org/members${toSearchParams(params)}`,
+  );
 }
 
 export function getOrgMember(userId: string) {

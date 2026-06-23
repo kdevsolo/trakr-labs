@@ -6,12 +6,15 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
   CreateIssueSchema,
+  ListIssuesQuerySchema,
   UpdateIssueSchema,
   type CreateIssueInput,
+  type ListIssuesQuery,
   type UpdateIssueInput,
 } from '@trakr/schemas';
 import {
@@ -38,8 +41,14 @@ export class IssuesController {
   list(
     @Param('projectId') projectId: string,
     @CurrentUser() user: AuthenticatedUser,
+    @Query(new ZodValidationPipe(ListIssuesQuerySchema))
+    query: ListIssuesQuery,
   ) {
-    return this.issuesService.list(projectId, requireOrgId(user.orgId));
+    return this.issuesService.list(
+      projectId,
+      requireOrgId(user.orgId),
+      query,
+    );
   }
 
   @Post()

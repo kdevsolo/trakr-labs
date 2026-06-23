@@ -1,10 +1,8 @@
-import { useClientQuery } from "@/hooks/use-client-query";
-
-import { listOrgMembers, queryKeys } from "@/lib/api";
+import { useOrgMembersStore } from "@/stores/use-org-members-store";
 
 export function useOrgMembers() {
-  return useClientQuery({
-    queryKey: queryKeys.users.members(),
-    queryFn: () => listOrgMembers(),
-  });
+  const members = useOrgMembersStore((state) => state.members);
+  const isLoading = useOrgMembersStore((state) => state.isLoading);
+
+  return { data: members, isLoading };
 }

@@ -1,5 +1,7 @@
 export * from './api-response';
+export * from './comments';
 export * from './issues';
+export * from './pagination';
 export * from './organizations';
 export * from './permissions';
 export * from './projects';

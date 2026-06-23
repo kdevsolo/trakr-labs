@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import type {
   CreateOrganizationInput,
   InviteUserInput,
+  PaginationQuery,
   UpdateMemberInput,
   UpdateProfileInput,
 } from '@trakr/schemas';
@@ -15,6 +16,8 @@ const userSelect = {
   email: true,
   orgId: true,
   isOrgAdmin: true,
+  tncAccepted: true,
+  tncAcceptingTimestamp: true,
   createdAt: true,
   updatedAt: true,
 } as const;
@@ -41,12 +44,47 @@ export class UsersService {
     });
   }
 
-  listByOrg(orgId: string) {
-    return this.prisma.user.findMany({
-      where: { orgId },
-      select: userSelect,
-      orderBy: { name: 'asc' },
+  async acceptTerms(userId: string) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { tncAccepted: true },
     });
+
+    if (user.tncAccepted) {
+      return this.getMe(userId);
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        tncAccepted: true,
+        tncAcceptingTimestamp: new Date(),
+      },
+      select: userSelect,
+    });
+  }
+
+  async listByOrg(orgId: string, query: PaginationQuery) {
+    const { page, pageSize } = query;
+    const skip = (page - 1) * pageSize;
+
+    const where = { orgId };
+
+    const [items, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where,
+        select: userSelect,
+        orderBy: { name: 'asc' },
+        skip,
+        take: pageSize,
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+
+    return {
+      items,
+      meta: { page, pageSize, total },
+    };
   }
 
   async getById(orgId: string, userId: string) {

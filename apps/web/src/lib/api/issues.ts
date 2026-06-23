@@ -1,4 +1,7 @@
+import type { ListIssuesQuery, PaginatedResponse } from "@trakr/schemas";
+
 import { apiFetch } from "./client";
+import { toSearchParams } from "./search-params";
 import type {
   CreateIssueInput,
   IssueWithRelations,
@@ -6,9 +9,12 @@ import type {
 } from "./types";
 
 export type IssueWithStatus = IssueWithRelations;
+export type ListIssuesParams = ListIssuesQuery;
 
-export function listIssues(projectId: string) {
-  return apiFetch<IssueWithRelations[]>(`/projects/${projectId}/issues`);
+export function listIssues(projectId: string, params?: ListIssuesParams) {
+  return apiFetch<PaginatedResponse<IssueWithRelations>>(
+    `/projects/${projectId}/issues${toSearchParams(params)}`,
+  );
 }
 
 export function createIssue(projectId: string, input: CreateIssueInput) {

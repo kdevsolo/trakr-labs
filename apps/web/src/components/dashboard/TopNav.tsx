@@ -51,7 +51,7 @@ const TopNav = ({ className }: TopNavProps) => {
       </button>
 
       <div className="flex shrink-0 items-center gap-2">
-        <button
+        {/* <button
           type="button"
           className="relative flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label="Notifications"
@@ -65,7 +65,7 @@ const TopNav = ({ className }: TopNavProps) => {
           aria-label="Activity history"
         >
           <ClockIcon className="size-4" />
-        </button>
+        </button> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="cursor-pointer">
             <div className="ml-1 flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">

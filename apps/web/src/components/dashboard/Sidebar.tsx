@@ -5,7 +5,6 @@ import {
   BugIcon,
   LayoutGridIcon,
   LifeBuoyIcon,
-  PlusIcon,
   SettingsIcon,
   UsersIcon,
 } from "lucide-react";
@@ -14,7 +13,6 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 import { LogoIcon } from "@/components/brand/logo";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   useSidebarStore,
@@ -60,14 +58,7 @@ const Sidebar = () => {
         </div>
       </div>
 
-      <div className="px-4 pb-4">
-        <Button className="w-full gap-2 shadow-sm" size="default">
-          <PlusIcon className="size-4" />
-          New Issue
-        </Button>
-      </div>
-
-      <nav className="flex flex-1 flex-col gap-0.5 px-3">
+      <nav className="flex flex-1 flex-col gap-0.5 px-3 pt-2">
         {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
           const isActive = activeTab === id;
 

@@ -6,6 +6,10 @@ import type {
 
 import { apiFetch } from './client'
 
+export function getMyPermissions() {
+  return apiFetch<MemberPermissions>('/users/me/permissions')
+}
+
 export function getMemberPermissions(userId: string) {
   return apiFetch<MemberPermissions>(`/org/members/${userId}/permissions`)
 }
