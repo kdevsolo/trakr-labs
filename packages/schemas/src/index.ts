@@ -1,4 +1,5 @@
 export * from './api-response';
+export * from './auth';
 export * from './comments';
 export * from './issues';
 export * from './pagination';

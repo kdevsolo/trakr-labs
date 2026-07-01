@@ -31,13 +31,20 @@ type IssuesHeaderProps = {
   onExport: () => Promise<IssueWithStatus[] | undefined>;
 };
 
+function sanitizeCsvCell(value: string): string {
+  if (/^[=+\-@]/.test(value)) {
+    return `'${value}`;
+  }
+  return value;
+}
+
 function exportIssuesCsv(issues: IssueWithStatus[], projectName: string) {
   const headers = ["Key", "Title", "Status", "Reporter", "Assignee", "Created"];
   const rows = issues.map((issue) => [
     issue.id.slice(0, 8).toUpperCase(),
-    issue.title,
+    sanitizeCsvCell(issue.title),
     issue.status?.title ?? "",
-    getIssueReporterDisplay(issue),
+    sanitizeCsvCell(getIssueReporterDisplay(issue)),
     issue.assignee?.name ?? (issue.assignedTo ? issue.assignedTo : "Unassigned"),
     issue.createdAt,
   ]);

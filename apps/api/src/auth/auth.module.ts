@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
 import { ProjectMemberGuard } from './guards/project-member.guard';
@@ -12,17 +10,7 @@ import { PermissionsService } from './permissions.service';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [
-    PassportModule,
-    ConfigModule,
-    PrismaModule,
-    JwtModule.registerAsync({
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET'),
-      }),
-      inject: [ConfigService],
-    }),
-  ],
+  imports: [PassportModule, PrismaModule],
   providers: [
     AuthService,
     PermissionsService,

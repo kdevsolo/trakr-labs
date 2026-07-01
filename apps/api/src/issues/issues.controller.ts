@@ -28,6 +28,7 @@ import { ProjectMemberGuard } from '../auth/guards/project-member.guard';
 import { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 import { requireOrgId } from '../auth/utils/require-org-id';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { UuidParamPipe } from '../common/pipes/uuid-param.pipe';
 import { IssuesService } from './issues.service';
 
 @Controller('projects/:projectId/issues')
@@ -39,7 +40,7 @@ export class IssuesController {
   @Get()
   @RequirePermission(PermissionResource.PROJECT, PermissionAction.READ, 'project')
   list(
-    @Param('projectId') projectId: string,
+    @Param('projectId', UuidParamPipe) projectId: string,
     @CurrentUser() user: AuthenticatedUser,
     @Query(new ZodValidationPipe(ListIssuesQuerySchema))
     query: ListIssuesQuery,
@@ -51,10 +52,24 @@ export class IssuesController {
     );
   }
 
+  @Get(':id')
+  @RequirePermission(PermissionResource.PROJECT, PermissionAction.READ, 'project')
+  findOne(
+    @Param('projectId', UuidParamPipe) projectId: string,
+    @Param('id', UuidParamPipe) id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.issuesService.findOne(
+      projectId,
+      requireOrgId(user.orgId),
+      id,
+    );
+  }
+
   @Post()
   @RequirePermission(PermissionResource.PROJECT, PermissionAction.UPDATE, 'project')
   create(
-    @Param('projectId') projectId: string,
+    @Param('projectId', UuidParamPipe) projectId: string,
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(CreateIssueSchema))
     dto: CreateIssueInput,
@@ -70,8 +85,8 @@ export class IssuesController {
   @Patch(':id')
   @RequirePermission(PermissionResource.PROJECT, PermissionAction.UPDATE, 'project')
   update(
-    @Param('projectId') projectId: string,
-    @Param('id') id: string,
+    @Param('projectId', UuidParamPipe) projectId: string,
+    @Param('id', UuidParamPipe) id: string,
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(UpdateIssueSchema))
     dto: UpdateIssueInput,
@@ -86,10 +101,10 @@ export class IssuesController {
   }
 
   @Delete(':id')
-  @RequirePermission(PermissionResource.PROJECT, PermissionAction.UPDATE, 'project')
+  @RequirePermission(PermissionResource.PROJECT, PermissionAction.DELETE, 'project')
   remove(
-    @Param('projectId') projectId: string,
-    @Param('id') id: string,
+    @Param('projectId', UuidParamPipe) projectId: string,
+    @Param('id', UuidParamPipe) id: string,
     @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.issuesService.remove(projectId, requireOrgId(user.orgId), id);

@@ -9,7 +9,6 @@ export enum PermissionAction {
 
 export const CreateProjectSchema = z.object({
   name: z.string().min(1).max(100),
-  orgId: z.string().min(1),
 });
 
 export const ProjectMemberActionSchema = z.enum([
@@ -24,7 +23,9 @@ export const AddProjectMemberSchema = z.object({
   actions: z.array(ProjectMemberActionSchema).optional(),
 });
 
-export const UpdateProjectSchema = CreateProjectSchema.partial();
+export const UpdateProjectSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+});
 export const ProjectSchema = z.object({
   id: z.string(),
   name: z.string(),

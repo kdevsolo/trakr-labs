@@ -35,3 +35,14 @@ export type AddProjectMemberByUserIdInput = z.infer<
   typeof AddProjectMemberByUserIdSchema
 >;
 export type MemberPermissions = z.infer<typeof MemberPermissionsSchema>;
+
+export const BatchMemberPermissionsQuerySchema = z.object({
+  userIds: z
+    .string()
+    .transform((value) => value.split(',').map((id) => id.trim()).filter(Boolean))
+    .pipe(z.array(z.string().uuid()).max(20)),
+});
+
+export type BatchMemberPermissionsQuery = z.infer<
+  typeof BatchMemberPermissionsQuerySchema
+>;

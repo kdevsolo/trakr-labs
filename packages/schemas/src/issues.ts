@@ -39,15 +39,15 @@ export const IssueMediaSchema = z.object({
 export const CreateIssueSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
-  statusId: z.string().min(1),
-  assignedTo: z.string().optional(),
+  statusId: uuidSchema,
+  assignedTo: uuidSchema.optional(),
 });
 
 export const UpdateIssueSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional(),
-  statusId: z.string().min(1).optional(),
-  assignedTo: z.string().nullable().optional(),
+  statusId: uuidSchema.optional(),
+  assignedTo: uuidSchema.nullable().optional(),
 });
 
 export const IssueSchema = z.object({

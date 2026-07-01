@@ -2,8 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { listIssues } from "@/lib/api";
+import { listAllIssues } from "@/lib/api";
+import { useIssue } from "@/hooks/api/use-issue";
 import { useIssues } from "@/hooks/api/use-issues";
+import { useLoadOrgMembers } from "@/hooks/api/use-load-org-members";
+import { useLoadStatusMaster } from "@/hooks/api/use-status-master";
 import { useMe } from "@/hooks/api/use-me";
 import { useMyPermissions } from "@/hooks/api/use-my-permissions";
 import { useProjects } from "@/hooks/api/use-projects";
@@ -28,6 +31,9 @@ const DEFAULT_META = {
 };
 
 export function IssuesView() {
+  useLoadStatusMaster();
+  useLoadOrgMembers();
+
   const { data: me } = useMe();
   const { data: permissions } = useMyPermissions(Boolean(me?.orgId));
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
@@ -75,6 +81,12 @@ export function IssuesView() {
   const issues = issuesResult?.items ?? [];
   const meta = issuesResult?.meta ?? DEFAULT_META;
 
+  const { data: selectedIssueDetail } = useIssue(
+    selectedProject?.id ?? "",
+    selectedIssue?.id ?? null,
+  );
+  const detailIssue = selectedIssueDetail ?? selectedIssue;
+
   useEffect(() => {
     if (projects.length === 0) {
       setSelectedProject(null);
@@ -112,10 +124,7 @@ export function IssuesView() {
     setIsExporting(true);
 
     try {
-      const exportParams: ListIssuesParams = {
-        page: 1,
-        pageSize: 100,
-      };
+      const exportParams: Omit<ListIssuesParams, "page" | "pageSize"> = {};
 
       if (statusFilter !== ALL_FILTER) {
         exportParams.statusId = statusFilter;
@@ -125,8 +134,7 @@ export function IssuesView() {
         exportParams.assignedTo = assigneeFilter;
       }
 
-      const result = await listIssues(selectedProject.id, exportParams);
-      return result.items;
+      return listAllIssues(selectedProject.id, exportParams);
     } finally {
       setIsExporting(false);
     }
@@ -177,9 +185,9 @@ export function IssuesView() {
         )}
       </div>
 
-      {selectedIssue && selectedProject ? (
+      {detailIssue && selectedProject ? (
         <IssueDetailPanel
-          issue={selectedIssue}
+          issue={detailIssue}
           projectId={selectedProject.id}
           projectKey={selectedProject.projectKey}
           onClose={() => setSelectedIssue(null)}
@@ -191,7 +199,6 @@ export function IssuesView() {
         <>
           <CreateProjectDrawer
             open={createProjectOpen}
-            orgId={me.orgId}
             onClose={() => setCreateProjectOpen(false)}
             onCreated={handleProjectCreated}
           />

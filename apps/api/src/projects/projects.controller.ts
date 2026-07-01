@@ -1,11 +1,10 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Delete,
+  Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
@@ -13,12 +12,14 @@ import {
   AddProjectMemberInput,
   AddProjectMemberSchema,
   CreateProjectSchema,
+  PaginationQuerySchema,
   type CreateProjectInput,
-  type UpdateProjectInput,
+  type PaginationQuery,
 } from '@trakr/schemas';
 import { AuthenticatedUser } from 'src/auth/interfaces/authenticated-user.interface';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
+import { UuidParamPipe } from 'src/common/pipes/uuid-param.pipe';
 import { RequirePermission } from 'src/auth/decorators/require-permission.decorator';
 import { OrgAdminOnly } from 'src/auth/decorators/org-admin.decorator';
 import { ProjectScoped } from 'src/auth/decorators/project-scoped.decorator';
@@ -38,7 +39,11 @@ export class ProjectsController {
     @Body(new ZodValidationPipe(CreateProjectSchema))
     createProjectDto: CreateProjectInput,
   ) {
-    return this.projectsService.create(user.id, createProjectDto);
+    return this.projectsService.create(
+      user.id,
+      requireOrgId(user.orgId),
+      createProjectDto,
+    );
   }
 
   @Post('add-member')
@@ -53,35 +58,23 @@ export class ProjectsController {
   }
 
   @Get()
-  findAll(@CurrentUser() user: AuthenticatedUser) {
-    return this.projectsService.findAll(requireOrgId(user.orgId), user.id);
+  findAll(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query(new ZodValidationPipe(PaginationQuerySchema))
+    query: PaginationQuery,
+  ) {
+    return this.projectsService.findAll(
+      requireOrgId(user.orgId),
+      user.id,
+      query,
+    );
   }
 
   @Get(':projectId')
   @ProjectScoped()
   @UseGuards(ProjectMemberGuard)
   @RequirePermission(PermissionResource.PROJECT, PermissionAction.READ, 'project')
-  findOne(@Param('projectId') projectId: string) {
+  findOne(@Param('projectId', UuidParamPipe) projectId: string) {
     return this.projectsService.findOne(projectId);
   }
-
-  @Patch(':projectId')
-  @ProjectScoped()
-  @UseGuards(ProjectMemberGuard)
-  @RequirePermission(PermissionResource.PROJECT, PermissionAction.UPDATE, 'project')
-  update(
-    @Param('projectId') projectId: string,
-    @Body() updateProjectDto: UpdateProjectInput,
-  ) {
-    return this.projectsService.update(projectId, updateProjectDto);
-  }
-
-  @Delete(':projectId')
-  @ProjectScoped()
-  @UseGuards(ProjectMemberGuard)
-  @RequirePermission(PermissionResource.PROJECT, PermissionAction.DELETE, 'project')
-  remove(@Param('projectId') projectId: string) {
-    return this.projectsService.remove(projectId);
-  }
-
 }

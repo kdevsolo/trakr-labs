@@ -109,6 +109,7 @@ model ProjectMember {
 
   @@unique([projectId, userId])
   @@index([userId])
+  @@index([projectId])
 }
 
 model MemberPermission {
@@ -155,6 +156,8 @@ model Issue {
   @@index([statusId])
   @@index([reportedBy])
   @@index([assignedTo])
+  @@index([projectId, createdAt(sort: Desc)])
+  @@index([projectId, statusId])
 }
 
 model Comment {
@@ -169,6 +172,7 @@ model Comment {
 
   @@index([issueId])
   @@index([authorId])
+  @@index([issueId, createdAt])
 }
 
 model IssueMedia {
@@ -196,4 +200,5 @@ model StatusMaster {
   issues Issue[]
 
   @@unique([orgId, title])
+  @@index([orgId])
 }

@@ -2,6 +2,12 @@
 
 import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import {
+  RequestPasswordResetSchema,
+  SignInSchema,
+  SignUpSchema,
+  UpdatePasswordSchema,
+} from '@trakr/schemas'
 
 import { acceptTerms } from '@/lib/api/users'
 import { createClient } from '@/lib/supabase/server'
@@ -18,17 +24,25 @@ async function getRequestOrigin() {
   )
 }
 
-function isTermsAccepted(formData: FormData) {
-  return formData.get('tncAccepted') === 'on'
+function formatZodError(error: { flatten: () => { fieldErrors: Record<string, string[] | undefined> } }) {
+  const fieldErrors = error.flatten().fieldErrors
+  const firstError = Object.values(fieldErrors).flat().find(Boolean)
+  return firstError ?? 'Validation failed'
 }
 
 export async function signIn(formData: FormData) {
+  const parsed = SignInSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+  })
+
+  if (!parsed.success) {
+    return { error: formatZodError(parsed.error) }
+  }
+
   const supabase = await createClient()
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  })
+  const { error } = await supabase.auth.signInWithPassword(parsed.data)
 
   if (error) return { error: error.message }
 
@@ -36,21 +50,28 @@ export async function signIn(formData: FormData) {
 }
 
 export async function signUp(formData: FormData) {
-  if (!isTermsAccepted(formData)) {
-    return {
-      error: 'You must accept the Terms of Service and Privacy Policy.',
-    }
+  const parsed = SignUpSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+    tncAccepted: formData.get('tncAccepted') === 'on' ? true : false,
+  })
+
+  if (!parsed.success) {
+    return { error: formatZodError(parsed.error) }
   }
 
   const supabase = await createClient()
-  const tncAcceptedAt = new Date().toISOString()
+  const cookieStore = await cookies()
+  cookieStore.set(TNC_ACCEPTED_COOKIE, new Date().toISOString(), {
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 86_400,
+    path: '/',
+  })
 
   const { error } = await supabase.auth.signUp({
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-    options: {
-      data: { tnc_accepted_at: tncAcceptedAt },
-    },
+    email: parsed.data.email,
+    password: parsed.data.password,
   })
 
   if (error) return { error: error.message }
@@ -59,10 +80,14 @@ export async function signUp(formData: FormData) {
 }
 
 export async function updatePassword(formData: FormData) {
-  if (!isTermsAccepted(formData)) {
-    return {
-      error: 'You must accept the Terms of Service and Privacy Policy.',
-    }
+  const parsed = UpdatePasswordSchema.safeParse({
+    password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
+    tncAccepted: formData.get('tncAccepted') === 'on' ? true : false,
+  })
+
+  if (!parsed.success) {
+    return { error: formatZodError(parsed.error) }
   }
 
   const supabase = await createClient()
@@ -75,15 +100,10 @@ export async function updatePassword(formData: FormData) {
   }
 
   const { error } = await supabase.auth.updateUser({
-    password: formData.get('password') as string,
+    password: parsed.data.password,
   })
 
   if (error) return { error: error.message }
-
-  const tncAcceptedAt = new Date().toISOString()
-  await supabase.auth.updateUser({
-    data: { tnc_accepted_at: tncAcceptedAt },
-  })
 
   const {
     data: { session },
@@ -93,7 +113,7 @@ export async function updatePassword(formData: FormData) {
     try {
       await acceptTerms(session.access_token)
     } catch {
-      // User row may not exist yet; metadata is stored for provisioning.
+      // User row may not exist yet; terms will be accepted on next API call.
     }
   }
 
@@ -101,14 +121,21 @@ export async function updatePassword(formData: FormData) {
 }
 
 export async function requestPasswordReset(formData: FormData) {
+  const parsed = RequestPasswordResetSchema.safeParse({
+    email: formData.get('email'),
+  })
+
+  if (!parsed.success) {
+    return { error: formatZodError(parsed.error) }
+  }
+
   const supabase = await createClient()
   const origin = await getRequestOrigin()
   const redirectTo = `${origin}/auth/callback?next=/auth/reset-password`
 
-  const { error } = await supabase.auth.resetPasswordForEmail(
-    formData.get('email') as string,
-    { redirectTo },
-  )
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo,
+  })
 
   if (error) return { error: error.message }
 
@@ -153,16 +180,19 @@ export async function signInWithOAuth(
 
 export async function persistTermsAcceptance() {
   const cookieStore = await cookies()
-  const tncAcceptedAt = cookieStore.get(TNC_ACCEPTED_COOKIE)?.value
 
-  if (!tncAcceptedAt) {
+  if (!cookieStore.get(TNC_ACCEPTED_COOKIE)?.value) {
     return
   }
 
   const supabase = await createClient()
-  await supabase.auth.updateUser({
-    data: { tnc_accepted_at: tncAcceptedAt },
-  })
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return
+  }
 
   const {
     data: { session },
@@ -172,7 +202,8 @@ export async function persistTermsAcceptance() {
     try {
       await acceptTerms(session.access_token)
     } catch {
-      // User row may not exist yet; metadata is stored for provisioning.
+      // User row may not exist yet; cookie retained for a later attempt.
+      return
     }
   }
 

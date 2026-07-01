@@ -4,6 +4,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
+import { SafeExternalLink } from "@/components/shared/SafeExternalLink";
 import {
   WidgetIssueMetadataSchema,
   type ConsoleLogEntry,
@@ -45,14 +46,12 @@ function WidgetMetadataSummary({ metadata }: { metadata: WidgetIssueMetadata }) 
       <MetaRow
         label="Page URL"
         value={
-          <a
+          <SafeExternalLink
             href={metadata.pageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
             className="break-all text-primary hover:underline"
           >
             {metadata.pageUrl}
-          </a>
+          </SafeExternalLink>
         }
       />
     </div>

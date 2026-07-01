@@ -8,14 +8,13 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import {
-  CreateOrganizationSchema,
   InviteUserSchema,
   PaginationQuerySchema,
   UpdateMemberSchema,
   UpdateProfileSchema,
   AcceptTermsSchema,
-  type CreateOrganizationInput,
   type InviteUserInput,
   type PaginationQuery,
   type UpdateMemberInput,
@@ -36,6 +35,7 @@ import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { requireOrgId } from '../auth/utils/require-org-id';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { UuidParamPipe } from '../common/pipes/uuid-param.pipe';
 
 @Controller()
 export class UsersController {
@@ -92,7 +92,7 @@ export class UsersController {
   @RequirePermission(PermissionResource.USER, PermissionAction.READ)
   getMember(
     @CurrentUser() user: AuthenticatedUser,
-    @Param('userId') userId: string,
+    @Param('userId', UuidParamPipe) userId: string,
   ) {
     return this.usersService.getById(requireOrgId(user.orgId), userId);
   }
@@ -103,7 +103,7 @@ export class UsersController {
   @RequirePermission(PermissionResource.USER, PermissionAction.UPDATE)
   updateMember(
     @CurrentUser() user: AuthenticatedUser,
-    @Param('userId') userId: string,
+    @Param('userId', UuidParamPipe) userId: string,
     @Body(new ZodValidationPipe(UpdateMemberSchema))
     dto: UpdateMemberInput,
   ) {
@@ -111,6 +111,7 @@ export class UsersController {
   }
 
   @Post('org/members/invite')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @UseGuards(OrgAdminGuard)
   @OrgAdminOnly()
   inviteMember(
@@ -119,15 +120,5 @@ export class UsersController {
     dto: InviteUserInput,
   ) {
     return this.usersService.inviteMember(requireOrgId(user.orgId), user.id, dto);
-  }
-
-  @UseGuards(OrgAdminGuard)
-  @Post('/org/create')
-  createOrg(
-    @CurrentUser() user: AuthenticatedUser,
-    @Body(new ZodValidationPipe(CreateOrganizationSchema))
-    dto: CreateOrganizationInput,
-  ) {
-    return this.usersService.createOrg(user.id, dto);
   }
 }

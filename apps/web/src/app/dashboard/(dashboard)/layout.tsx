@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { MeHydration } from "@/providers/me-hydration";
 import { getMe } from "../action";
 
 export default async function DashboardShellLayout({
@@ -12,5 +13,9 @@ export default async function DashboardShellLayout({
   if (!meDetails) redirect("/auth/login");
   if (!meDetails.orgId) redirect("/dashboard/onboarding");
 
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <MeHydration initialMe={meDetails}>
+      <DashboardLayout>{children}</DashboardLayout>
+    </MeHydration>
+  );
 }

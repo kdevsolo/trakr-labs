@@ -25,6 +25,8 @@ export const queryKeys = {
     me: () => [...queryKeys.permissions.all(), "me"] as const,
     member: (userId: string) =>
       [...queryKeys.permissions.all(), userId] as const,
+    membersBatch: (userIds: string[]) =>
+      [...queryKeys.permissions.all(), "batch", userIds.sort().join(",")] as const,
   },
   projects: {
     all: () => [...queryKeys.all, "projects"] as const,

@@ -19,6 +19,8 @@ export class SupabaseStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
+      issuer: `${supabaseUrl}/auth/v1`,
+      audience: 'authenticated',
       secretOrKeyProvider: passportJwtSecret({
         cache: true,
         rateLimit: true,

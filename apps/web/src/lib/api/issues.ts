@@ -17,6 +17,29 @@ export function listIssues(projectId: string, params?: ListIssuesParams) {
   );
 }
 
+export function getIssue(projectId: string, issueId: string) {
+  return apiFetch<IssueWithRelations>(
+    `/projects/${projectId}/issues/${issueId}`,
+  );
+}
+
+export async function listAllIssues(
+  projectId: string,
+  params?: Omit<ListIssuesParams, "page" | "pageSize">,
+  pageSize = 100,
+) {
+  const firstPage = await listIssues(projectId, { ...params, page: 1, pageSize });
+  const allItems = [...firstPage.items];
+  const totalPages = Math.ceil(firstPage.meta.total / pageSize);
+
+  for (let page = 2; page <= totalPages; page += 1) {
+    const nextPage = await listIssues(projectId, { ...params, page, pageSize });
+    allItems.push(...nextPage.items);
+  }
+
+  return allItems;
+}
+
 export function createIssue(projectId: string, input: CreateIssueInput) {
   return apiFetch<IssueWithRelations>(`/projects/${projectId}/issues`, {
     method: "POST",

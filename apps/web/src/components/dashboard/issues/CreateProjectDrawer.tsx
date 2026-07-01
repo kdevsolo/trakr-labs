@@ -21,14 +21,12 @@ import { FieldLabel } from "../onboarding/FieldLabel";
 
 type CreateProjectDrawerProps = {
   open: boolean;
-  orgId: string;
   onClose: () => void;
   onCreated: (project: Project) => void;
 };
 
 export function CreateProjectDrawer({
   open,
-  orgId,
   onClose,
   onCreated,
 }: CreateProjectDrawerProps) {
@@ -59,7 +57,6 @@ export function CreateProjectDrawer({
     try {
       const project = await createProject.mutateAsync({
         name: trimmedName,
-        orgId,
       });
       onCreated(project);
       handleClose();

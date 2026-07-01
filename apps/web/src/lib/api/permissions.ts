@@ -14,6 +14,20 @@ export function getMemberPermissions(userId: string) {
   return apiFetch<MemberPermissions>(`/org/members/${userId}/permissions`)
 }
 
+export function getBatchMemberPermissions(userIds: string[]) {
+  if (userIds.length === 0) {
+    return Promise.resolve({} as Record<string, MemberPermissions>)
+  }
+
+  const params = new URLSearchParams({
+    userIds: userIds.join(','),
+  })
+
+  return apiFetch<Record<string, MemberPermissions>>(
+    `/org/members/permissions?${params.toString()}`,
+  )
+}
+
 export function setOrgPermissions(userId: string, grants: PermissionGrant[]) {
   return apiFetch<MemberPermissions>(
     `/org/members/${userId}/permissions`,

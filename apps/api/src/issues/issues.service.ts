@@ -1,15 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import type {
   CreateIssueInput,
   ListIssuesQuery,
   UpdateIssueInput,
 } from '@trakr/schemas';
-import { withSignedIssueMedia, withSignedIssueMediaList } from '../widget/utils/widget-storage';
+import { withSignedIssueMedia } from '../widget/utils/widget-storage';
 import { PrismaService } from '../prisma/prisma.service';
 
 const issueInclude = {
   status: true,
   media: { orderBy: { createdAt: 'asc' as const } },
+  reporter: { select: { id: true, name: true } },
+  assignee: { select: { id: true, name: true } },
+} as const;
+
+const issueListInclude = {
+  status: true,
   reporter: { select: { id: true, name: true } },
   assignee: { select: { id: true, name: true } },
 } as const;
@@ -35,7 +41,7 @@ export class IssuesService {
     const [items, total] = await Promise.all([
       this.prisma.issue.findMany({
         where,
-        include: issueInclude,
+        include: issueListInclude,
         orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,
@@ -44,9 +50,21 @@ export class IssuesService {
     ]);
 
     return {
-      items: await withSignedIssueMediaList(items),
+      items,
       meta: { page, pageSize, total },
     };
+  }
+
+  async findOne(projectId: string, orgId: string, issueId: string) {
+    await this.assertProjectInOrg(projectId, orgId);
+    await this.assertIssueInProject(issueId, projectId);
+
+    return withSignedIssueMedia(
+      await this.prisma.issue.findFirstOrThrow({
+        where: { id: issueId, projectId },
+        include: issueInclude,
+      }),
+    );
   }
 
   async create(
@@ -56,6 +74,10 @@ export class IssuesService {
     dto: CreateIssueInput,
   ) {
     await this.assertProjectInOrg(projectId, orgId);
+    await this.assertStatusInOrg(dto.statusId, orgId);
+    if (dto.assignedTo) {
+      await this.assertAssigneeInOrg(dto.assignedTo, orgId);
+    }
 
     return withSignedIssueMedia(
       await this.prisma.issue.create({
@@ -83,6 +105,13 @@ export class IssuesService {
   ) {
     await this.assertProjectInOrg(projectId, orgId);
     await this.assertIssueInProject(issueId, projectId);
+
+    if (dto.statusId !== undefined) {
+      await this.assertStatusInOrg(dto.statusId, orgId);
+    }
+    if (dto.assignedTo) {
+      await this.assertAssigneeInOrg(dto.assignedTo, orgId);
+    }
 
     return withSignedIssueMedia(
       await this.prisma.issue.update({
@@ -116,6 +145,28 @@ export class IssuesService {
 
     if (!project) {
       throw new NotFoundException('Project not found in this organization');
+    }
+  }
+
+  private async assertStatusInOrg(statusId: string, orgId: string) {
+    const status = await this.prisma.statusMaster.findFirst({
+      where: { id: statusId, orgId },
+      select: { id: true },
+    });
+
+    if (!status) {
+      throw new BadRequestException('Status not found in this organization');
+    }
+  }
+
+  private async assertAssigneeInOrg(userId: string, orgId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, orgId },
+      select: { id: true },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Assignee not found in this organization');
     }
   }
 

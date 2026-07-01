@@ -8,7 +8,6 @@ import {
 import { Reflector } from '@nestjs/core';
 import { PROJECT_SCOPED_KEY } from '../constants/metadata';
 import { AuthenticatedUser } from '../interfaces/authenticated-user.interface';
-import { PermissionsService } from '../permissions.service';
 import { requireOrgId } from '../utils/require-org-id';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -16,7 +15,6 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class ProjectMemberGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly permissionsService: PermissionsService,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -51,6 +49,10 @@ export class ProjectMemberGuard implements CanActivate {
       throw new ForbiddenException('Project ID is required');
     }
 
+    if (user.projectIds.includes(projectId)) {
+      return true;
+    }
+
     const project = await this.prisma.project.findFirst({
       where: { id: projectId, orgId },
       select: { id: true },
@@ -60,16 +62,6 @@ export class ProjectMemberGuard implements CanActivate {
       throw new NotFoundException('Project not found in this organization');
     }
 
-    const isMember = await this.permissionsService.isProjectMember(
-      user.id,
-      projectId,
-      orgId,
-    );
-
-    if (!isMember) {
-      throw new ForbiddenException('You are not a member of this project');
-    }
-
-    return true;
+    throw new ForbiddenException('You are not a member of this project');
   }
 }

@@ -6,13 +6,20 @@ const SIGNED_URL_TTL_SECONDS = 3600;
 export function parseWidgetStoragePath(storedUrl: string): string | null {
   try {
     const parsed = new URL(storedUrl);
-    const prefix = `/storage/v1/object/public/${WIDGET_STORAGE_BUCKET}/`;
+    const bucket = WIDGET_STORAGE_BUCKET;
+    const prefixes = [
+      `/storage/v1/object/public/${bucket}/`,
+      `/storage/v1/object/authenticated/${bucket}/`,
+      `/storage/v1/object/sign/${bucket}/`,
+    ];
 
-    if (!parsed.pathname.startsWith(prefix)) {
-      return null;
+    for (const prefix of prefixes) {
+      if (parsed.pathname.startsWith(prefix)) {
+        return decodeURIComponent(parsed.pathname.slice(prefix.length));
+      }
     }
 
-    return decodeURIComponent(parsed.pathname.slice(prefix.length));
+    return null;
   } catch {
     return null;
   }

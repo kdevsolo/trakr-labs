@@ -99,6 +99,8 @@ export function MemberPermissionsDrawer({
     setProjectError(null)
 
     try {
+      const updates: Promise<void>[] = []
+
       for (const project of projects) {
         const level = projectLevels[project.id] ?? 'none'
         const existingGrants = permissions?.byProject[project.id]
@@ -110,20 +112,27 @@ export function MemberPermissionsDrawer({
 
         if (level === 'none') {
           if (existingLevel !== 'none') {
-            await removeProjectMember.mutateAsync(project.id)
+            updates.push(
+              removeProjectMember.mutateAsync(project.id).then(() => undefined),
+            )
           }
           continue
         }
 
-        await addProjectMember.mutateAsync({
-          projectId: project.id,
-          userId,
-        })
-        await setProjectPermissions.mutateAsync({
-          projectId: project.id,
-          grants: deriveProjectGrants(level),
-        })
+        updates.push(
+          addProjectMember
+            .mutateAsync({ projectId: project.id, userId })
+            .then(() =>
+              setProjectPermissions.mutateAsync({
+                projectId: project.id,
+                grants: deriveProjectGrants(level),
+              }),
+            )
+            .then(() => undefined),
+        )
       }
+
+      await Promise.all(updates)
     } catch (err) {
       setProjectError(
         err instanceof Error

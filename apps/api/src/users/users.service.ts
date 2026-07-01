@@ -1,6 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import type {
-  CreateOrganizationInput,
   InviteUserInput,
   PaginationQuery,
   UpdateMemberInput,
@@ -24,6 +23,8 @@ const userSelect = {
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly permissionsService: PermissionsService,
@@ -110,29 +111,6 @@ export class UsersService {
     return updated;
   }
 
-  async createOrg(userId: string, dto: CreateOrganizationInput) {
-    const user = await this.prisma.user.findUniqueOrThrow({
-      where: { id: userId },
-    });
-
-    if (user.orgId) {
-      throw new BadRequestException('User already belongs to an organization');
-    }
-
-    if (user.isOrgAdmin) {
-      throw new BadRequestException('User is already an organization admin');
-    }
-
-    return this.prisma.organization.create({
-      data: {
-        name: dto.name,
-        ownerId: userId,
-        createdBy: userId,
-        modifiedBy: userId,
-      },
-    });
-  }
-
   async inviteMember(orgId: string, adminId: string, dto: InviteUserInput) {
     const frontendUrl = process.env.FRONTEND_URL;
     if (!frontendUrl) {
@@ -146,31 +124,36 @@ export class UsersService {
     );
 
     if (error) {
-      throw new BadRequestException(error.message);
+      this.logger.warn(`Supabase invite failed for ${dto.email}: ${error.message}`);
+      throw new BadRequestException('Failed to send invite. Please try again.');
     }
 
     const uid = data.user.id;
 
-    await this.prisma.$transaction([
-      this.prisma.user.create({
+    await this.permissionsService.validateInviteGrants(orgId, dto.permissions);
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.user.create({
         data: { id: uid, name: dto.name, email: dto.email, orgId },
-      }),
-      ...dto.permissions.map((p) =>
-        this.prisma.memberPermission.create({
-          data: {
+      });
+
+      if (dto.permissions.length > 0) {
+        await tx.memberPermission.createMany({
+          data: dto.permissions.map((p) => ({
             userId: uid,
             orgId,
             projectId: p.projectId ?? null,
             resource: p.resource,
             action: p.action,
             grantedBy: adminId,
-          },
-        }),
-      ),
-      this.prisma.userInvite.create({
+          })),
+        });
+      }
+
+      await tx.userInvite.create({
         data: { userId: uid, orgId, invitedBy: adminId },
-      }),
-    ]);
+      });
+    });
 
     return { id: uid };
   }

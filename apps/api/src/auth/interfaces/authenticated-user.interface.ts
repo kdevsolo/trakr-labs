@@ -8,4 +8,5 @@ export interface AuthenticatedUser {
   isOrgAdmin: boolean;
   orgGrants: PermissionGrant[];
   projectGrants: Record<string, PermissionGrant[]>;
+  projectIds: string[];
 }

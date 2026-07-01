@@ -1,9 +1,16 @@
+import type { PaginatedResponse } from "@trakr/schemas";
+
 import { apiFetch } from "./client";
+import { toSearchParams } from "./search-params";
 import type { Comment, CreateCommentInput } from "./types";
 
-export function listIssueComments(projectId: string, issueId: string) {
-  return apiFetch<Comment[]>(
-    `/projects/${projectId}/issues/${issueId}/comments`,
+export function listIssueComments(
+  projectId: string,
+  issueId: string,
+  params?: { page?: number; pageSize?: number },
+) {
+  return apiFetch<PaginatedResponse<Comment>>(
+    `/projects/${projectId}/issues/${issueId}/comments${toSearchParams(params)}`,
   );
 }
 

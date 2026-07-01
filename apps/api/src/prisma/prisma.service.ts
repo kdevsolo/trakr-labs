@@ -14,6 +14,13 @@ export class PrismaService
   constructor(config: ConfigService) {
     const pool = new Pool({
       connectionString: config.getOrThrow<string>('DATABASE_URL'),
+      max: Number(config.get<string>('PG_POOL_MAX') ?? 10),
+      idleTimeoutMillis: Number(
+        config.get<string>('PG_POOL_IDLE_TIMEOUT_MS') ?? 30_000,
+      ),
+      connectionTimeoutMillis: Number(
+        config.get<string>('PG_POOL_CONNECTION_TIMEOUT_MS') ?? 5_000,
+      ),
     });
     const adapter = new PrismaPg(pool);
     super({ adapter });

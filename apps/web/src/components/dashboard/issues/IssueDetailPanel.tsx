@@ -3,6 +3,7 @@
 import { ExternalLinkIcon, LinkIcon, XIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { SafeExternalLink } from "@/components/shared/SafeExternalLink";
 import { useUpdateIssue } from "@/hooks/api/use-issues";
 
 import { formatIssueKey, formatRelativeTime } from "./IssueTable";
@@ -124,10 +125,8 @@ export function IssueDetailPanel({
               <ul className="grid grid-cols-2 gap-3">
                 {issue.media.map((item) => (
                   <li key={item.id}>
-                    <a
+                    <SafeExternalLink
                       href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className="block overflow-hidden rounded-md border border-border bg-muted/20 transition-colors hover:bg-muted/40"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -136,7 +135,7 @@ export function IssueDetailPanel({
                         alt=""
                         className="aspect-video w-full object-cover"
                       />
-                    </a>
+                    </SafeExternalLink>
                   </li>
                 ))}
               </ul>

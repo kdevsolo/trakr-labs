@@ -28,7 +28,7 @@ export default function CreateOrgStep() {
   })
 
   const handleContinue = () => {
-    createOrg({ name: orgName } as CreateOrganizationInput)
+    createOrg({ name: orgName })
   }
 
   return (

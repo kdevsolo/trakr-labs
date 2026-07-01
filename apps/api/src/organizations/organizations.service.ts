@@ -1,8 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import type {
-  CreateOrganizationInput,
-  UpdateOrganizationInput,
-} from '@trakr/schemas';
+import type { CreateOrganizationInput } from '@trakr/schemas';
 import { DEFAULT_STATUSES } from 'src/common/constants/default-statuses';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -45,23 +42,7 @@ export class OrganizationsService {
       });
 
       return organization;
-    })
-  }
-
-  findAll() {
-    return `This action returns all organizations`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} organization`;
-  }
-
-  update(id: number, updateOrganizationDto: UpdateOrganizationInput) {
-    return `This action updates a #${id} organization`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} organization`;
+    });
   }
 
   async getStatusMaster(orgId: string) {

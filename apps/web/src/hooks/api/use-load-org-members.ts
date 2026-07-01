@@ -4,15 +4,28 @@ import { listOrgMembers, queryKeys } from "@/lib/api";
 import { useClientQuery } from "@/hooks/use-client-query";
 import { useOrgMembersStore } from "@/stores/use-org-members-store";
 
-const PRELOAD_PARAMS = { page: 1, pageSize: 100 };
+const PAGE_SIZE = 100;
+
+async function listAllOrgMembers() {
+  const firstPage = await listOrgMembers({ page: 1, pageSize: PAGE_SIZE });
+  const allItems = [...firstPage.items];
+  const totalPages = Math.ceil(firstPage.meta.total / PAGE_SIZE);
+
+  for (let page = 2; page <= totalPages; page += 1) {
+    const nextPage = await listOrgMembers({ page, pageSize: PAGE_SIZE });
+    allItems.push(...nextPage.items);
+  }
+
+  return allItems;
+}
 
 export function useLoadOrgMembers() {
   const setMembers = useOrgMembersStore((state) => state.setMembers);
   const setLoading = useOrgMembersStore((state) => state.setLoading);
 
   const query = useClientQuery({
-    queryKey: queryKeys.users.members(PRELOAD_PARAMS),
-    queryFn: () => listOrgMembers(PRELOAD_PARAMS),
+    queryKey: [...queryKeys.users.membersPrefix(), "all"],
+    queryFn: listAllOrgMembers,
   });
 
   useEffect(() => {
@@ -21,7 +34,7 @@ export function useLoadOrgMembers() {
 
   useEffect(() => {
     if (query.data) {
-      setMembers(query.data.items);
+      setMembers(query.data);
     }
   }, [query.data, setMembers]);
 

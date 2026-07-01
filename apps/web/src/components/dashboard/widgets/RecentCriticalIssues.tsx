@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { ColDef, ICellRendererParams } from "ag-grid-community";
 import { UserIcon } from "lucide-react";
 
-import { DataTable } from "@/components/shared/DataTable";
+import { LazyDataTable } from "@/components/shared/LazyDataTable";
 import { cn } from "@/lib/utils";
 
 type IssueStatus = "OPEN" | "IN PROGRESS" | "IN REVIEW";
@@ -157,7 +157,7 @@ const RecentCriticalIssues = () => {
         </button>
       </div>
       <div className="p-1">
-        <DataTable
+        <LazyDataTable
           rowData={MOCK_ISSUES}
           columnDefs={columnDefs}
           height={280}

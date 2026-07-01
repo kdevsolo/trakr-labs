@@ -1,6 +1,6 @@
 "use client";
 
-import { FeedbackWidget } from "@trakr/widget-ui";
+import dynamic from "next/dynamic";
 import { ChevronDownIcon, CopyIcon, FolderIcon, RefreshCwIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -21,13 +21,13 @@ import {
 } from "@/hooks/api/use-widget";
 import { useProjects } from "@/hooks/api/use-projects";
 import type { Project } from "@/lib/api";
-import {
-  clearWidgetSecret,
-  readWidgetSecret,
-  storeWidgetSecret,
-} from "@/lib/widget-secret-storage";
 
 import "@trakr/widget-ui/styles.css";
+
+const FeedbackWidget = dynamic(
+  () => import("@trakr/widget-ui").then((mod) => mod.FeedbackWidget),
+  { ssr: false },
+);
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 const WIDGET_URL =
@@ -75,12 +75,7 @@ export function WidgetSettingsView() {
   }, [projects]);
 
   useEffect(() => {
-    if (!projectId) {
-      setRevealedSecret(null);
-      return;
-    }
-
-    setRevealedSecret(readWidgetSecret(projectId));
+    setRevealedSecret(null);
   }, [projectId]);
 
   const embedSnippet = useMemo(() => {
@@ -92,19 +87,16 @@ export function WidgetSettingsView() {
 
   async function handleEnable() {
     const result = await enableWidget.mutateAsync();
-    storeWidgetSecret(projectId, result.widgetSecret);
     setRevealedSecret(result.widgetSecret);
   }
 
   async function handleRotate() {
     const result = await rotateSecret.mutateAsync();
-    storeWidgetSecret(projectId, result.widgetSecret);
     setRevealedSecret(result.widgetSecret);
   }
 
   async function handleDisable() {
     await disableWidget.mutateAsync();
-    clearWidgetSecret(projectId);
     setRevealedSecret(null);
   }
 
@@ -172,7 +164,7 @@ export function WidgetSettingsView() {
                   {configLoading
                     ? "Loading configuration…"
                     : widgetConfig?.enabled
-                      ? "Enabled — embed code is active for this project."
+                      ? "Enabled — copy the embed code after enabling or rotating the secret."
                       : "Disabled — enable the widget to generate credentials."}
                 </p>
               </div>
@@ -218,9 +210,22 @@ export function WidgetSettingsView() {
                 </div>
               </dl>
             ) : null}
-
-            
           </section>
+
+          {revealedSecret ? (
+            <section className="rounded-lg border border-amber-200 bg-amber-50 p-5">
+              <h2 className="text-base font-semibold text-foreground">
+                Save your widget secret
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Copy the embed code below now. The secret is not stored in your
+                browser and will not be shown again after you leave this page.
+              </p>
+              <p className="mt-3 font-mono text-xs break-all rounded-md bg-white p-3 border border-border">
+                {revealedSecret}
+              </p>
+            </section>
+          ) : null}
 
           {embedSnippet ? (
             <section className="rounded-lg border border-border bg-white p-5">
@@ -237,6 +242,10 @@ export function WidgetSettingsView() {
                 {embedSnippet}
               </pre>
             </section>
+          ) : widgetConfig?.enabled && widgetConfig.hasSecret ? (
+            <p className="text-sm text-muted-foreground">
+              Rotate the secret to reveal the embed code and live preview.
+            </p>
           ) : null}
 
           <section className="rounded-lg border border-border bg-white p-5">
@@ -259,7 +268,7 @@ export function WidgetSettingsView() {
                 </div>
               ) : widgetConfig?.enabled && widgetConfig.hasSecret ? (
                 <p className="text-center text-sm text-muted-foreground">
-                  Rotate the secret to restore the live preview in this browser tab.
+                  Rotate the secret to restore the live preview in this session.
                 </p>
               ) : (
                 <p className="text-center text-sm text-muted-foreground">

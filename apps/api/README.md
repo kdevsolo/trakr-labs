@@ -29,7 +29,6 @@ Used on:
 
 PermissionsController (entire controller — class-level guard + per-route @OrgAdminOnly())
 PATCH org/members/:userId in UsersController
-Note: POST /org/create has @UseGuards(OrgAdminGuard) but no @OrgAdminOnly(), so the guard does nothing there.
 
 4. ProjectMemberGuard — project membership
 Question it answers: Can this user access this specific project?
@@ -37,7 +36,6 @@ Question it answers: Can this user access this specific project?
 Only enforces when @ProjectScoped() is on the controller/handler
 Org admins skip the membership check entirely
 For everyone else:
-Verifies the project exists in the user's org
-Checks they are a ProjectMember
+Verifies membership via user.projectIds loaded at auth time (DB fallback removed)
 Fails with 404 if project not in org, 403 if not a member
-Used on: IssuesController (@Controller('projects/:projectId/issues') + @ProjectScoped())
+Used on: IssuesController, ProjectsController findOne, ProjectWidgetController

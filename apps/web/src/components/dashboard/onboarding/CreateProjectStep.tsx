@@ -17,7 +17,7 @@ export default function CreateProjectStep() {
   const { setProjectName, projectName, orgId } = useOnboardingStore()
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: () => createProject({ name: projectName, orgId }),
+    mutationFn: () => createProject({ name: projectName }),
     onSuccess: () => {
       router.push('/dashboard')
     },

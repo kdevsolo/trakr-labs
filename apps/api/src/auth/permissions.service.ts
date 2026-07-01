@@ -17,11 +17,35 @@ import { requireOrgId } from './utils/require-org-id';
 @Injectable()
 export class PermissionsService {
   private readonly cache = new Map<string, AuthenticatedUser>();
+  private readonly cacheTimestamps = new Map<string, number>();
+  private readonly cacheTtlMs = Number(process.env.AUTH_CACHE_TTL_MS ?? 60_000);
 
   constructor(private readonly prisma: PrismaService) {}
 
+  getCachedUser(userId: string): AuthenticatedUser | null {
+    const cached = this.cache.get(userId);
+    const cachedAt = this.cacheTimestamps.get(userId);
+
+    if (!cached || cachedAt === undefined) {
+      return null;
+    }
+
+    if (Date.now() - cachedAt > this.cacheTtlMs) {
+      this.invalidateUserCache(userId);
+      return null;
+    }
+
+    return cached;
+  }
+
+  setCachedUser(user: AuthenticatedUser) {
+    this.cache.set(user.id, user);
+    this.cacheTimestamps.set(user.id, Date.now());
+  }
+
   invalidateUserCache(userId: string) {
     this.cache.delete(userId);
+    this.cacheTimestamps.delete(userId);
   }
 
   hasPermission(
@@ -219,6 +243,92 @@ export class PermissionsService {
       },
     });
     return member !== null;
+  }
+
+  async validateInviteGrants(
+    orgId: string,
+    grants: Array<{
+      resource: PermissionResource;
+      action: PermissionAction;
+      projectId?: string | null;
+    }>,
+  ) {
+    for (const grant of grants) {
+      const scope: PermissionScope = grant.projectId ? 'project' : 'org';
+      this.validateGrants(
+        [
+          {
+            resource: grant.resource,
+            action: grant.action,
+            projectId: grant.projectId ?? null,
+          },
+        ],
+        scope,
+        grant.projectId ?? null,
+      );
+
+      if (grant.projectId) {
+        const project = await this.prisma.project.findFirst({
+          where: { id: grant.projectId, orgId },
+          select: { id: true },
+        });
+        if (!project) {
+          throw new BadRequestException(
+            'Project not found in this organization',
+          );
+        }
+      }
+    }
+  }
+
+  async getBatchMemberPermissions(orgId: string, userIds: string[]) {
+    if (userIds.length === 0) {
+      return {};
+    }
+
+    const permissions = await this.prisma.memberPermission.findMany({
+      where: { orgId, userId: { in: userIds } },
+    });
+
+    const result: Record<
+      string,
+      Awaited<ReturnType<PermissionsService['getMemberPermissions']>>
+    > = {};
+
+    for (const userId of userIds) {
+      const userPermissions = permissions.filter((p) => p.userId === userId);
+      const orgWide = userPermissions.filter((p) => p.projectId === null);
+      const byProject = userPermissions
+        .filter((p) => p.projectId !== null)
+        .reduce<
+          Record<
+            string,
+            Array<{ resource: PermissionResource; action: PermissionAction }>
+          >
+        >((acc, permission) => {
+          const projectId = permission.projectId as string;
+          if (!acc[projectId]) {
+            acc[projectId] = [];
+          }
+          acc[projectId].push({
+            resource: permission.resource,
+            action: permission.action,
+          });
+          return acc;
+        }, {});
+
+      result[userId] = {
+        userId,
+        orgId,
+        orgWide: orgWide.map((p) => ({
+          resource: p.resource,
+          action: p.action,
+        })),
+        byProject,
+      };
+    }
+
+    return result;
   }
 
   private validateGrants(

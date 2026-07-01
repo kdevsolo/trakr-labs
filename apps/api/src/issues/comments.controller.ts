@@ -4,11 +4,14 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
   CreateCommentSchema,
+  PaginationQuerySchema,
   type CreateCommentInput,
+  type PaginationQuery,
 } from '@trakr/schemas';
 import {
   PermissionAction,
@@ -21,6 +24,7 @@ import { ProjectMemberGuard } from '../auth/guards/project-member.guard';
 import { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 import { requireOrgId } from '../auth/utils/require-org-id';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { UuidParamPipe } from '../common/pipes/uuid-param.pipe';
 import { CommentsService } from './comments.service';
 
 @Controller('projects/:projectId/issues/:issueId/comments')
@@ -32,22 +36,25 @@ export class CommentsController {
   @Get()
   @RequirePermission(PermissionResource.PROJECT, PermissionAction.READ, 'project')
   list(
-    @Param('projectId') projectId: string,
-    @Param('issueId') issueId: string,
+    @Param('projectId', UuidParamPipe) projectId: string,
+    @Param('issueId', UuidParamPipe) issueId: string,
     @CurrentUser() user: AuthenticatedUser,
+    @Query(new ZodValidationPipe(PaginationQuerySchema))
+    query: PaginationQuery,
   ) {
     return this.commentsService.list(
       projectId,
       requireOrgId(user.orgId),
       issueId,
+      query,
     );
   }
 
   @Post()
   @RequirePermission(PermissionResource.PROJECT, PermissionAction.UPDATE, 'project')
   create(
-    @Param('projectId') projectId: string,
-    @Param('issueId') issueId: string,
+    @Param('projectId', UuidParamPipe) projectId: string,
+    @Param('issueId', UuidParamPipe) issueId: string,
     @CurrentUser() user: AuthenticatedUser,
     @Body(new ZodValidationPipe(CreateCommentSchema))
     dto: CreateCommentInput,

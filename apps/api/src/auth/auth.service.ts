@@ -1,33 +1,48 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { PermissionsService } from './permissions.service';
 import { AuthenticatedUser } from './interfaces/authenticated-user.interface';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { PermissionGrant } from './interfaces/permission-grant.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly permissionsService: PermissionsService,
+  ) {}
 
   async resolveUser(payload: JwtPayload): Promise<AuthenticatedUser> {
     if (!payload.sub) {
       throw new UnauthorizedException('Invalid token: missing subject');
     }
 
+    const cached = this.permissionsService.getCachedUser(payload.sub);
+    if (cached) {
+      return cached;
+    }
+
     let user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      include: { permissions: true },
+      include: {
+        permissions: true,
+        invite: true,
+        projectMembers: { select: { projectId: true } },
+      },
     });
 
     if (!user) {
       user = await this.provisionUser(payload);
-    } else {
+    } else if (user.invite?.status === 'PENDING') {
       await this.prisma.userInvite.updateMany({
         where: { userId: user.id, status: 'PENDING' },
         data: { status: 'ACCEPTED' },
       });
     }
 
-    return this.toAuthenticatedUser(user);
+    const authenticatedUser = this.toAuthenticatedUser(user);
+    this.permissionsService.setCachedUser(authenticatedUser);
+    return authenticatedUser;
   }
 
   private async provisionUser(payload: JwtPayload) {
@@ -43,23 +58,17 @@ export class AuthService {
       payload.user_metadata?.full_name ??
       email.split('@')[0];
 
-    const tncAcceptedAt = payload.user_metadata?.tnc_accepted_at;
-    const tncData =
-      tncAcceptedAt && !Number.isNaN(Date.parse(tncAcceptedAt))
-        ? {
-            tncAccepted: true,
-            tncAcceptingTimestamp: new Date(tncAcceptedAt),
-          }
-        : {};
-
     return this.prisma.user.create({
       data: {
         id: payload.sub,
         email,
         name,
-        ...tncData,
       },
-      include: { permissions: true },
+      include: {
+        permissions: true,
+        invite: true,
+        projectMembers: { select: { projectId: true } },
+      },
     });
   }
 
@@ -75,6 +84,7 @@ export class AuthService {
         action: PermissionGrant['action'];
         projectId: string | null;
       }>;
+      projectMembers: Array<{ projectId: string }>;
     },
   ): AuthenticatedUser {
     const orgGrants: PermissionGrant[] = [];
@@ -105,6 +115,7 @@ export class AuthService {
       isOrgAdmin: user.isOrgAdmin,
       orgGrants,
       projectGrants,
+      projectIds: user.projectMembers.map((member) => member.projectId),
     };
   }
 }

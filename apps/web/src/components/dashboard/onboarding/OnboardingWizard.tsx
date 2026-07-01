@@ -13,11 +13,11 @@ export default function OnboardingWizard({ data }: { data: User }) {
   useEffect(() => {
     if (data.orgId) {
       setStep(2)
-      if(!orgId) {
+      if (!orgId) {
         setOrgId(data.orgId)
       }
     }
-  }, [data.orgId])
+  }, [data.orgId, orgId, setOrgId, setStep])
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">

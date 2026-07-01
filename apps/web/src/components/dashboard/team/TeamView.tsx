@@ -1,13 +1,12 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useQueries } from '@tanstack/react-query'
 
-import { getMemberPermissions, queryKeys } from '@/lib/api'
 import type { MemberPermissions, User } from '@/lib/api/types'
+import { useLoadOrgMembers } from '@/hooks/api/use-load-org-members'
+import { useMembersPermissions } from '@/hooks/api/use-members-permissions'
 import { useMe } from '@/hooks/api/use-me'
 import { useOrgMembersList } from '@/hooks/api/use-org-members-list'
-import { useIsClient } from '@/hooks/use-is-client'
 
 import { AddMemberDrawer } from './AddMemberDrawer'
 import { MemberPermissionsDrawer } from './MemberPermissionsDrawer'
@@ -23,7 +22,8 @@ const DEFAULT_META = {
 }
 
 export function TeamView() {
-  const isClient = useIsClient()
+  useLoadOrgMembers()
+
   const { data: me } = useMe()
   const [page, setPage] = useState(1)
   const { data: membersResult, isLoading: membersLoading } = useOrgMembersList({
@@ -38,27 +38,18 @@ export function TeamView() {
   const [permissionsDrawerOpen, setPermissionsDrawerOpen] = useState(false)
   const [selectedMember, setSelectedMember] = useState<User | null>(null)
 
-  const permissionQueries = useQueries({
-    queries: members.map((member) => ({
-      queryKey: queryKeys.permissions.member(member.id),
-      queryFn: () => getMemberPermissions(member.id),
-      enabled: isClient && canManage && members.length > 0,
-    })),
-  })
+  const memberIds = useMemo(
+    () => (canManage ? members.map((member) => member.id) : []),
+    [canManage, members],
+  )
 
-  const permissionsByUserId = useMemo(() => {
-    const map: Record<string, MemberPermissions> = {}
-    members.forEach((member, index) => {
-      const data = permissionQueries[index]?.data
-      if (data) map[member.id] = data
-    })
-    return map
-  }, [members, permissionQueries])
+  const { data: batchPermissions, isLoading: permissionsLoading } =
+    useMembersPermissions(memberIds, canManage && members.length > 0)
 
-  const permissionsLoading =
-    canManage &&
-    members.length > 0 &&
-    permissionQueries.some((q) => q.isLoading)
+  const permissionsByUserId = (batchPermissions ?? {}) as Record<
+    string,
+    MemberPermissions
+  >
 
   function handleManage(member: User) {
     setSelectedMember(member)

@@ -7,7 +7,7 @@ import {
 import type {
   AddProjectMemberInput,
   CreateProjectInput,
-  UpdateProjectInput,
+  PaginationQuery,
 } from '@trakr/schemas';
 import { isGrantAllowed } from 'src/auth/constants/permissions';
 import { AuthenticatedUser } from 'src/auth/interfaces/authenticated-user.interface';
@@ -34,8 +34,11 @@ export class ProjectsService {
     private readonly permissionsService: PermissionsService,
   ) {}
 
-  async create(userId: string, createProjectDto: CreateProjectInput) {
-    const { orgId } = createProjectDto;
+  async create(
+    userId: string,
+    orgId: string,
+    createProjectDto: CreateProjectInput,
+  ) {
     const projectKey = generateProjectKey(createProjectDto.name, userId);
 
     const project = await this.prisma.$transaction(async (tx) => {
@@ -150,27 +153,37 @@ export class ProjectsService {
     return { success: true };
   }
 
-  async findAll(orgId: string, userId: string) {
+  async findAll(orgId: string, userId: string, query: PaginationQuery) {
     const member = await this.prisma.projectMember.findFirst({
       where: { userId, project: { orgId } },
     });
     if (!member) {
       throw new ForbiddenException('You are not a member of this project');
     }
-    return this.prisma.project.findMany({
-      where: { orgId, members: { some: { userId } } },
-    },);
+
+    const { page, pageSize } = query;
+    const skip = (page - 1) * pageSize;
+    const where = { orgId, members: { some: { userId } } };
+
+    const [items, total] = await Promise.all([
+      this.prisma.project.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        skip,
+        take: pageSize,
+      }),
+      this.prisma.project.count({ where }),
+    ]);
+
+    return {
+      items,
+      meta: { page, pageSize, total },
+    };
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} project`;
-  }
-
-  update(id: string, updateProjectDto: UpdateProjectInput) {
-    return `This action updates a #${id} project`;
-  }
-
-  remove(id: string) {
-    return `This action removes a #${id} project`;
+  findOne(projectId: string) {
+    return this.prisma.project.findUniqueOrThrow({
+      where: { id: projectId },
+    });
   }
 }

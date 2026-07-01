@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { CreateCommentInput } from '@trakr/schemas';
+import type { CreateCommentInput, PaginationQuery } from '@trakr/schemas';
 import { PrismaService } from '../prisma/prisma.service';
 
 const commentSelect = {
@@ -15,14 +15,33 @@ const commentSelect = {
 export class CommentsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async list(projectId: string, orgId: string, issueId: string) {
+  async list(
+    projectId: string,
+    orgId: string,
+    issueId: string,
+    query: PaginationQuery,
+  ) {
     await this.assertIssueInProject(issueId, projectId, orgId);
 
-    return this.prisma.comment.findMany({
-      where: { issueId },
-      select: commentSelect,
-      orderBy: { createdAt: 'asc' },
-    });
+    const { page, pageSize } = query;
+    const skip = (page - 1) * pageSize;
+    const where = { issueId };
+
+    const [items, total] = await Promise.all([
+      this.prisma.comment.findMany({
+        where,
+        select: commentSelect,
+        orderBy: { createdAt: 'asc' },
+        skip,
+        take: pageSize,
+      }),
+      this.prisma.comment.count({ where }),
+    ]);
+
+    return {
+      items,
+      meta: { page, pageSize, total },
+    };
   }
 
   async create(

@@ -11,7 +11,13 @@ import { useClientQuery } from "@/hooks/use-client-query";
 export function useIssueComments(projectId: string, issueId: string) {
   return useClientQuery({
     queryKey: queryKeys.issues.comments(projectId, issueId),
-    queryFn: () => listIssueComments(projectId, issueId),
+    queryFn: async () => {
+      const result = await listIssueComments(projectId, issueId, {
+        page: 1,
+        pageSize: 50,
+      });
+      return result.items;
+    },
     enabled: Boolean(projectId && issueId),
   });
 }
