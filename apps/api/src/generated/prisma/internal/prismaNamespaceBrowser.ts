@@ -60,7 +60,9 @@ export const ModelName = {
   Issue: 'Issue',
   Comment: 'Comment',
   IssueMedia: 'IssueMedia',
-  StatusMaster: 'StatusMaster'
+  StatusMaster: 'StatusMaster',
+  GithubInstallation: 'GithubInstallation',
+  RepoConnection: 'RepoConnection'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -212,6 +214,36 @@ export const StatusMasterScalarFieldEnum = {
 } as const
 
 export type StatusMasterScalarFieldEnum = (typeof StatusMasterScalarFieldEnum)[keyof typeof StatusMasterScalarFieldEnum]
+
+
+export const GithubInstallationScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  installationId: 'installationId',
+  accountLogin: 'accountLogin',
+  accountType: 'accountType',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GithubInstallationScalarFieldEnum = (typeof GithubInstallationScalarFieldEnum)[keyof typeof GithubInstallationScalarFieldEnum]
+
+
+export const RepoConnectionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  installationId: 'installationId',
+  repoOwner: 'repoOwner',
+  repoName: 'repoName',
+  repoId: 'repoId',
+  defaultBranch: 'defaultBranch',
+  connectedBy: 'connectedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RepoConnectionScalarFieldEnum = (typeof RepoConnectionScalarFieldEnum)[keyof typeof RepoConnectionScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -393,7 +393,9 @@ export const ModelName = {
   Issue: 'Issue',
   Comment: 'Comment',
   IssueMedia: 'IssueMedia',
-  StatusMaster: 'StatusMaster'
+  StatusMaster: 'StatusMaster',
+  GithubInstallation: 'GithubInstallation',
+  RepoConnection: 'RepoConnection'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -409,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userInvite" | "organization" | "project" | "projectMember" | "memberPermission" | "issue" | "comment" | "issueMedia" | "statusMaster"
+    modelProps: "user" | "userInvite" | "organization" | "project" | "projectMember" | "memberPermission" | "issue" | "comment" | "issueMedia" | "statusMaster" | "githubInstallation" | "repoConnection"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1153,6 +1155,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    GithubInstallation: {
+      payload: Prisma.$GithubInstallationPayload<ExtArgs>
+      fields: Prisma.GithubInstallationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GithubInstallationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GithubInstallationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
+        }
+        findFirst: {
+          args: Prisma.GithubInstallationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GithubInstallationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
+        }
+        findMany: {
+          args: Prisma.GithubInstallationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>[]
+        }
+        create: {
+          args: Prisma.GithubInstallationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
+        }
+        createMany: {
+          args: Prisma.GithubInstallationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GithubInstallationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>[]
+        }
+        delete: {
+          args: Prisma.GithubInstallationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
+        }
+        update: {
+          args: Prisma.GithubInstallationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
+        }
+        deleteMany: {
+          args: Prisma.GithubInstallationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GithubInstallationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GithubInstallationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>[]
+        }
+        upsert: {
+          args: Prisma.GithubInstallationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GithubInstallationPayload>
+        }
+        aggregate: {
+          args: Prisma.GithubInstallationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGithubInstallation>
+        }
+        groupBy: {
+          args: Prisma.GithubInstallationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GithubInstallationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GithubInstallationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GithubInstallationCountAggregateOutputType> | number
+        }
+      }
+    }
+    RepoConnection: {
+      payload: Prisma.$RepoConnectionPayload<ExtArgs>
+      fields: Prisma.RepoConnectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RepoConnectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoConnectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RepoConnectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoConnectionPayload>
+        }
+        findFirst: {
+          args: Prisma.RepoConnectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoConnectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RepoConnectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoConnectionPayload>
+        }
+        findMany: {
+          args: Prisma.RepoConnectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoConnectionPayload>[]
+        }
+        create: {
+          args: Prisma.RepoConnectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoConnectionPayload>
+        }
+        createMany: {
+          args: Prisma.RepoConnectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RepoConnectionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoConnectionPayload>[]
+        }
+        delete: {
+          args: Prisma.RepoConnectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoConnectionPayload>
+        }
+        update: {
+          args: Prisma.RepoConnectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoConnectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.RepoConnectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RepoConnectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RepoConnectionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoConnectionPayload>[]
+        }
+        upsert: {
+          args: Prisma.RepoConnectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoConnectionPayload>
+        }
+        aggregate: {
+          args: Prisma.RepoConnectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRepoConnection>
+        }
+        groupBy: {
+          args: Prisma.RepoConnectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RepoConnectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RepoConnectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RepoConnectionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1325,6 +1475,36 @@ export const StatusMasterScalarFieldEnum = {
 } as const
 
 export type StatusMasterScalarFieldEnum = (typeof StatusMasterScalarFieldEnum)[keyof typeof StatusMasterScalarFieldEnum]
+
+
+export const GithubInstallationScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  installationId: 'installationId',
+  accountLogin: 'accountLogin',
+  accountType: 'accountType',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GithubInstallationScalarFieldEnum = (typeof GithubInstallationScalarFieldEnum)[keyof typeof GithubInstallationScalarFieldEnum]
+
+
+export const RepoConnectionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  installationId: 'installationId',
+  repoOwner: 'repoOwner',
+  repoName: 'repoName',
+  repoId: 'repoId',
+  defaultBranch: 'defaultBranch',
+  connectedBy: 'connectedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RepoConnectionScalarFieldEnum = (typeof RepoConnectionScalarFieldEnum)[keyof typeof RepoConnectionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1612,6 +1792,8 @@ export type GlobalOmitConfig = {
   comment?: Prisma.CommentOmit
   issueMedia?: Prisma.IssueMediaOmit
   statusMaster?: Prisma.StatusMasterOmit
+  githubInstallation?: Prisma.GithubInstallationOmit
+  repoConnection?: Prisma.RepoConnectionOmit
 }
 
 /* Types for Logging */

@@ -202,6 +202,7 @@ export type OrganizationWhereInput = {
   projects?: Prisma.ProjectListRelationFilter
   permissions?: Prisma.MemberPermissionListRelationFilter
   statuses?: Prisma.StatusMasterListRelationFilter
+  githubInstallations?: Prisma.GithubInstallationListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -216,6 +217,7 @@ export type OrganizationOrderByWithRelationInput = {
   projects?: Prisma.ProjectOrderByRelationAggregateInput
   permissions?: Prisma.MemberPermissionOrderByRelationAggregateInput
   statuses?: Prisma.StatusMasterOrderByRelationAggregateInput
+  githubInstallations?: Prisma.GithubInstallationOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -233,6 +235,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   projects?: Prisma.ProjectListRelationFilter
   permissions?: Prisma.MemberPermissionListRelationFilter
   statuses?: Prisma.StatusMasterListRelationFilter
+  githubInstallations?: Prisma.GithubInstallationListRelationFilter
 }, "id">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -273,6 +276,7 @@ export type OrganizationCreateInput = {
   projects?: Prisma.ProjectCreateNestedManyWithoutOrgInput
   permissions?: Prisma.MemberPermissionCreateNestedManyWithoutOrgInput
   statuses?: Prisma.StatusMasterCreateNestedManyWithoutOrgInput
+  githubInstallations?: Prisma.GithubInstallationCreateNestedManyWithoutOrgInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -287,6 +291,7 @@ export type OrganizationUncheckedCreateInput = {
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrgInput
   permissions?: Prisma.MemberPermissionUncheckedCreateNestedManyWithoutOrgInput
   statuses?: Prisma.StatusMasterUncheckedCreateNestedManyWithoutOrgInput
+  githubInstallations?: Prisma.GithubInstallationUncheckedCreateNestedManyWithoutOrgInput
 }
 
 export type OrganizationUpdateInput = {
@@ -301,6 +306,7 @@ export type OrganizationUpdateInput = {
   projects?: Prisma.ProjectUpdateManyWithoutOrgNestedInput
   permissions?: Prisma.MemberPermissionUpdateManyWithoutOrgNestedInput
   statuses?: Prisma.StatusMasterUpdateManyWithoutOrgNestedInput
+  githubInstallations?: Prisma.GithubInstallationUpdateManyWithoutOrgNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -315,6 +321,7 @@ export type OrganizationUncheckedUpdateInput = {
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrgNestedInput
   permissions?: Prisma.MemberPermissionUncheckedUpdateManyWithoutOrgNestedInput
   statuses?: Prisma.StatusMasterUncheckedUpdateManyWithoutOrgNestedInput
+  githubInstallations?: Prisma.GithubInstallationUncheckedUpdateManyWithoutOrgNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -445,6 +452,20 @@ export type OrganizationUpdateOneRequiredWithoutStatusesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutStatusesInput, Prisma.OrganizationUpdateWithoutStatusesInput>, Prisma.OrganizationUncheckedUpdateWithoutStatusesInput>
 }
 
+export type OrganizationCreateNestedOneWithoutGithubInstallationsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutGithubInstallationsInput, Prisma.OrganizationUncheckedCreateWithoutGithubInstallationsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutGithubInstallationsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutGithubInstallationsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutGithubInstallationsInput, Prisma.OrganizationUncheckedCreateWithoutGithubInstallationsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutGithubInstallationsInput
+  upsert?: Prisma.OrganizationUpsertWithoutGithubInstallationsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutGithubInstallationsInput, Prisma.OrganizationUpdateWithoutGithubInstallationsInput>, Prisma.OrganizationUncheckedUpdateWithoutGithubInstallationsInput>
+}
+
 export type OrganizationCreateWithoutUsersInput = {
   id?: string
   name: string
@@ -456,6 +477,7 @@ export type OrganizationCreateWithoutUsersInput = {
   projects?: Prisma.ProjectCreateNestedManyWithoutOrgInput
   permissions?: Prisma.MemberPermissionCreateNestedManyWithoutOrgInput
   statuses?: Prisma.StatusMasterCreateNestedManyWithoutOrgInput
+  githubInstallations?: Prisma.GithubInstallationCreateNestedManyWithoutOrgInput
 }
 
 export type OrganizationUncheckedCreateWithoutUsersInput = {
@@ -469,6 +491,7 @@ export type OrganizationUncheckedCreateWithoutUsersInput = {
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrgInput
   permissions?: Prisma.MemberPermissionUncheckedCreateNestedManyWithoutOrgInput
   statuses?: Prisma.StatusMasterUncheckedCreateNestedManyWithoutOrgInput
+  githubInstallations?: Prisma.GithubInstallationUncheckedCreateNestedManyWithoutOrgInput
 }
 
 export type OrganizationCreateOrConnectWithoutUsersInput = {
@@ -498,6 +521,7 @@ export type OrganizationUpdateWithoutUsersInput = {
   projects?: Prisma.ProjectUpdateManyWithoutOrgNestedInput
   permissions?: Prisma.MemberPermissionUpdateManyWithoutOrgNestedInput
   statuses?: Prisma.StatusMasterUpdateManyWithoutOrgNestedInput
+  githubInstallations?: Prisma.GithubInstallationUpdateManyWithoutOrgNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutUsersInput = {
@@ -511,6 +535,7 @@ export type OrganizationUncheckedUpdateWithoutUsersInput = {
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrgNestedInput
   permissions?: Prisma.MemberPermissionUncheckedUpdateManyWithoutOrgNestedInput
   statuses?: Prisma.StatusMasterUncheckedUpdateManyWithoutOrgNestedInput
+  githubInstallations?: Prisma.GithubInstallationUncheckedUpdateManyWithoutOrgNestedInput
 }
 
 export type OrganizationCreateWithoutProjectsInput = {
@@ -524,6 +549,7 @@ export type OrganizationCreateWithoutProjectsInput = {
   users?: Prisma.UserCreateNestedManyWithoutOrgInput
   permissions?: Prisma.MemberPermissionCreateNestedManyWithoutOrgInput
   statuses?: Prisma.StatusMasterCreateNestedManyWithoutOrgInput
+  githubInstallations?: Prisma.GithubInstallationCreateNestedManyWithoutOrgInput
 }
 
 export type OrganizationUncheckedCreateWithoutProjectsInput = {
@@ -537,6 +563,7 @@ export type OrganizationUncheckedCreateWithoutProjectsInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutOrgInput
   permissions?: Prisma.MemberPermissionUncheckedCreateNestedManyWithoutOrgInput
   statuses?: Prisma.StatusMasterUncheckedCreateNestedManyWithoutOrgInput
+  githubInstallations?: Prisma.GithubInstallationUncheckedCreateNestedManyWithoutOrgInput
 }
 
 export type OrganizationCreateOrConnectWithoutProjectsInput = {
@@ -566,6 +593,7 @@ export type OrganizationUpdateWithoutProjectsInput = {
   users?: Prisma.UserUpdateManyWithoutOrgNestedInput
   permissions?: Prisma.MemberPermissionUpdateManyWithoutOrgNestedInput
   statuses?: Prisma.StatusMasterUpdateManyWithoutOrgNestedInput
+  githubInstallations?: Prisma.GithubInstallationUpdateManyWithoutOrgNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutProjectsInput = {
@@ -579,6 +607,7 @@ export type OrganizationUncheckedUpdateWithoutProjectsInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutOrgNestedInput
   permissions?: Prisma.MemberPermissionUncheckedUpdateManyWithoutOrgNestedInput
   statuses?: Prisma.StatusMasterUncheckedUpdateManyWithoutOrgNestedInput
+  githubInstallations?: Prisma.GithubInstallationUncheckedUpdateManyWithoutOrgNestedInput
 }
 
 export type OrganizationCreateWithoutPermissionsInput = {
@@ -592,6 +621,7 @@ export type OrganizationCreateWithoutPermissionsInput = {
   users?: Prisma.UserCreateNestedManyWithoutOrgInput
   projects?: Prisma.ProjectCreateNestedManyWithoutOrgInput
   statuses?: Prisma.StatusMasterCreateNestedManyWithoutOrgInput
+  githubInstallations?: Prisma.GithubInstallationCreateNestedManyWithoutOrgInput
 }
 
 export type OrganizationUncheckedCreateWithoutPermissionsInput = {
@@ -605,6 +635,7 @@ export type OrganizationUncheckedCreateWithoutPermissionsInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutOrgInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrgInput
   statuses?: Prisma.StatusMasterUncheckedCreateNestedManyWithoutOrgInput
+  githubInstallations?: Prisma.GithubInstallationUncheckedCreateNestedManyWithoutOrgInput
 }
 
 export type OrganizationCreateOrConnectWithoutPermissionsInput = {
@@ -634,6 +665,7 @@ export type OrganizationUpdateWithoutPermissionsInput = {
   users?: Prisma.UserUpdateManyWithoutOrgNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutOrgNestedInput
   statuses?: Prisma.StatusMasterUpdateManyWithoutOrgNestedInput
+  githubInstallations?: Prisma.GithubInstallationUpdateManyWithoutOrgNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutPermissionsInput = {
@@ -647,6 +679,7 @@ export type OrganizationUncheckedUpdateWithoutPermissionsInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutOrgNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrgNestedInput
   statuses?: Prisma.StatusMasterUncheckedUpdateManyWithoutOrgNestedInput
+  githubInstallations?: Prisma.GithubInstallationUncheckedUpdateManyWithoutOrgNestedInput
 }
 
 export type OrganizationCreateWithoutStatusesInput = {
@@ -660,6 +693,7 @@ export type OrganizationCreateWithoutStatusesInput = {
   users?: Prisma.UserCreateNestedManyWithoutOrgInput
   projects?: Prisma.ProjectCreateNestedManyWithoutOrgInput
   permissions?: Prisma.MemberPermissionCreateNestedManyWithoutOrgInput
+  githubInstallations?: Prisma.GithubInstallationCreateNestedManyWithoutOrgInput
 }
 
 export type OrganizationUncheckedCreateWithoutStatusesInput = {
@@ -673,6 +707,7 @@ export type OrganizationUncheckedCreateWithoutStatusesInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutOrgInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrgInput
   permissions?: Prisma.MemberPermissionUncheckedCreateNestedManyWithoutOrgInput
+  githubInstallations?: Prisma.GithubInstallationUncheckedCreateNestedManyWithoutOrgInput
 }
 
 export type OrganizationCreateOrConnectWithoutStatusesInput = {
@@ -702,6 +737,7 @@ export type OrganizationUpdateWithoutStatusesInput = {
   users?: Prisma.UserUpdateManyWithoutOrgNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutOrgNestedInput
   permissions?: Prisma.MemberPermissionUpdateManyWithoutOrgNestedInput
+  githubInstallations?: Prisma.GithubInstallationUpdateManyWithoutOrgNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutStatusesInput = {
@@ -715,6 +751,79 @@ export type OrganizationUncheckedUpdateWithoutStatusesInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutOrgNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrgNestedInput
   permissions?: Prisma.MemberPermissionUncheckedUpdateManyWithoutOrgNestedInput
+  githubInstallations?: Prisma.GithubInstallationUncheckedUpdateManyWithoutOrgNestedInput
+}
+
+export type OrganizationCreateWithoutGithubInstallationsInput = {
+  id?: string
+  name: string
+  ownerId: string
+  createdBy: string
+  modifiedBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserCreateNestedManyWithoutOrgInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutOrgInput
+  permissions?: Prisma.MemberPermissionCreateNestedManyWithoutOrgInput
+  statuses?: Prisma.StatusMasterCreateNestedManyWithoutOrgInput
+}
+
+export type OrganizationUncheckedCreateWithoutGithubInstallationsInput = {
+  id?: string
+  name: string
+  ownerId: string
+  createdBy: string
+  modifiedBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutOrgInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrgInput
+  permissions?: Prisma.MemberPermissionUncheckedCreateNestedManyWithoutOrgInput
+  statuses?: Prisma.StatusMasterUncheckedCreateNestedManyWithoutOrgInput
+}
+
+export type OrganizationCreateOrConnectWithoutGithubInstallationsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutGithubInstallationsInput, Prisma.OrganizationUncheckedCreateWithoutGithubInstallationsInput>
+}
+
+export type OrganizationUpsertWithoutGithubInstallationsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutGithubInstallationsInput, Prisma.OrganizationUncheckedUpdateWithoutGithubInstallationsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutGithubInstallationsInput, Prisma.OrganizationUncheckedCreateWithoutGithubInstallationsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutGithubInstallationsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutGithubInstallationsInput, Prisma.OrganizationUncheckedUpdateWithoutGithubInstallationsInput>
+}
+
+export type OrganizationUpdateWithoutGithubInstallationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUpdateManyWithoutOrgNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutOrgNestedInput
+  permissions?: Prisma.MemberPermissionUpdateManyWithoutOrgNestedInput
+  statuses?: Prisma.StatusMasterUpdateManyWithoutOrgNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutGithubInstallationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutOrgNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrgNestedInput
+  permissions?: Prisma.MemberPermissionUncheckedUpdateManyWithoutOrgNestedInput
+  statuses?: Prisma.StatusMasterUncheckedUpdateManyWithoutOrgNestedInput
 }
 
 
@@ -727,6 +836,7 @@ export type OrganizationCountOutputType = {
   projects: number
   permissions: number
   statuses: number
+  githubInstallations: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -734,6 +844,7 @@ export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   projects?: boolean | OrganizationCountOutputTypeCountProjectsArgs
   permissions?: boolean | OrganizationCountOutputTypeCountPermissionsArgs
   statuses?: boolean | OrganizationCountOutputTypeCountStatusesArgs
+  githubInstallations?: boolean | OrganizationCountOutputTypeCountGithubInstallationsArgs
 }
 
 /**
@@ -774,6 +885,13 @@ export type OrganizationCountOutputTypeCountStatusesArgs<ExtArgs extends runtime
   where?: Prisma.StatusMasterWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountGithubInstallationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GithubInstallationWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -787,6 +905,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   projects?: boolean | Prisma.Organization$projectsArgs<ExtArgs>
   permissions?: boolean | Prisma.Organization$permissionsArgs<ExtArgs>
   statuses?: boolean | Prisma.Organization$statusesArgs<ExtArgs>
+  githubInstallations?: boolean | Prisma.Organization$githubInstallationsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -826,6 +945,7 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   projects?: boolean | Prisma.Organization$projectsArgs<ExtArgs>
   permissions?: boolean | Prisma.Organization$permissionsArgs<ExtArgs>
   statuses?: boolean | Prisma.Organization$statusesArgs<ExtArgs>
+  githubInstallations?: boolean | Prisma.Organization$githubInstallationsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -838,6 +958,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     projects: Prisma.$ProjectPayload<ExtArgs>[]
     permissions: Prisma.$MemberPermissionPayload<ExtArgs>[]
     statuses: Prisma.$StatusMasterPayload<ExtArgs>[]
+    githubInstallations: Prisma.$GithubInstallationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1245,6 +1366,7 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   projects<T extends Prisma.Organization$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   permissions<T extends Prisma.Organization$permissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   statuses<T extends Prisma.Organization$statusesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$statusesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StatusMasterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  githubInstallations<T extends Prisma.Organization$githubInstallationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$githubInstallationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GithubInstallationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1767,6 +1889,30 @@ export type Organization$statusesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.StatusMasterScalarFieldEnum | Prisma.StatusMasterScalarFieldEnum[]
+}
+
+/**
+ * Organization.githubInstallations
+ */
+export type Organization$githubInstallationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GithubInstallation
+   */
+  select?: Prisma.GithubInstallationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GithubInstallation
+   */
+  omit?: Prisma.GithubInstallationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GithubInstallationInclude<ExtArgs> | null
+  where?: Prisma.GithubInstallationWhereInput
+  orderBy?: Prisma.GithubInstallationOrderByWithRelationInput | Prisma.GithubInstallationOrderByWithRelationInput[]
+  cursor?: Prisma.GithubInstallationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GithubInstallationScalarFieldEnum | Prisma.GithubInstallationScalarFieldEnum[]
 }
 
 /**

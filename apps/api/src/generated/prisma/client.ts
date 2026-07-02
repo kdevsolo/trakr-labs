@@ -89,3 +89,13 @@ export type IssueMedia = Prisma.IssueMediaModel
  * 
  */
 export type StatusMaster = Prisma.StatusMasterModel
+/**
+ * Model GithubInstallation
+ * 
+ */
+export type GithubInstallation = Prisma.GithubInstallationModel
+/**
+ * Model RepoConnection
+ * 
+ */
+export type RepoConnection = Prisma.RepoConnectionModel

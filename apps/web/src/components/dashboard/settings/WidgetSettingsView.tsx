@@ -1,17 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { ChevronDownIcon, CopyIcon, FolderIcon, RefreshCwIcon } from "lucide-react";
+import { CopyIcon, RefreshCwIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import {
   useDisableWidget,
@@ -19,7 +11,6 @@ import {
   useRotateWidgetSecret,
   useWidgetConfig,
 } from "@/hooks/api/use-widget";
-import { useProjects } from "@/hooks/api/use-projects";
 import type { Project } from "@/lib/api";
 
 import "@trakr/widget-ui/styles.css";
@@ -46,33 +37,20 @@ function buildEmbedSnippet(
 ></script>`;
 }
 
-export function WidgetSettingsView() {
-  const { data: projects = [], isLoading: projectsLoading } = useProjects();
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+type WidgetSettingsViewProps = {
+  project: Project | null;
+};
+
+export function WidgetSettingsView({ project }: WidgetSettingsViewProps) {
   const [revealedSecret, setRevealedSecret] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [projectMenuOpen, setProjectMenuOpen] = useState(false);
 
-  const projectId = selectedProject?.id ?? "";
+  const projectId = project?.id ?? "";
   const { data: widgetConfig, isLoading: configLoading } =
     useWidgetConfig(projectId);
   const enableWidget = useEnableWidget(projectId);
   const rotateSecret = useRotateWidgetSecret(projectId);
   const disableWidget = useDisableWidget(projectId);
-
-  useEffect(() => {
-    if (projects.length === 0) {
-      setSelectedProject(null);
-      return;
-    }
-
-    setSelectedProject((current) => {
-      if (current && projects.some((project) => project.id === current.id)) {
-        return current;
-      }
-      return projects[0] ?? null;
-    });
-  }, [projects]);
 
   useEffect(() => {
     setRevealedSecret(null);
@@ -111,49 +89,13 @@ export function WidgetSettingsView() {
     widgetConfig?.enabled && revealedSecret && widgetConfig.projectKey;
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-muted-foreground">
-          Project:
-        </span>
-        <DropdownMenu open={projectMenuOpen} onOpenChange={setProjectMenuOpen}>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              disabled={projectsLoading}
-              className="flex h-8 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm font-medium transition-colors hover:bg-accent focus:outline-none disabled:opacity-50"
-            >
-              <FolderIcon className="size-3.5 text-muted-foreground" />
-              {projectsLoading
-                ? "Loading projects…"
-                : selectedProject?.name ?? "Select project"}
-              <ChevronDownIcon className="size-3.5 text-muted-foreground" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuLabel>Switch project</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {projects.map((project) => (
-              <DropdownMenuItem
-                key={project.id}
-                onClick={() => {
-                  setSelectedProject(project);
-                  setProjectMenuOpen(false);
-                }}
-              >
-                {project.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {!selectedProject ? (
+    <>
+      {!project ? (
         <p className="text-sm text-muted-foreground">
           Create a project to configure the feedback widget.
         </p>
       ) : (
-        <>
+        <div className="space-y-8">
           <section className="rounded-lg border border-border bg-white p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -277,8 +219,8 @@ export function WidgetSettingsView() {
               )}
             </div>
           </section>
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 }

@@ -226,6 +226,7 @@ export type ProjectWhereInput = {
   members?: Prisma.ProjectMemberListRelationFilter
   permissions?: Prisma.MemberPermissionListRelationFilter
   issues?: Prisma.IssueListRelationFilter
+  repoConnection?: Prisma.XOR<Prisma.RepoConnectionNullableScalarRelationFilter, Prisma.RepoConnectionWhereInput> | null
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -243,6 +244,7 @@ export type ProjectOrderByWithRelationInput = {
   members?: Prisma.ProjectMemberOrderByRelationAggregateInput
   permissions?: Prisma.MemberPermissionOrderByRelationAggregateInput
   issues?: Prisma.IssueOrderByRelationAggregateInput
+  repoConnection?: Prisma.RepoConnectionOrderByWithRelationInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -263,6 +265,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   members?: Prisma.ProjectMemberListRelationFilter
   permissions?: Prisma.MemberPermissionListRelationFilter
   issues?: Prisma.IssueListRelationFilter
+  repoConnection?: Prisma.XOR<Prisma.RepoConnectionNullableScalarRelationFilter, Prisma.RepoConnectionWhereInput> | null
 }, "id" | "projectKey">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -311,6 +314,7 @@ export type ProjectCreateInput = {
   members?: Prisma.ProjectMemberCreateNestedManyWithoutProjectInput
   permissions?: Prisma.MemberPermissionCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
+  repoConnection?: Prisma.RepoConnectionCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -327,6 +331,7 @@ export type ProjectUncheckedCreateInput = {
   members?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
   permissions?: Prisma.MemberPermissionUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
+  repoConnection?: Prisma.RepoConnectionUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -343,6 +348,7 @@ export type ProjectUpdateInput = {
   members?: Prisma.ProjectMemberUpdateManyWithoutProjectNestedInput
   permissions?: Prisma.MemberPermissionUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
+  repoConnection?: Prisma.RepoConnectionUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -359,6 +365,7 @@ export type ProjectUncheckedUpdateInput = {
   members?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
   permissions?: Prisma.MemberPermissionUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
+  repoConnection?: Prisma.RepoConnectionUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -544,6 +551,20 @@ export type ProjectUpdateOneRequiredWithoutIssuesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutIssuesInput, Prisma.ProjectUpdateWithoutIssuesInput>, Prisma.ProjectUncheckedUpdateWithoutIssuesInput>
 }
 
+export type ProjectCreateNestedOneWithoutRepoConnectionInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutRepoConnectionInput, Prisma.ProjectUncheckedCreateWithoutRepoConnectionInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutRepoConnectionInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneRequiredWithoutRepoConnectionNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutRepoConnectionInput, Prisma.ProjectUncheckedCreateWithoutRepoConnectionInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutRepoConnectionInput
+  upsert?: Prisma.ProjectUpsertWithoutRepoConnectionInput
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutRepoConnectionInput, Prisma.ProjectUpdateWithoutRepoConnectionInput>, Prisma.ProjectUncheckedUpdateWithoutRepoConnectionInput>
+}
+
 export type ProjectCreateWithoutOrgInput = {
   id?: string
   name: string
@@ -557,6 +578,7 @@ export type ProjectCreateWithoutOrgInput = {
   members?: Prisma.ProjectMemberCreateNestedManyWithoutProjectInput
   permissions?: Prisma.MemberPermissionCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
+  repoConnection?: Prisma.RepoConnectionCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutOrgInput = {
@@ -572,6 +594,7 @@ export type ProjectUncheckedCreateWithoutOrgInput = {
   members?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
   permissions?: Prisma.MemberPermissionUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
+  repoConnection?: Prisma.RepoConnectionUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutOrgInput = {
@@ -629,6 +652,7 @@ export type ProjectCreateWithoutMembersInput = {
   org: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   permissions?: Prisma.MemberPermissionCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
+  repoConnection?: Prisma.RepoConnectionCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutMembersInput = {
@@ -644,6 +668,7 @@ export type ProjectUncheckedCreateWithoutMembersInput = {
   updatedAt?: Date | string
   permissions?: Prisma.MemberPermissionUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
+  repoConnection?: Prisma.RepoConnectionUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutMembersInput = {
@@ -675,6 +700,7 @@ export type ProjectUpdateWithoutMembersInput = {
   org?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   permissions?: Prisma.MemberPermissionUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
+  repoConnection?: Prisma.RepoConnectionUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutMembersInput = {
@@ -690,6 +716,7 @@ export type ProjectUncheckedUpdateWithoutMembersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   permissions?: Prisma.MemberPermissionUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
+  repoConnection?: Prisma.RepoConnectionUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutPermissionsInput = {
@@ -705,6 +732,7 @@ export type ProjectCreateWithoutPermissionsInput = {
   org: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   members?: Prisma.ProjectMemberCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
+  repoConnection?: Prisma.RepoConnectionCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutPermissionsInput = {
@@ -720,6 +748,7 @@ export type ProjectUncheckedCreateWithoutPermissionsInput = {
   updatedAt?: Date | string
   members?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
+  repoConnection?: Prisma.RepoConnectionUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutPermissionsInput = {
@@ -751,6 +780,7 @@ export type ProjectUpdateWithoutPermissionsInput = {
   org?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   members?: Prisma.ProjectMemberUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
+  repoConnection?: Prisma.RepoConnectionUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutPermissionsInput = {
@@ -766,6 +796,7 @@ export type ProjectUncheckedUpdateWithoutPermissionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
+  repoConnection?: Prisma.RepoConnectionUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutIssuesInput = {
@@ -781,6 +812,7 @@ export type ProjectCreateWithoutIssuesInput = {
   org: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   members?: Prisma.ProjectMemberCreateNestedManyWithoutProjectInput
   permissions?: Prisma.MemberPermissionCreateNestedManyWithoutProjectInput
+  repoConnection?: Prisma.RepoConnectionCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutIssuesInput = {
@@ -796,6 +828,7 @@ export type ProjectUncheckedCreateWithoutIssuesInput = {
   updatedAt?: Date | string
   members?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
   permissions?: Prisma.MemberPermissionUncheckedCreateNestedManyWithoutProjectInput
+  repoConnection?: Prisma.RepoConnectionUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutIssuesInput = {
@@ -827,6 +860,7 @@ export type ProjectUpdateWithoutIssuesInput = {
   org?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   members?: Prisma.ProjectMemberUpdateManyWithoutProjectNestedInput
   permissions?: Prisma.MemberPermissionUpdateManyWithoutProjectNestedInput
+  repoConnection?: Prisma.RepoConnectionUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutIssuesInput = {
@@ -842,6 +876,87 @@ export type ProjectUncheckedUpdateWithoutIssuesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
   permissions?: Prisma.MemberPermissionUncheckedUpdateManyWithoutProjectNestedInput
+  repoConnection?: Prisma.RepoConnectionUncheckedUpdateOneWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutRepoConnectionInput = {
+  id?: string
+  name: string
+  projectKey: string
+  widgetEnabled?: boolean
+  widgetSecretHash?: string | null
+  createdBy: string
+  modifiedBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  org: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
+  members?: Prisma.ProjectMemberCreateNestedManyWithoutProjectInput
+  permissions?: Prisma.MemberPermissionCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutRepoConnectionInput = {
+  id?: string
+  name: string
+  projectKey: string
+  orgId: string
+  widgetEnabled?: boolean
+  widgetSecretHash?: string | null
+  createdBy: string
+  modifiedBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
+  permissions?: Prisma.MemberPermissionUncheckedCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutRepoConnectionInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutRepoConnectionInput, Prisma.ProjectUncheckedCreateWithoutRepoConnectionInput>
+}
+
+export type ProjectUpsertWithoutRepoConnectionInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutRepoConnectionInput, Prisma.ProjectUncheckedUpdateWithoutRepoConnectionInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutRepoConnectionInput, Prisma.ProjectUncheckedCreateWithoutRepoConnectionInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutRepoConnectionInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutRepoConnectionInput, Prisma.ProjectUncheckedUpdateWithoutRepoConnectionInput>
+}
+
+export type ProjectUpdateWithoutRepoConnectionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  projectKey?: Prisma.StringFieldUpdateOperationsInput | string
+  widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  org?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
+  members?: Prisma.ProjectMemberUpdateManyWithoutProjectNestedInput
+  permissions?: Prisma.MemberPermissionUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutRepoConnectionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  projectKey?: Prisma.StringFieldUpdateOperationsInput | string
+  orgId?: Prisma.StringFieldUpdateOperationsInput | string
+  widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
+  permissions?: Prisma.MemberPermissionUncheckedUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyOrgInput = {
@@ -869,6 +984,7 @@ export type ProjectUpdateWithoutOrgInput = {
   members?: Prisma.ProjectMemberUpdateManyWithoutProjectNestedInput
   permissions?: Prisma.MemberPermissionUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
+  repoConnection?: Prisma.RepoConnectionUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutOrgInput = {
@@ -884,6 +1000,7 @@ export type ProjectUncheckedUpdateWithoutOrgInput = {
   members?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
   permissions?: Prisma.MemberPermissionUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
+  repoConnection?: Prisma.RepoConnectionUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutOrgInput = {
@@ -962,6 +1079,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   members?: boolean | Prisma.Project$membersArgs<ExtArgs>
   permissions?: boolean | Prisma.Project$permissionsArgs<ExtArgs>
   issues?: boolean | Prisma.Project$issuesArgs<ExtArgs>
+  repoConnection?: boolean | Prisma.Project$repoConnectionArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -1012,6 +1130,7 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   members?: boolean | Prisma.Project$membersArgs<ExtArgs>
   permissions?: boolean | Prisma.Project$permissionsArgs<ExtArgs>
   issues?: boolean | Prisma.Project$issuesArgs<ExtArgs>
+  repoConnection?: boolean | Prisma.Project$repoConnectionArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1028,6 +1147,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     members: Prisma.$ProjectMemberPayload<ExtArgs>[]
     permissions: Prisma.$MemberPermissionPayload<ExtArgs>[]
     issues: Prisma.$IssuePayload<ExtArgs>[]
+    repoConnection: Prisma.$RepoConnectionPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1438,6 +1558,7 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   members<T extends Prisma.Project$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   permissions<T extends Prisma.Project$permissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   issues<T extends Prisma.Project$issuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$issuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IssuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  repoConnection<T extends Prisma.Project$repoConnectionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$repoConnectionArgs<ExtArgs>>): Prisma.Prisma__RepoConnectionClient<runtime.Types.Result.GetResult<Prisma.$RepoConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1947,6 +2068,25 @@ export type Project$issuesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.IssueScalarFieldEnum | Prisma.IssueScalarFieldEnum[]
+}
+
+/**
+ * Project.repoConnection
+ */
+export type Project$repoConnectionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RepoConnection
+   */
+  select?: Prisma.RepoConnectionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RepoConnection
+   */
+  omit?: Prisma.RepoConnectionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RepoConnectionInclude<ExtArgs> | null
+  where?: Prisma.RepoConnectionWhereInput
 }
 
 /**

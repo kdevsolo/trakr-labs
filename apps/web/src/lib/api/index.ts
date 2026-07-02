@@ -3,6 +3,7 @@ export { queryKeys } from "./query-keys";
 export * from "./types";
 export * from "./health";
 export * from "./comments";
+export * from "./github";
 export * from "./users";
 export * from "./issues";
 export * from "./organization";

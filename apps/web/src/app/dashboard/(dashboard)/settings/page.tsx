@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import DashboardHeader from "@/components/dashboard/widgets/DashboardHeader";
-import { WidgetSettingsView } from "@/components/dashboard/settings/WidgetSettingsView";
+import { SettingsView } from "@/components/dashboard/settings/SettingsView";
 import { getMe } from "@/app/dashboard/action";
 
 export default async function SettingsPage() {
@@ -15,9 +15,9 @@ export default async function SettingsPage() {
     <div className="space-y-6">
       <DashboardHeader
         title="Settings"
-        subtitle="Configure the embeddable feedback widget for your projects."
+        subtitle="Connect a GitHub repository and configure the embeddable feedback widget for your projects."
       />
-      <WidgetSettingsView />
+      <SettingsView />
     </div>
   );
 }

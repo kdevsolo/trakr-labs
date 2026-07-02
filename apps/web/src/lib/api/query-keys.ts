@@ -41,4 +41,12 @@ export const queryKeys = {
     config: (projectId: string) =>
       [...queryKeys.all, "widget", projectId] as const,
   },
+  github: {
+    all: (projectId: string) =>
+      [...queryKeys.all, "github", projectId] as const,
+    connection: (projectId: string) =>
+      [...queryKeys.github.all(projectId), "connection"] as const,
+    repos: (projectId: string) =>
+      [...queryKeys.github.all(projectId), "repos"] as const,
+  },
 } as const;

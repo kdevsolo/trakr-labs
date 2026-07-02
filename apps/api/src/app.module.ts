@@ -9,6 +9,7 @@ import { JwtAuthGuard } from './auth/guards/jwt.guard';
 import { PermissionsGuard } from './auth/guards/permissions.guard';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { GithubModule } from './github/github.module';
 import { IssuesModule } from './issues/issues.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -34,6 +35,7 @@ import { WidgetModule } from './widget/widget.module';
     OrganizationsModule,
     ProjectsModule,
     WidgetModule,
+    GithubModule,
   ],
   controllers: [AppController],
   providers: [
