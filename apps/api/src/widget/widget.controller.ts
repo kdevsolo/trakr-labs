@@ -1,9 +1,11 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import {
   RequestUploadUrlSchema,
+  SubmitAutoReportSchema,
   SubmitFeedbackSchema,
   type RequestUploadUrlInput,
+  type SubmitAutoReportInput,
   type SubmitFeedbackInput,
 } from '@trakr/schemas';
 import type { Request } from 'express';
@@ -42,6 +44,24 @@ export class WidgetController {
   ) {
     const userAgent = request.headers['user-agent'];
     return this.widgetService.submitFeedback(request.widgetProject, dto, {
+      userAgent: typeof userAgent === 'string' ? userAgent : undefined,
+    });
+  }
+
+  @Get('config')
+  getRuntimeConfig(@Req() request: WidgetRequest) {
+    return this.widgetService.getRuntimeConfig(request.widgetProject);
+  }
+
+  @Post('report')
+  @Throttle({ default: { limit: 60, ttl: 60_000 } })
+  submitAutoReport(
+    @Req() request: WidgetRequest,
+    @Body(new ZodValidationPipe(SubmitAutoReportSchema))
+    dto: SubmitAutoReportInput,
+  ) {
+    const userAgent = request.headers['user-agent'];
+    return this.widgetService.submitAutoReport(request.widgetProject, dto, {
       userAgent: typeof userAgent === 'string' ? userAgent : undefined,
     });
   }

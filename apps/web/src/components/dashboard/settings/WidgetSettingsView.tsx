@@ -5,10 +5,12 @@ import { CopyIcon, RefreshCwIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   useDisableWidget,
   useEnableWidget,
   useRotateWidgetSecret,
+  useUpdateWidgetSettings,
   useWidgetConfig,
 } from "@/hooks/api/use-widget";
 import type { Project } from "@/lib/api";
@@ -42,7 +44,7 @@ type WidgetSettingsViewProps = {
 };
 
 export function WidgetSettingsView({ project }: WidgetSettingsViewProps) {
-  const [revealedSecret, setRevealedSecret] = useState<string | null>(null);
+  const [freshSecret, setFreshSecret] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const projectId = project?.id ?? "";
@@ -51,31 +53,34 @@ export function WidgetSettingsView({ project }: WidgetSettingsViewProps) {
   const enableWidget = useEnableWidget(projectId);
   const rotateSecret = useRotateWidgetSecret(projectId);
   const disableWidget = useDisableWidget(projectId);
+  const updateSettings = useUpdateWidgetSettings(projectId);
 
   useEffect(() => {
-    setRevealedSecret(null);
+    setFreshSecret(null);
   }, [projectId]);
 
+  const widgetSecret = widgetConfig?.widgetSecret ?? freshSecret;
+
   const embedSnippet = useMemo(() => {
-    if (!widgetConfig?.projectKey || !revealedSecret) {
+    if (!widgetConfig?.projectKey || !widgetSecret) {
       return null;
     }
-    return buildEmbedSnippet(widgetConfig.projectKey, revealedSecret);
-  }, [revealedSecret, widgetConfig?.projectKey]);
+    return buildEmbedSnippet(widgetConfig.projectKey, widgetSecret);
+  }, [widgetSecret, widgetConfig?.projectKey]);
 
   async function handleEnable() {
     const result = await enableWidget.mutateAsync();
-    setRevealedSecret(result.widgetSecret);
+    setFreshSecret(result.widgetSecret);
   }
 
   async function handleRotate() {
     const result = await rotateSecret.mutateAsync();
-    setRevealedSecret(result.widgetSecret);
+    setFreshSecret(result.widgetSecret);
   }
 
   async function handleDisable() {
     await disableWidget.mutateAsync();
-    setRevealedSecret(null);
+    setFreshSecret(null);
   }
 
   async function handleCopySnippet() {
@@ -86,7 +91,9 @@ export function WidgetSettingsView({ project }: WidgetSettingsViewProps) {
   }
 
   const previewReady =
-    widgetConfig?.enabled && revealedSecret && widgetConfig.projectKey;
+    widgetConfig?.enabled && widgetSecret && widgetConfig.projectKey;
+  const needsSecretRotation =
+    widgetConfig?.enabled && widgetConfig.hasSecret && !widgetSecret;
 
   return (
     <>
@@ -106,7 +113,7 @@ export function WidgetSettingsView({ project }: WidgetSettingsViewProps) {
                   {configLoading
                     ? "Loading configuration…"
                     : widgetConfig?.enabled
-                      ? "Enabled — copy the embed code after enabling or rotating the secret."
+                      ? "Enabled — copy the embed code below."
                       : "Disabled — enable the widget to generate credentials."}
                 </p>
               </div>
@@ -154,40 +161,113 @@ export function WidgetSettingsView({ project }: WidgetSettingsViewProps) {
             ) : null}
           </section>
 
-          {revealedSecret ? (
-            <section className="rounded-lg border border-amber-200 bg-amber-50 p-5">
+          {widgetConfig?.enabled ? (
+            <section className="rounded-lg border border-border bg-white p-5">
               <h2 className="text-base font-semibold text-foreground">
-                Save your widget secret
+                Automatic reporting
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Copy the embed code below now. The secret is not stored in your
-                browser and will not be shown again after you leave this page.
+                Crashes and server or network failures are reported as issues
+                without user action. HTTP 4xx responses are not auto-reported.
+              </p>
+
+              <div className="mt-4 space-y-4">
+                <label className="flex items-start gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={widgetConfig.autoCrashReport}
+                    disabled={updateSettings.isPending || configLoading}
+                    onChange={(event) => {
+                      void updateSettings.mutateAsync({
+                        autoCrashReport: event.target.checked,
+                      });
+                    }}
+                  />
+                  <span>
+                    <Label className="text-foreground">Auto-report crashes</Label>
+                    <span className="mt-0.5 block text-muted-foreground">
+                      Uncaught errors and unhandled promise rejections.
+                    </span>
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={widgetConfig.autoNetworkReport}
+                    disabled={updateSettings.isPending || configLoading}
+                    onChange={(event) => {
+                      void updateSettings.mutateAsync({
+                        autoNetworkReport: event.target.checked,
+                      });
+                    }}
+                  />
+                  <span>
+                    <Label className="text-foreground">
+                      Auto-report network failures
+                    </Label>
+                    <span className="mt-0.5 block text-muted-foreground">
+                      HTTP 5xx responses, timeouts, and network errors.
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </section>
+          ) : null}
+
+          {freshSecret ? (
+            <section className="rounded-lg border border-amber-200 bg-amber-50 p-5">
+              <h2 className="text-base font-semibold text-foreground">
+                Secret updated
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Update the embed code on your site if you rotated the secret.
+                Existing installs will stop working until you deploy the new
+                snippet.
               </p>
               <p className="mt-3 font-mono text-xs break-all rounded-md bg-white p-3 border border-border">
-                {revealedSecret}
+                {freshSecret}
               </p>
             </section>
           ) : null}
 
-          {embedSnippet ? (
+          {widgetConfig?.enabled ? (
             <section className="rounded-lg border border-border bg-white p-5">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <h2 className="text-base font-semibold text-foreground">
                   Embed code
                 </h2>
-                <Button variant="outline" size="sm" onClick={handleCopySnippet}>
-                  <CopyIcon className="size-4" />
-                  {copied ? "Copied" : "Copy snippet"}
-                </Button>
+                {embedSnippet ? (
+                  <Button variant="outline" size="sm" onClick={handleCopySnippet}>
+                    <CopyIcon className="size-4" />
+                    {copied ? "Copied" : "Copy snippet"}
+                  </Button>
+                ) : null}
               </div>
-              <pre className="overflow-x-auto rounded-md bg-zinc-950 p-4 text-xs text-zinc-100">
-                {embedSnippet}
-              </pre>
+              {embedSnippet ? (
+                <>
+                  <pre className="overflow-x-auto rounded-md bg-zinc-950 p-4 text-xs text-zinc-100">
+                    {embedSnippet}
+                  </pre>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Add <code className="text-xs">data-ui=&quot;false&quot;</code> to
+                    disable the feedback button while keeping automatic crash and
+                    network reporting.
+                  </p>
+                </>
+              ) : needsSecretRotation ? (
+                <p className="text-sm text-muted-foreground">
+                  Rotate the secret once to restore the embed code for projects
+                  enabled before encrypted storage was added.
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Enable the widget to generate embed code.
+                </p>
+              )}
             </section>
-          ) : widgetConfig?.enabled && widgetConfig.hasSecret ? (
-            <p className="text-sm text-muted-foreground">
-              Rotate the secret to reveal the embed code and live preview.
-            </p>
           ) : null}
 
           <section className="rounded-lg border border-border bg-white p-5">
@@ -204,13 +284,14 @@ export function WidgetSettingsView({ project }: WidgetSettingsViewProps) {
                   <FeedbackWidget
                     mode="inline"
                     projectKey={widgetConfig.projectKey}
-                    widgetSecret={revealedSecret}
+                    widgetSecret={widgetSecret}
                     apiUrl={API_URL}
                   />
                 </div>
-              ) : widgetConfig?.enabled && widgetConfig.hasSecret ? (
+              ) : needsSecretRotation ? (
                 <p className="text-center text-sm text-muted-foreground">
-                  Rotate the secret to restore the live preview in this session.
+                  Rotate the secret once to restore the live preview for projects
+                  enabled before encrypted storage was added.
                 </p>
               ) : (
                 <p className="text-center text-sm text-muted-foreground">

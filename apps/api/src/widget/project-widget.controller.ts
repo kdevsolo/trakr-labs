@@ -1,11 +1,17 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
+import {
+  UpdateWidgetSettingsSchema,
+  type UpdateWidgetSettingsInput,
+} from '@trakr/schemas';
 import { AuthenticatedUser } from 'src/auth/interfaces/authenticated-user.interface';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { RequirePermission } from 'src/auth/decorators/require-permission.decorator';
@@ -14,6 +20,7 @@ import { ProjectMemberGuard } from 'src/auth/guards/project-member.guard';
 import { PermissionAction, PermissionResource } from 'src/generated/prisma/enums';
 import { requireOrgId } from 'src/auth/utils/require-org-id';
 import { UuidParamPipe } from 'src/common/pipes/uuid-param.pipe';
+import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
 import { WidgetService } from './widget.service';
 
 @Controller('projects/:projectId/widget')
@@ -29,6 +36,22 @@ export class ProjectWidgetController {
     @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.widgetService.getConfig(projectId, requireOrgId(user.orgId));
+  }
+
+  @Patch()
+  @RequirePermission(PermissionResource.PROJECT, PermissionAction.UPDATE, 'project')
+  updateSettings(
+    @Param('projectId', UuidParamPipe) projectId: string,
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(UpdateWidgetSettingsSchema))
+    dto: UpdateWidgetSettingsInput,
+  ) {
+    return this.widgetService.updateSettings(
+      projectId,
+      requireOrgId(user.orgId),
+      user.id,
+      dto,
+    );
   }
 
   @Post('enable')

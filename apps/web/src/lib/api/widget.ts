@@ -1,8 +1,22 @@
 import { apiFetch } from "./client";
-import type { EnableWidgetResponse, WidgetConfig } from "@trakr/schemas";
+import type {
+  EnableWidgetResponse,
+  UpdateWidgetSettingsInput,
+  WidgetConfig,
+} from "@trakr/schemas";
 
 export function getWidgetConfig(projectId: string) {
   return apiFetch<WidgetConfig>(`/projects/${projectId}/widget`);
+}
+
+export function updateWidgetSettings(
+  projectId: string,
+  input: UpdateWidgetSettingsInput,
+) {
+  return apiFetch<WidgetConfig>(`/projects/${projectId}/widget`, {
+    method: "PATCH",
+    json: input,
+  });
 }
 
 export function enableWidget(projectId: string) {

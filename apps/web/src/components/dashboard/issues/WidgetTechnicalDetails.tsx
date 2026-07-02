@@ -37,23 +37,58 @@ export function WidgetTechnicalDetails({ metadata }: WidgetTechnicalDetailsProps
 }
 
 function WidgetMetadataSummary({ metadata }: { metadata: WidgetIssueMetadata }) {
-  if (!metadata.pageUrl) {
+  const isAuto = metadata.reportType === "auto";
+  const autoLabel =
+    metadata.autoType === "crash"
+      ? "Auto-reported crash"
+      : metadata.autoType === "network"
+        ? "Auto-reported network failure"
+        : "Auto-reported";
+
+  if (
+    !metadata.pageUrl &&
+    !isAuto &&
+    metadata.occurrenceCount === undefined
+  ) {
     return null;
   }
 
   return (
     <div className="grid grid-cols-1 gap-3 rounded-md border border-border bg-muted/20 p-3">
-      <MetaRow
-        label="Page URL"
-        value={
-          <SafeExternalLink
-            href={metadata.pageUrl}
-            className="break-all text-primary hover:underline"
-          >
-            {metadata.pageUrl}
-          </SafeExternalLink>
-        }
-      />
+      {isAuto ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-900">
+            {autoLabel}
+          </span>
+          {metadata.occurrenceCount && metadata.occurrenceCount > 1 ? (
+            <span className="text-xs text-muted-foreground">
+              {metadata.occurrenceCount} occurrences
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+      {metadata.pageUrl ? (
+        <MetaRow
+          label="Page URL"
+          value={
+            <SafeExternalLink
+              href={metadata.pageUrl}
+              className="break-all text-primary hover:underline"
+            >
+              {metadata.pageUrl}
+            </SafeExternalLink>
+          }
+        />
+      ) : null}
+      {metadata.sessionId ? (
+        <MetaRow label="Session" value={metadata.sessionId} mono />
+      ) : null}
+      {metadata.lastSeenAt ? (
+        <MetaRow
+          label="Last seen"
+          value={new Date(metadata.lastSeenAt).toLocaleString()}
+        />
+      ) : null}
     </div>
   );
 }

@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "vite build && vite build --watch & vite",
-    "build": "vite build",
+    "dev": "vite build --watch & vite",
+    "build": "vite build && pnpm check-size",
+    "check-size": "node scripts/check-bundle-size.mjs",
     "preview": "vite preview --port 5173",
     "lint": "tsc --noEmit"
   },

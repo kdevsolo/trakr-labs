@@ -5,7 +5,9 @@ import {
 } from '@nestjs/common';
 import type {
   RequestUploadUrlInput,
+  SubmitAutoReportInput,
   SubmitFeedbackInput,
+  UpdateWidgetSettingsInput,
   UploadUrlResponse,
 } from '@trakr/schemas';
 import { randomUUID } from 'crypto';
@@ -23,6 +25,10 @@ import {
   generateWidgetSecret,
   hashWidgetSecret,
 } from './utils/generate-widget-secret';
+import {
+  decryptWidgetSecret,
+  encryptWidgetSecret,
+} from './utils/encrypt-widget-secret';
 import {
   buildPublicStorageUrl,
   isValidWidgetMediaUrl,
@@ -121,6 +127,7 @@ export class WidgetService {
           projectId: context.projectId,
           metadata: {
             source: 'widget',
+            reportType: 'manual',
             email: dto.email,
             pageUrl: dto.pageUrl ?? null,
             submittedAt: new Date().toISOString(),
@@ -148,6 +155,142 @@ export class WidgetService {
     return { id: issue.id };
   }
 
+  async submitAutoReport(
+    context: WidgetProjectContext,
+    dto: SubmitAutoReportInput,
+    serverContext?: { userAgent?: string },
+  ): Promise<{ id: string; deduplicated: boolean }> {
+    const project = await this.prisma.project.findFirst({
+      where: { id: context.projectId },
+      select: {
+        widgetAutoCrashReport: true,
+        widgetAutoNetworkReport: true,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    if (dto.type === 'crash' && !project.widgetAutoCrashReport) {
+      throw new BadRequestException('Automatic crash reporting is disabled');
+    }
+
+    if (dto.type === 'network' && !project.widgetAutoNetworkReport) {
+      throw new BadRequestException('Automatic network reporting is disabled');
+    }
+
+    const now = new Date();
+    const dedupSince = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    const existing = await this.prisma.issue.findFirst({
+      where: {
+        projectId: context.projectId,
+        metadata: {
+          path: ['fingerprint'],
+          equals: dto.fingerprint,
+        },
+        updatedAt: { gte: dedupSince },
+      },
+      select: { id: true, metadata: true },
+    });
+
+    if (existing) {
+      const metadata =
+        existing.metadata && typeof existing.metadata === 'object'
+          ? (existing.metadata as Record<string, unknown>)
+          : {};
+      const occurrenceCount =
+        typeof metadata.occurrenceCount === 'number'
+          ? metadata.occurrenceCount + 1
+          : 2;
+
+      await this.prisma.issue.update({
+        where: { id: existing.id },
+        data: {
+          metadata: {
+            ...metadata,
+            occurrenceCount,
+            lastSeenAt: now.toISOString(),
+            ...(dto.context ? { context: dto.context } : {}),
+            ...(dto.pageUrl ? { pageUrl: dto.pageUrl } : {}),
+            ...(serverContext?.userAgent
+              ? {
+                  server: {
+                    ...(typeof metadata.server === 'object' && metadata.server
+                      ? metadata.server
+                      : {}),
+                    userAgent: serverContext.userAgent,
+                  },
+                }
+              : {}),
+          },
+        },
+      });
+
+      return { id: existing.id, deduplicated: true };
+    }
+
+    const openStatus = await this.prisma.statusMaster.findFirst({
+      where: { orgId: context.orgId, title: 'Open', active: true },
+      select: { id: true },
+    });
+
+    if (!openStatus) {
+      throw new BadRequestException(
+        'Project is not configured for feedback (missing Open status)',
+      );
+    }
+
+    const issue = await this.prisma.issue.create({
+      data: {
+        title: dto.title,
+        description: dto.description,
+        statusId: openStatus.id,
+        projectId: context.projectId,
+        metadata: {
+          source: 'widget',
+          reportType: 'auto',
+          autoType: dto.type,
+          fingerprint: dto.fingerprint,
+          sessionId: dto.sessionId,
+          occurrenceCount: 1,
+          firstSeenAt: now.toISOString(),
+          lastSeenAt: now.toISOString(),
+          pageUrl: dto.pageUrl ?? null,
+          submittedAt: now.toISOString(),
+          context: dto.context,
+          ...(serverContext?.userAgent
+            ? { server: { userAgent: serverContext.userAgent } }
+            : {}),
+        },
+      },
+    });
+
+    return { id: issue.id, deduplicated: false };
+  }
+
+  async getRuntimeConfig(context: WidgetProjectContext) {
+    const project = await this.prisma.project.findFirst({
+      where: { id: context.projectId },
+      select: {
+        projectKey: true,
+        widgetAutoCrashReport: true,
+        widgetAutoNetworkReport: true,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    return {
+      projectKey: project.projectKey,
+      autoCrashReport: project.widgetAutoCrashReport,
+      autoNetworkReport: project.widgetAutoNetworkReport,
+    };
+  }
+
   async getConfig(projectId: string, orgId: string) {
     const project = await this.findProjectInOrg(projectId, orgId);
 
@@ -155,6 +298,48 @@ export class WidgetService {
       projectKey: project.projectKey,
       enabled: project.widgetEnabled,
       hasSecret: Boolean(project.widgetSecretHash),
+      widgetSecret: this.decryptStoredWidgetSecret(project.widgetSecretEnc),
+      autoCrashReport: project.widgetAutoCrashReport,
+      autoNetworkReport: project.widgetAutoNetworkReport,
+    };
+  }
+
+  async updateSettings(
+    projectId: string,
+    orgId: string,
+    userId: string,
+    dto: UpdateWidgetSettingsInput,
+  ) {
+    await this.findProjectInOrg(projectId, orgId);
+
+    const project = await this.prisma.project.update({
+      where: { id: projectId },
+      data: {
+        ...(dto.autoCrashReport !== undefined
+          ? { widgetAutoCrashReport: dto.autoCrashReport }
+          : {}),
+        ...(dto.autoNetworkReport !== undefined
+          ? { widgetAutoNetworkReport: dto.autoNetworkReport }
+          : {}),
+        modifiedBy: userId,
+      },
+      select: {
+        projectKey: true,
+        widgetEnabled: true,
+        widgetSecretHash: true,
+        widgetSecretEnc: true,
+        widgetAutoCrashReport: true,
+        widgetAutoNetworkReport: true,
+      },
+    });
+
+    return {
+      projectKey: project.projectKey,
+      enabled: project.widgetEnabled,
+      hasSecret: Boolean(project.widgetSecretHash),
+      widgetSecret: this.decryptStoredWidgetSecret(project.widgetSecretEnc),
+      autoCrashReport: project.widgetAutoCrashReport,
+      autoNetworkReport: project.widgetAutoNetworkReport,
     };
   }
 
@@ -168,6 +353,7 @@ export class WidgetService {
       data: {
         widgetEnabled: true,
         widgetSecretHash: hashWidgetSecret(widgetSecret),
+        widgetSecretEnc: encryptWidgetSecret(widgetSecret),
         modifiedBy: userId,
       },
       select: { projectKey: true, widgetEnabled: true },
@@ -189,6 +375,7 @@ export class WidgetService {
       where: { id: projectId },
       data: {
         widgetSecretHash: hashWidgetSecret(widgetSecret),
+        widgetSecretEnc: encryptWidgetSecret(widgetSecret),
         modifiedBy: userId,
       },
       select: { projectKey: true, widgetEnabled: true },
@@ -228,6 +415,9 @@ export class WidgetService {
         projectKey: true,
         widgetEnabled: true,
         widgetSecretHash: true,
+        widgetSecretEnc: true,
+        widgetAutoCrashReport: true,
+        widgetAutoNetworkReport: true,
       },
     });
 
@@ -236,5 +426,19 @@ export class WidgetService {
     }
 
     return project;
+  }
+
+  private decryptStoredWidgetSecret(
+    widgetSecretEnc: string | null,
+  ): string | undefined {
+    if (!widgetSecretEnc) {
+      return undefined;
+    }
+
+    try {
+      return decryptWidgetSecret(widgetSecretEnc);
+    } catch {
+      return undefined;
+    }
   }
 }

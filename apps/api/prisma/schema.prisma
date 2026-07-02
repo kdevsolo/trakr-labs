@@ -83,8 +83,11 @@ model Project {
   name             String
   projectKey       String   @unique
   orgId            String
-  widgetEnabled    Boolean  @default(false)
-  widgetSecretHash String? // bcrypt/sha256 hash; null until enabled
+  widgetEnabled           Boolean  @default(false)
+  widgetSecretHash        String? // sha256 hash; null until enabled
+  widgetSecretEnc         String? // AES-GCM encrypted secret for dashboard display
+  widgetAutoCrashReport   Boolean  @default(true)
+  widgetAutoNetworkReport Boolean  @default(true)
   createdBy        String
   modifiedBy       String
   createdAt        DateTime @default(now())

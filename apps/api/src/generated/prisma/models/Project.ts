@@ -31,6 +31,9 @@ export type ProjectMinAggregateOutputType = {
   orgId: string | null
   widgetEnabled: boolean | null
   widgetSecretHash: string | null
+  widgetSecretEnc: string | null
+  widgetAutoCrashReport: boolean | null
+  widgetAutoNetworkReport: boolean | null
   createdBy: string | null
   modifiedBy: string | null
   createdAt: Date | null
@@ -44,6 +47,9 @@ export type ProjectMaxAggregateOutputType = {
   orgId: string | null
   widgetEnabled: boolean | null
   widgetSecretHash: string | null
+  widgetSecretEnc: string | null
+  widgetAutoCrashReport: boolean | null
+  widgetAutoNetworkReport: boolean | null
   createdBy: string | null
   modifiedBy: string | null
   createdAt: Date | null
@@ -57,6 +63,9 @@ export type ProjectCountAggregateOutputType = {
   orgId: number
   widgetEnabled: number
   widgetSecretHash: number
+  widgetSecretEnc: number
+  widgetAutoCrashReport: number
+  widgetAutoNetworkReport: number
   createdBy: number
   modifiedBy: number
   createdAt: number
@@ -72,6 +81,9 @@ export type ProjectMinAggregateInputType = {
   orgId?: true
   widgetEnabled?: true
   widgetSecretHash?: true
+  widgetSecretEnc?: true
+  widgetAutoCrashReport?: true
+  widgetAutoNetworkReport?: true
   createdBy?: true
   modifiedBy?: true
   createdAt?: true
@@ -85,6 +97,9 @@ export type ProjectMaxAggregateInputType = {
   orgId?: true
   widgetEnabled?: true
   widgetSecretHash?: true
+  widgetSecretEnc?: true
+  widgetAutoCrashReport?: true
+  widgetAutoNetworkReport?: true
   createdBy?: true
   modifiedBy?: true
   createdAt?: true
@@ -98,6 +113,9 @@ export type ProjectCountAggregateInputType = {
   orgId?: true
   widgetEnabled?: true
   widgetSecretHash?: true
+  widgetSecretEnc?: true
+  widgetAutoCrashReport?: true
+  widgetAutoNetworkReport?: true
   createdBy?: true
   modifiedBy?: true
   createdAt?: true
@@ -184,6 +202,9 @@ export type ProjectGroupByOutputType = {
   orgId: string
   widgetEnabled: boolean
   widgetSecretHash: string | null
+  widgetSecretEnc: string | null
+  widgetAutoCrashReport: boolean
+  widgetAutoNetworkReport: boolean
   createdBy: string
   modifiedBy: string
   createdAt: Date
@@ -218,6 +239,9 @@ export type ProjectWhereInput = {
   orgId?: Prisma.StringFilter<"Project"> | string
   widgetEnabled?: Prisma.BoolFilter<"Project"> | boolean
   widgetSecretHash?: Prisma.StringNullableFilter<"Project"> | string | null
+  widgetSecretEnc?: Prisma.StringNullableFilter<"Project"> | string | null
+  widgetAutoCrashReport?: Prisma.BoolFilter<"Project"> | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFilter<"Project"> | boolean
   createdBy?: Prisma.StringFilter<"Project"> | string
   modifiedBy?: Prisma.StringFilter<"Project"> | string
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
@@ -236,6 +260,9 @@ export type ProjectOrderByWithRelationInput = {
   orgId?: Prisma.SortOrder
   widgetEnabled?: Prisma.SortOrder
   widgetSecretHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  widgetSecretEnc?: Prisma.SortOrderInput | Prisma.SortOrder
+  widgetAutoCrashReport?: Prisma.SortOrder
+  widgetAutoNetworkReport?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   modifiedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -257,6 +284,9 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   orgId?: Prisma.StringFilter<"Project"> | string
   widgetEnabled?: Prisma.BoolFilter<"Project"> | boolean
   widgetSecretHash?: Prisma.StringNullableFilter<"Project"> | string | null
+  widgetSecretEnc?: Prisma.StringNullableFilter<"Project"> | string | null
+  widgetAutoCrashReport?: Prisma.BoolFilter<"Project"> | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFilter<"Project"> | boolean
   createdBy?: Prisma.StringFilter<"Project"> | string
   modifiedBy?: Prisma.StringFilter<"Project"> | string
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
@@ -275,6 +305,9 @@ export type ProjectOrderByWithAggregationInput = {
   orgId?: Prisma.SortOrder
   widgetEnabled?: Prisma.SortOrder
   widgetSecretHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  widgetSecretEnc?: Prisma.SortOrderInput | Prisma.SortOrder
+  widgetAutoCrashReport?: Prisma.SortOrder
+  widgetAutoNetworkReport?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   modifiedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -294,6 +327,9 @@ export type ProjectScalarWhereWithAggregatesInput = {
   orgId?: Prisma.StringWithAggregatesFilter<"Project"> | string
   widgetEnabled?: Prisma.BoolWithAggregatesFilter<"Project"> | boolean
   widgetSecretHash?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
+  widgetSecretEnc?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
+  widgetAutoCrashReport?: Prisma.BoolWithAggregatesFilter<"Project"> | boolean
+  widgetAutoNetworkReport?: Prisma.BoolWithAggregatesFilter<"Project"> | boolean
   createdBy?: Prisma.StringWithAggregatesFilter<"Project"> | string
   modifiedBy?: Prisma.StringWithAggregatesFilter<"Project"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
@@ -306,6 +342,9 @@ export type ProjectCreateInput = {
   projectKey: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -324,6 +363,9 @@ export type ProjectUncheckedCreateInput = {
   orgId: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -340,6 +382,9 @@ export type ProjectUpdateInput = {
   projectKey?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -358,6 +403,9 @@ export type ProjectUncheckedUpdateInput = {
   orgId?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -375,6 +423,9 @@ export type ProjectCreateManyInput = {
   orgId: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -387,6 +438,9 @@ export type ProjectUpdateManyMutationInput = {
   projectKey?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -400,6 +454,9 @@ export type ProjectUncheckedUpdateManyInput = {
   orgId?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -423,6 +480,9 @@ export type ProjectCountOrderByAggregateInput = {
   orgId?: Prisma.SortOrder
   widgetEnabled?: Prisma.SortOrder
   widgetSecretHash?: Prisma.SortOrder
+  widgetSecretEnc?: Prisma.SortOrder
+  widgetAutoCrashReport?: Prisma.SortOrder
+  widgetAutoNetworkReport?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   modifiedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -436,6 +496,9 @@ export type ProjectMaxOrderByAggregateInput = {
   orgId?: Prisma.SortOrder
   widgetEnabled?: Prisma.SortOrder
   widgetSecretHash?: Prisma.SortOrder
+  widgetSecretEnc?: Prisma.SortOrder
+  widgetAutoCrashReport?: Prisma.SortOrder
+  widgetAutoNetworkReport?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   modifiedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -449,6 +512,9 @@ export type ProjectMinOrderByAggregateInput = {
   orgId?: Prisma.SortOrder
   widgetEnabled?: Prisma.SortOrder
   widgetSecretHash?: Prisma.SortOrder
+  widgetSecretEnc?: Prisma.SortOrder
+  widgetAutoCrashReport?: Prisma.SortOrder
+  widgetAutoNetworkReport?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   modifiedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -571,6 +637,9 @@ export type ProjectCreateWithoutOrgInput = {
   projectKey: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -587,6 +656,9 @@ export type ProjectUncheckedCreateWithoutOrgInput = {
   projectKey: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -633,6 +705,9 @@ export type ProjectScalarWhereInput = {
   orgId?: Prisma.StringFilter<"Project"> | string
   widgetEnabled?: Prisma.BoolFilter<"Project"> | boolean
   widgetSecretHash?: Prisma.StringNullableFilter<"Project"> | string | null
+  widgetSecretEnc?: Prisma.StringNullableFilter<"Project"> | string | null
+  widgetAutoCrashReport?: Prisma.BoolFilter<"Project"> | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFilter<"Project"> | boolean
   createdBy?: Prisma.StringFilter<"Project"> | string
   modifiedBy?: Prisma.StringFilter<"Project"> | string
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
@@ -645,6 +720,9 @@ export type ProjectCreateWithoutMembersInput = {
   projectKey: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -662,6 +740,9 @@ export type ProjectUncheckedCreateWithoutMembersInput = {
   orgId: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -693,6 +774,9 @@ export type ProjectUpdateWithoutMembersInput = {
   projectKey?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -710,6 +794,9 @@ export type ProjectUncheckedUpdateWithoutMembersInput = {
   orgId?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -725,6 +812,9 @@ export type ProjectCreateWithoutPermissionsInput = {
   projectKey: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -742,6 +832,9 @@ export type ProjectUncheckedCreateWithoutPermissionsInput = {
   orgId: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -773,6 +866,9 @@ export type ProjectUpdateWithoutPermissionsInput = {
   projectKey?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -790,6 +886,9 @@ export type ProjectUncheckedUpdateWithoutPermissionsInput = {
   orgId?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -805,6 +904,9 @@ export type ProjectCreateWithoutIssuesInput = {
   projectKey: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -822,6 +924,9 @@ export type ProjectUncheckedCreateWithoutIssuesInput = {
   orgId: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -853,6 +958,9 @@ export type ProjectUpdateWithoutIssuesInput = {
   projectKey?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -870,6 +978,9 @@ export type ProjectUncheckedUpdateWithoutIssuesInput = {
   orgId?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -885,6 +996,9 @@ export type ProjectCreateWithoutRepoConnectionInput = {
   projectKey: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -902,6 +1016,9 @@ export type ProjectUncheckedCreateWithoutRepoConnectionInput = {
   orgId: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -933,6 +1050,9 @@ export type ProjectUpdateWithoutRepoConnectionInput = {
   projectKey?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -950,6 +1070,9 @@ export type ProjectUncheckedUpdateWithoutRepoConnectionInput = {
   orgId?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -965,6 +1088,9 @@ export type ProjectCreateManyOrgInput = {
   projectKey: string
   widgetEnabled?: boolean
   widgetSecretHash?: string | null
+  widgetSecretEnc?: string | null
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy: string
   modifiedBy: string
   createdAt?: Date | string
@@ -977,6 +1103,9 @@ export type ProjectUpdateWithoutOrgInput = {
   projectKey?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -993,6 +1122,9 @@ export type ProjectUncheckedUpdateWithoutOrgInput = {
   projectKey?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1009,6 +1141,9 @@ export type ProjectUncheckedUpdateManyWithoutOrgInput = {
   projectKey?: Prisma.StringFieldUpdateOperationsInput | string
   widgetEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   widgetSecretHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetSecretEnc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  widgetAutoCrashReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  widgetAutoNetworkReport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   modifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1071,6 +1206,9 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   orgId?: boolean
   widgetEnabled?: boolean
   widgetSecretHash?: boolean
+  widgetSecretEnc?: boolean
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy?: boolean
   modifiedBy?: boolean
   createdAt?: boolean
@@ -1090,6 +1228,9 @@ export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   orgId?: boolean
   widgetEnabled?: boolean
   widgetSecretHash?: boolean
+  widgetSecretEnc?: boolean
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy?: boolean
   modifiedBy?: boolean
   createdAt?: boolean
@@ -1104,6 +1245,9 @@ export type ProjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   orgId?: boolean
   widgetEnabled?: boolean
   widgetSecretHash?: boolean
+  widgetSecretEnc?: boolean
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy?: boolean
   modifiedBy?: boolean
   createdAt?: boolean
@@ -1118,13 +1262,16 @@ export type ProjectSelectScalar = {
   orgId?: boolean
   widgetEnabled?: boolean
   widgetSecretHash?: boolean
+  widgetSecretEnc?: boolean
+  widgetAutoCrashReport?: boolean
+  widgetAutoNetworkReport?: boolean
   createdBy?: boolean
   modifiedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "projectKey" | "orgId" | "widgetEnabled" | "widgetSecretHash" | "createdBy" | "modifiedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "projectKey" | "orgId" | "widgetEnabled" | "widgetSecretHash" | "widgetSecretEnc" | "widgetAutoCrashReport" | "widgetAutoNetworkReport" | "createdBy" | "modifiedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   org?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   members?: boolean | Prisma.Project$membersArgs<ExtArgs>
@@ -1156,6 +1303,9 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     orgId: string
     widgetEnabled: boolean
     widgetSecretHash: string | null
+    widgetSecretEnc: string | null
+    widgetAutoCrashReport: boolean
+    widgetAutoNetworkReport: boolean
     createdBy: string
     modifiedBy: string
     createdAt: Date
@@ -1594,6 +1744,9 @@ export interface ProjectFieldRefs {
   readonly orgId: Prisma.FieldRef<"Project", 'String'>
   readonly widgetEnabled: Prisma.FieldRef<"Project", 'Boolean'>
   readonly widgetSecretHash: Prisma.FieldRef<"Project", 'String'>
+  readonly widgetSecretEnc: Prisma.FieldRef<"Project", 'String'>
+  readonly widgetAutoCrashReport: Prisma.FieldRef<"Project", 'Boolean'>
+  readonly widgetAutoNetworkReport: Prisma.FieldRef<"Project", 'Boolean'>
   readonly createdBy: Prisma.FieldRef<"Project", 'String'>
   readonly modifiedBy: Prisma.FieldRef<"Project", 'String'>
   readonly createdAt: Prisma.FieldRef<"Project", 'DateTime'>

@@ -1,8 +1,11 @@
 import type {
   RequestUploadUrlInput,
+  SubmitAutoReportInput,
+  SubmitAutoReportResponse,
   SubmitFeedbackInput,
   SubmitFeedbackResponse,
   UploadUrlResponse,
+  WidgetRuntimeConfig,
 } from '@trakr/schemas';
 
 const PROJECT_KEY_HEADER = 'x-project-key';
@@ -135,6 +138,39 @@ export async function submitFeedback(
   }
 
   return parseJsonResponse<SubmitFeedbackResponse>(response);
+}
+
+export async function fetchWidgetRuntimeConfig(
+  auth: WidgetAuth,
+): Promise<WidgetRuntimeConfig> {
+  const response = await fetch(`${auth.apiUrl}/widget/config`, {
+    method: 'GET',
+    headers: widgetHeaders(auth),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  return parseJsonResponse<WidgetRuntimeConfig>(response);
+}
+
+export async function submitAutoReport(
+  auth: WidgetAuth,
+  input: SubmitAutoReportInput,
+): Promise<SubmitAutoReportResponse> {
+  const response = await fetch(`${auth.apiUrl}/widget/report`, {
+    method: 'POST',
+    headers: widgetHeaders(auth),
+    body: JSON.stringify(input),
+    keepalive: true,
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  return parseJsonResponse<SubmitAutoReportResponse>(response);
 }
 
 export const ALLOWED_IMAGE_TYPES = [

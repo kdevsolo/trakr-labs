@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { UpdateWidgetSettingsInput } from "@trakr/schemas";
 
 import {
   disableWidget,
@@ -6,6 +7,7 @@ import {
   getWidgetConfig,
   queryKeys,
   rotateWidgetSecret,
+  updateWidgetSettings,
 } from "@/lib/api";
 import { useClientQuery } from "@/hooks/use-client-query";
 
@@ -48,6 +50,20 @@ export function useDisableWidget(projectId: string) {
 
   return useMutation({
     mutationFn: () => disableWidget(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.widget.config(projectId),
+      });
+    },
+  });
+}
+
+export function useUpdateWidgetSettings(projectId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: UpdateWidgetSettingsInput) =>
+      updateWidgetSettings(projectId, input),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.widget.config(projectId),

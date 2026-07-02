@@ -1,10 +1,16 @@
-import { installContextCapture } from '@trakr/widget-ui';
+import {
+  installAutoReport,
+  installContextCapture,
+  isAutoReportInstalled,
+  isContextCaptureInstalled,
+} from '@trakr/widget-ui';
 import { mountWidget } from './mount';
 
 declare global {
   interface Window {
     TrakrWidget?: {
       mount: typeof mountWidget;
+      start: typeof startWidget;
     };
   }
 }
@@ -14,6 +20,7 @@ function readScriptAttributes(): {
   widgetSecret?: string;
   apiUrl?: string;
   mode?: 'floating' | 'inline';
+  uiEnabled?: boolean;
 } {
   const script =
     document.currentScript ??
@@ -29,11 +36,27 @@ function readScriptAttributes(): {
     widgetSecret: script.dataset.widgetSecret,
     apiUrl: script.dataset.apiUrl,
     mode: mode === 'inline' ? 'inline' : 'floating',
+    uiEnabled: script.dataset.ui !== 'false',
   };
 }
 
+async function startWidget(options: {
+  projectKey: string;
+  widgetSecret: string;
+  apiUrl: string;
+}) {
+  if (!isContextCaptureInstalled()) {
+    installContextCapture({ apiUrl: options.apiUrl });
+  }
+
+  if (!isAutoReportInstalled()) {
+    await installAutoReport(options);
+  }
+}
+
 function autoMount() {
-  const { projectKey, widgetSecret, apiUrl, mode } = readScriptAttributes();
+  const { projectKey, widgetSecret, apiUrl, mode, uiEnabled } =
+    readScriptAttributes();
 
   if (!projectKey || !widgetSecret || !apiUrl) {
     console.error(
@@ -42,7 +65,11 @@ function autoMount() {
     return;
   }
 
-  installContextCapture({ apiUrl });
+  void startWidget({ projectKey, widgetSecret, apiUrl });
+
+  if (!uiEnabled) {
+    return;
+  }
 
   const host = document.createElement('div');
   host.id = 'trakr-widget-root';
@@ -51,7 +78,7 @@ function autoMount() {
   mountWidget(host, { projectKey, widgetSecret, apiUrl, mode });
 }
 
-window.TrakrWidget = { mount: mountWidget };
+window.TrakrWidget = { mount: mountWidget, start: startWidget };
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', autoMount);
@@ -59,4 +86,4 @@ if (document.readyState === 'loading') {
   autoMount();
 }
 
-export { mountWidget };
+export { mountWidget, startWidget };

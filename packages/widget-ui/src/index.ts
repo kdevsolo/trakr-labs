@@ -6,5 +6,13 @@ export {
   getCapturedContext,
   installContextCapture,
   isContextCaptureInstalled,
+  setAutoReportHooks,
+  type AutoReportHooks,
 } from './context-capture';
+export {
+  flushQueuedReports,
+  installAutoReport,
+  isAutoReportInstalled,
+  uninstallAutoReport,
+} from './auto-report';
 export * from './widget-api';

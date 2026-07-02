@@ -74,7 +74,14 @@ export const IssueWithRelationsSchema = IssueSchema.extend({
 
 export const WidgetIssueMetadataSchema = z.object({
   source: z.literal('widget'),
-  email: z.string().email(),
+  reportType: z.enum(['manual', 'auto']).optional(),
+  email: z.string().email().optional(),
+  autoType: z.enum(['crash', 'network']).optional(),
+  fingerprint: z.string().max(64).optional(),
+  sessionId: z.string().max(64).optional(),
+  occurrenceCount: z.number().int().positive().optional(),
+  firstSeenAt: z.string().optional(),
+  lastSeenAt: z.string().optional(),
   pageUrl: z.string().nullable().optional(),
   submittedAt: z.string(),
   context: FeedbackContextSchema.optional(),

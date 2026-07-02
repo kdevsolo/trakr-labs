@@ -17,11 +17,22 @@ type InstallContextCaptureOptions = {
   apiUrl?: string;
 };
 
+export type AutoReportHooks = {
+  onCrash?: (payload: { message: string; stack?: string }) => void;
+  onNetworkFailure?: (entry: FailedNetworkRequest) => void;
+};
+
 // Captured data may include PII from console logs or request URLs.
 const consoleLogs: ConsoleLogEntry[] = [];
 const failedRequests: FailedNetworkRequest[] = [];
 let installed = false;
-let excludedUrlPatterns: string[] = ['/widget/upload-url', '/widget/feedback'];
+let autoReportHooks: AutoReportHooks | null = null;
+let excludedUrlPatterns: string[] = [
+  '/widget/upload-url',
+  '/widget/feedback',
+  '/widget/report',
+  '/widget/config',
+];
 
 function truncate(value: string, maxLength: number): string {
   if (value.length <= maxLength) return value;
@@ -65,18 +76,22 @@ function shouldExcludeUrl(url: string): boolean {
 function pushFailedRequest(entry: FailedNetworkRequest) {
   if (shouldExcludeUrl(entry.url)) return;
 
-  failedRequests.push({
+  const normalized: FailedNetworkRequest = {
     ...entry,
     url: truncate(entry.url, MAX_URL_LENGTH),
     statusText: entry.statusText
       ? truncate(entry.statusText, 200)
       : undefined,
     error: entry.error ? truncate(entry.error, MAX_ERROR_LENGTH) : undefined,
-  });
+  };
+
+  failedRequests.push(normalized);
 
   if (failedRequests.length > MAX_FAILED_REQUESTS) {
     failedRequests.shift();
   }
+
+  autoReportHooks?.onNetworkFailure?.(normalized);
 }
 
 function collectDeviceContext(): DeviceContext {
@@ -128,10 +143,22 @@ function installConsoleCapture() {
       ? serializeArg(event.error)
       : `${event.message} at ${event.filename}:${event.lineno}:${event.colno}`;
     pushConsoleLog('error', message);
+    autoReportHooks?.onCrash?.({
+      message: event.error instanceof Error ? event.error.message : event.message,
+      stack: event.error instanceof Error ? event.error.stack : message,
+    });
   });
 
   window.addEventListener('unhandledrejection', (event) => {
-    pushConsoleLog('error', `Unhandled rejection: ${serializeArg(event.reason)}`);
+    const serialized = serializeArg(event.reason);
+    pushConsoleLog('error', `Unhandled rejection: ${serialized}`);
+    autoReportHooks?.onCrash?.({
+      message:
+        event.reason instanceof Error
+          ? event.reason.message
+          : `Unhandled rejection: ${serialized}`,
+      stack: event.reason instanceof Error ? event.reason.stack : serialized,
+    });
   });
 }
 
@@ -289,8 +316,12 @@ export function installContextCapture(
     excludedUrlPatterns = [
       `${normalizedApiUrl}/widget/upload-url`,
       `${normalizedApiUrl}/widget/feedback`,
+      `${normalizedApiUrl}/widget/report`,
+      `${normalizedApiUrl}/widget/config`,
       '/widget/upload-url',
       '/widget/feedback',
+      '/widget/report',
+      '/widget/config',
     ];
   }
 
@@ -309,6 +340,10 @@ export function getCapturedContext(): FeedbackContext {
     failedRequests:
       failedRequests.length > 0 ? [...failedRequests] : undefined,
   };
+}
+
+export function setAutoReportHooks(hooks: AutoReportHooks | null): void {
+  autoReportHooks = hooks;
 }
 
 declare global {

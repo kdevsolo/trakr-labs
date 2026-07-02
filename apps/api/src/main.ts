@@ -28,7 +28,8 @@ async function bootstrap() {
         callback(null, true);
         return;
       }
-      callback(new Error('Not allowed by CORS'), false);
+      // Widget embeds run on customer origins and authenticate via headers.
+      callback(null, true);
     },
     credentials: true,
   });

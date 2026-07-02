@@ -15,7 +15,12 @@ export function getIssueReporterDisplay(issue: IssueReporterSource): string {
 
   const metadata = WidgetIssueMetadataSchema.safeParse(issue.metadata);
   if (metadata.success) {
-    return metadata.data.email;
+    if (metadata.data.reportType === "auto") {
+      return "Automatic";
+    }
+    if (metadata.data.email) {
+      return metadata.data.email;
+    }
   }
 
   return "—";

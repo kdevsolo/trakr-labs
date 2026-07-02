@@ -71,10 +71,41 @@ export const UploadUrlResponseSchema = z.object({
   path: z.string(),
 });
 
+export const AutoReportTypeSchema = z.enum(['crash', 'network']);
+
+export const SubmitAutoReportSchema = z.object({
+  type: AutoReportTypeSchema,
+  fingerprint: z.string().max(64),
+  title: z.string().min(1).max(200),
+  description: z.string().max(2000).optional(),
+  pageUrl: z.string().url().optional(),
+  sessionId: z.string().max(64).optional(),
+  context: FeedbackContextSchema,
+});
+
+export const SubmitAutoReportResponseSchema = z.object({
+  id: z.string(),
+  deduplicated: z.boolean(),
+});
+
+export const WidgetRuntimeConfigSchema = z.object({
+  projectKey: z.string(),
+  autoCrashReport: z.boolean(),
+  autoNetworkReport: z.boolean(),
+});
+
+export const UpdateWidgetSettingsSchema = z.object({
+  autoCrashReport: z.boolean().optional(),
+  autoNetworkReport: z.boolean().optional(),
+});
+
 export const WidgetConfigSchema = z.object({
   projectKey: z.string(),
   enabled: z.boolean(),
   hasSecret: z.boolean(),
+  widgetSecret: z.string().optional(),
+  autoCrashReport: z.boolean(),
+  autoNetworkReport: z.boolean(),
 });
 
 export const EnableWidgetResponseSchema = z.object({
@@ -92,5 +123,14 @@ export type SubmitFeedbackInput = z.infer<typeof SubmitFeedbackSchema>;
 export type SubmitFeedbackResponse = z.infer<typeof SubmitFeedbackResponseSchema>;
 export type RequestUploadUrlInput = z.infer<typeof RequestUploadUrlSchema>;
 export type UploadUrlResponse = z.infer<typeof UploadUrlResponseSchema>;
+export type AutoReportType = z.infer<typeof AutoReportTypeSchema>;
+export type SubmitAutoReportInput = z.infer<typeof SubmitAutoReportSchema>;
+export type SubmitAutoReportResponse = z.infer<
+  typeof SubmitAutoReportResponseSchema
+>;
+export type WidgetRuntimeConfig = z.infer<typeof WidgetRuntimeConfigSchema>;
+export type UpdateWidgetSettingsInput = z.infer<
+  typeof UpdateWidgetSettingsSchema
+>;
 export type WidgetConfig = z.infer<typeof WidgetConfigSchema>;
 export type EnableWidgetResponse = z.infer<typeof EnableWidgetResponseSchema>;
