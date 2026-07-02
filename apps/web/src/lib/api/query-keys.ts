@@ -36,6 +36,8 @@ export const queryKeys = {
     all: () => [...queryKeys.all, "organizations"] as const,
     statusMaster: () =>
       [...queryKeys.organizations.all(), "status-master"] as const,
+    dashboard: (params?: Record<string, unknown>) =>
+      [...queryKeys.organizations.all(), "dashboard", params ?? {}] as const,
   },
   widget: {
     config: (projectId: string) =>

@@ -41,6 +41,9 @@ export function useCreateIssue(projectId: string) {
       queryClient.invalidateQueries({
         queryKey: queryKeys.issues.all(projectId),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.organizations.dashboard(),
+      });
     },
   });
 }
@@ -60,6 +63,9 @@ export function useUpdateIssue(projectId: string) {
       queryClient.invalidateQueries({
         queryKey: queryKeys.issues.all(projectId),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.organizations.dashboard(),
+      });
     },
   });
 }
@@ -72,6 +78,9 @@ export function useDeleteIssue(projectId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.issues.all(projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.organizations.dashboard(),
       });
     },
   });

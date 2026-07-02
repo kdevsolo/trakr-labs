@@ -1,6 +1,7 @@
 export * from './api-response';
 export * from './auth';
 export * from './comments';
+export * from './dashboard';
 export * from './github';
 export * from './issues';
 export * from './pagination';
